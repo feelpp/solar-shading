@@ -1,17 +1,17 @@
 {
   "private": true,
-  "name": "feelpp-project",
-  "description": "The Feel++ Project documentation",
+  "name": "solar-shading",
+  "description": "The Solar Shading documentation",
   "version": "2.0.2",
   "license": "AGPL-3.0",
-  "author": "The Feel++ Project Team",
-  "homepage": "https://github.com/feelpp/feelpp-project#readme",
+  "author": "The Solar Shading Team",
+  "homepage": "https://github.com/feelpp/solar-shading#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/feelpp/feelpp-project.git"
+    "url": "git+https://github.com/feelpp/solar-shading.git"
   },
   "bugs": {
-    "url": "https://github.com/feelpp/feelpp-project/issues"
+    "url": "https://github.com/feelpp/solar-shading/issues"
   },
   "contributors": [
     {

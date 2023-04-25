@@ -1,7 +1,7 @@
 site:
-  title: My Feel++ Project
-  url: https://feelpp.github.io/feelpp-project/
-  start_page: feelpp-project::index.adoc
+  title: My Solar Shading
+  url: https://feelpp.github.io/solar-shading/
+  start_page: solar-shading::index.adoc
 content:
   sources:
   - url: .

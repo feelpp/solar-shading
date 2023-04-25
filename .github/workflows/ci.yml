@@ -64,14 +64,14 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         # Artifact name
-        name: feelpp-project-artifacts
+        name: solar-shading-artifacts
         # Directory containing files to upload
-        path: build/default/assets/feelpp-project-*
+        path: build/default/assets/solar-shading-*
     - name: Release
       if: startsWith(github.ref ,'refs/tags/v')
       uses: softprops/action-gh-release@v1
       with:
-        files: build/default/assets/feelpp-project-*
+        files: build/default/assets/solar-shading-*
         draft: false
         prerelease: ${{ contains(github.ref, 'alpha') || contains(github.ref, 'beta') || contains(github.ref, 'rc')}}
         name: Release ${{ github.ref_name }}
@@ -92,7 +92,7 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         # Artifact name
-        name: feelpp-project-artifacts
+        name: solar-shading-artifacts
         path: artifacts/
     -
         name: Docker meta
@@ -100,7 +100,7 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: |
-            ghcr.io/feelpp/feelpp-project
+            ghcr.io/feelpp/solar-shading
           tags: |
             type=ref,event=branch
             type=ref,event=pr
