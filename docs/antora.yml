@@ -1,0 +1,14 @@
+name: feelpp-project
+title: Feel++ Template Project
+version: ~
+start_page: index.adoc
+nav:
+- modules/ROOT/nav.adoc
+ext:
+  collector:
+    - run:
+        command: ./generate-jupyter.sh docs/modules/ROOT
+      scan:
+        dir: jupyter/
+        files: '**/*.ipynb'
+        base: modules/ROOT/attachments/
