@@ -58,19 +58,20 @@ public:
     {
         M_azimuthSize = intervalsAzimuth;
         M_altitudeSize = intervalsAltitude;
-        M_azimuthAngles = new value_type[intervalsAzimuth];
         value_type deltaAzimuth = 2* M_PI /intervalsAzimuth;
+        M_azimuthAngles.resize(M_azimuthSize);
         for(int i=0; i<intervalsAzimuth; i++)
         {
             M_azimuthAngles[i] = i * deltaAzimuth+1e-6;            
-        }
+        }        
 
-        M_altitudeAngles = new value_type[intervalsAltitude];
         value_type deltaAltitude = 0.5 * M_PI /intervalsAltitude;
+        M_altitudeAngles.resize(M_altitudeSize);
         for(int i=0; i<intervalsAltitude; i++)
         {
             M_altitudeAngles[i] = i * deltaAltitude;        
-        }        
+        } 
+                  
     }
 
     // Choose a random pair of indices in the discretized azimuth and altitude vectors
@@ -227,7 +228,7 @@ public:
             for(auto const &el : ray_submesh->elements() ) // from each element of the submesh, launch M_Nrays randomly oriented            
             {                
 
-                        auto rays_from_element = [&,marker=marker](int n_rays_thread){
+                    auto rays_from_element = [&,marker=marker](int n_rays_thread){
 
                         Eigen::MatrixXd SM_table(M_azimuthSize,M_altitudeSize);
                         SM_table.setZero();
@@ -372,8 +373,7 @@ public:
     std::map<std::string,tr_mesh_ptrtype> M_submeshes;
     std::map<int,node_type> M_faces_to_normals;
 
-    value_type * M_azimuthAngles;
-    value_type * M_altitudeAngles;
+    Eigen::VectorXd M_azimuthAngles, M_altitudeAngles;
 
     int M_azimuthSize;
     int M_altitudeSize;
