@@ -1,12 +1,12 @@
 [submodule "benchmark/pcg-cpp"]
-	path = benchmark/pcg-cpp
+	path = benchmark/extlibs/pcg-cpp
 	url = https://github.com/imneme/pcg-cpp.git
 [submodule "benchmark/Xoshiro-cpp"]
-	path = benchmark/Xoshiro-cpp
+	path = benchmark/extlibs/Xoshiro-cpp
 	url = https://github.com/Reputeless/Xoshiro-cpp.git
 [submodule "benchmark/EigenRand"]
-	path = benchmark/EigenRand
+	path = benchmark/extlibs/EigenRand
 	url = https://github.com/bab2min/EigenRand.git
 [submodule "benchmark/eigen"]
-	path = benchmark/eigen
+	path = benchmark/extlibs/eigen
 	url = https://gitlab.com/libeigen/eigen.git
