@@ -50,6 +50,8 @@ endif()
 
 add_subdirectory( src )
 add_subdirectory( docs )
+add_subdirectory( benchmark/distributions ) # add benchmark directory
+add_subdirectory( benchmark/extlibs/EigenRand)
 
 # extra ignored files
 list(APPEND CPACK_SOURCE_IGNORE_FILES
@@ -90,6 +92,5 @@ set(CPACK_DEBIAN_PACKAGE_SECTION "science")
 set(CPACK_DEBIAN_PACKAGE_VERSION "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}${EXTRA_VERSION}")
 set(CPACK_DEBIAN_ARCHITECTURE "${CMAKE_SYSTEM_PROCESSOR}")
 # set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA "${CMAKE_SOURCE_DIR}/cmake/debian/postinst")
-  
-include(CPack)
 
+include(CPack)
