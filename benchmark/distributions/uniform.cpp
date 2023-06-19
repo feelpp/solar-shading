@@ -57,6 +57,7 @@ int main(int argc, char *argv[]) {
     Eigen::VectorXi EigenVector(numVectors);
     std::vector<int> pcgCppVector(numVectors);
     std::vector<int> xoshiroCppVector(numVectors);
+    Eigen::VectorXi EigenVector2(numVectors);
     
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Technique 1: Eigen::VectorXi::Random() ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
@@ -71,13 +72,12 @@ int main(int argc, char *argv[]) {
     outputFile<< "\n" << flag << ",Eigen::VectorXi::Random,"<< durationEigen.count();
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Technique 2: std::uniform_int_distribution ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    
-    auto startStdUniform = std::chrono::steady_clock::now();
-
 
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<int> dist(0, 100);
+
+    auto startStdUniform = std::chrono::steady_clock::now();
 
     for (int i = 0; i < numVectors; ++i) {
         stdVector[i] = dist(gen);
@@ -89,11 +89,11 @@ int main(int argc, char *argv[]) {
     outputFile<< "\n" << flag << ",std::uniform_int_distribution," << durationStdUniform.count();
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Technique 3: Mersenne Twister ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    
-    auto startMersenne = std::chrono::steady_clock::now();
 
     std::mt19937 mersenne(gen());
     std::uniform_int_distribution<int> mersenneDist(0, 100);
+
+    auto startMersenne = std::chrono::steady_clock::now();
 
     for (int i = 0; i < numVectors; ++i) {
         mersenneVector[i] = mersenneDist(mersenne);
@@ -104,18 +104,31 @@ int main(int argc, char *argv[]) {
 
     outputFile<< "\n" << flag << ",Mersenne Twister," << durationMersenne.count();
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Technique 4: Eigen::Rand ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Technique 4a: Eigen::Rand ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
-    auto startEigenRand = std::chrono::steady_clock::now();
-
     Eigen::Rand::Vmt19937_64 urng{ 42 };
+
+    auto startEigenRand = std::chrono::steady_clock::now();
 
     EigenVector = Eigen::Rand::uniformInt<Eigen::VectorXi>(numVectors, 1, urng, 0, 100);
 
     auto endEigenRand = std::chrono::steady_clock::now();
     auto durationEigenRand = std::chrono::duration_cast<std::chrono::milliseconds>(endEigenRand - startEigenRand);
 
-    outputFile << "\n" << flag << ",EigenRand,"<< durationEigenRand.count();
+    outputFile << "\n" << flag << ",EigenRanda,"<< durationEigenRand.count();
+
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Technique 4b: Eigen::Rand ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    
+    Eigen::Rand::Vmt19937_64 urng2{ 42 };
+
+    auto startEigenRand2 = std::chrono::steady_clock::now();
+
+    EigenVector2 = Eigen::Rand::uniformIntLike(EigenVector2, urng2, 0, 100);
+
+    auto endEigenRand2 = std::chrono::steady_clock::now();
+    auto durationEigenRand2 = std::chrono::duration_cast<std::chrono::milliseconds>(endEigenRand2 - startEigenRand2);
+
+    outputFile << "\n" << flag << ",EigenRandb,"<< durationEigenRand2.count();
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Technique 5: Intel MKL ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
@@ -134,13 +147,15 @@ int main(int argc, char *argv[]) {
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Technique 6: pcg-cpp ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
+    pcg32_fast rng;  // Create an instance of the pcg32 random number generator
+    rng.seed(42);  // Seed the pcg32 random number generator
+    std::uniform_int_distribution<int> pcgDist(0, 100);  // Create a uniform distribution over the range [0, 100
+
     auto startPcgCpp = std::chrono::steady_clock::now();
 
-    pcg32 rng;  // Create an instance of the pcg32 random number generator
-    rng.seed(42);  // Seed the pcg32 random number generator
-
     for (int i = 0; i < numVectors; ++i) {
-        pcgCppVector[i] = static_cast<int>(rng(101));  // Generate random integers between 0 and 100
+        // pcgCppVector[i] = static_cast<int>(rng(101));  // Generate random integers between 0 and 100
+        pcgCppVector[i] = pcgDist(rng);
     }
 
     auto endPcgCpp = std::chrono::steady_clock::now();
@@ -150,14 +165,14 @@ int main(int argc, char *argv[]) {
     outputFile << "\n" << flag << ",pcg-cpp," << durationPcgCpp.count();
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Technique 7: Xoshiro-cpp ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    
-    auto startXoshiroCpp = std::chrono::steady_clock::now();
 
     const std::uint64_t seed = 12345;
 
     Xoshiro256PlusPlus rg(seed);
 
     std::uniform_int_distribution<int> DIST(0,100);
+
+    auto startXoshiroCpp = std::chrono::steady_clock::now();
 
     for (int i = 0; i < numVectors; i++) {
         xoshiroCppVector[i] =  DIST(rg);

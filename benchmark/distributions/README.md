@@ -31,3 +31,5 @@ After running this, the benchmarks can be found in the benchmark/distributions d
 
 
 After each execution, the results are saved in these two files, but if you want to rerun the benchmark, you will have to respond 'Y' to the question 'Do you want to erase the previous results ?' in the script.
+
+The `-march=native` flag is used to compile the benchmarks with the best possible optimization for the machine on which the benchmarks are run. If you want to compile the benchmarks for an execution on another machine, you can change this flag in the script by using `-mavx2` or `-msse4.2` for example. 
