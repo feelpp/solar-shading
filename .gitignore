@@ -47,3 +47,4 @@ tramp
 
 # benchmarking results
 benchmark/distributions/comparison.png
+results/ShadingMasks/*.png

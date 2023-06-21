@@ -44,8 +44,13 @@ def plotShadingMask(csv_filename):
     plt.rgrids([i*10 for i in range(0,10)])
     ax1.set_rlim(bottom=90, top=0)
 
-    
-    plt.savefig('Shading_mask'+Path(csv_filename).stem+'.png')
+    # assuming `destination` is a variable containing your destination path
+
+    output_file = os.path.join(p.destination, 'Shading_mask'+Path(csv_filename).stem+'.png')
+    plt.savefig(output_file)
+
+    # plt.savefig('Shading_mask'+Path(csv_filename).stem+'.png')
+    plt.close(fig)
 
 def plotShadingMaskDir(directory_path):
     for root, dirs, files in os.walk(directory_path):

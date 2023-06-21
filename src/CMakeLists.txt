@@ -22,6 +22,35 @@
 #
 #
 
+
 feelpp_add_application(example_ShadingMasks SRCS example_ShadingMasks.cpp LINK_LIBRARIES Feelpp::feelpp TESTS NO_MPI_TEST INSTALL)
 
+
 feelpp_add_testcase(cases)
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ BELOW THE IN-APP BENCHMARKING ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# # Add the benchmarkPCG target
+add_executable(example_ShadingMasks_comparison example_ShadingMasks_comparison.cpp)
+
+feelpp_add_application(example_ShadingMasks_comparison SRCS example_ShadingMasks_comparison.cpp LINK_LIBRARIES Feelpp::feelpp TESTS NO_MPI_TEST INSTALL)
+
+
+target_include_directories(example_ShadingMasks_comparison PRIVATE
+    ${CMAKE_SOURCE_DIR}/benchmark/extlibs/eigen
+    ${CMAKE_SOURCE_DIR}/benchmark/extlibs/pcg-cpp/include
+    ${CMAKE_SOURCE_DIR}/benchmark/extlibs/eigen/Eigen
+    ${CMAKE_SOURCE_DIR}/benchmark/extlibs/Xoshiro-cpp
+)
+
+target_link_libraries(example_ShadingMasks_comparison PRIVATE
+    Feelpp::feelpp
+)
+
+# Add compilation flags
+target_compile_options(example_ShadingMasks_comparison PRIVATE
+    -O3
+    -march=native
+    -funroll-loops
+)

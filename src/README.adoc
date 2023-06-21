@@ -21,10 +21,28 @@ One can specify a single csv file, a directory containing several csv files, and
 
 After building the sources, one can launch the exampleShadingMask case
 
-`./feelpp_ktirio_example_ShadingMasks --config-file exampleShadingMask/exampleShadingMask.cfg`
+`./feelpp_ss_example_ShadingMasks --config-file exampleShadingMask/exampleShadingMask.cfg`
 
 It will produce a mask per marked surface (floors are not marked). In order to visualize the results, one can launch the Python script
 
 `python3 visualization/shadingMask_visualization.py --dir_path <PATH_TO_SHADING_MASKS_RESULT_DIRECTORY> --destination <DIRECTORY_STORING_VISUALIZATION_RESULTS>`
 
 One can also launch this example via CTest.
+
+=== Execution of the in-app benchmarks
+
+After building the sources, one can launch the in-app benchmarks when located at the source of the repo:
+
+`./src/run_examples.sh`
+
+All resulting `.png` files are stored at 'results/ShadingMasks/'.
+
+The python script may not end properly, but the results are still saved, and one can execute :
+
+`^c` (control + c) to stop the script.
+
+CAREFUL: One may have to change the `FILES_PATH` variable in the run_examples.sh script to match the path given 
+by the output of the feelpp library, storing the matrices and csv files in a special local directory.
+
+
+
