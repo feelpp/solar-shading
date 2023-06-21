@@ -47,6 +47,8 @@ def plotShadingMask(csv_filename):
     
     plt.savefig('Shading_mask'+Path(csv_filename).stem+'.png')
 
+    plt.close()
+
 def plotShadingMaskDir(directory_path):
     for root, dirs, files in os.walk(directory_path):
         for file in files:
