@@ -20,20 +20,66 @@ public:
         M_Nthreads = specs["Nthreads"].get<int>() ;
 
         // For each building, save the surface mesh and build the corresponding BVH tree for ray search
-        for(std::string buildingName : specs["Buildings"])
-        {
-            std::cout << fmt::format("{}\n",buildingName);
-            auto volumeSubmesh = createSubmesh(_mesh=mesh,_range=markedelements(mesh,buildingName),_update=0);    
-            auto surfaceSubmesh = createSubmesh(_mesh=volumeSubmesh,_range=boundaryfaces(volumeSubmesh),_update=0);
-            BVHTree<MeshType::nDim> bvhBuilding;
-            bvhBuilding.buildPrimitivesInfo(surfaceSubmesh);
-            bvhBuilding.buildRootTree();
+        if( specs["/Buildings"_json_pointer].contains("list") ) // the list of volume markers is provided
+        {            
+            auto markersVolume = specs["Buildings"]["list"].get<std::vector<std::string>>();
+            for(std::string buildingName : markersVolume)
+            {
+                std::cout << fmt::format("{}\n",buildingName);
+                auto volumeSubmesh = createSubmesh(_mesh=mesh,_range=markedelements(mesh,buildingName),_update=0);    
+                auto surfaceSubmesh = createSubmesh(_mesh=volumeSubmesh,_range=boundaryfaces(volumeSubmesh),_update=0);
+                BVHTree<MeshType::nDim> bvhBuilding;
+                bvhBuilding.buildPrimitivesInfo(surfaceSubmesh);
+                bvhBuilding.buildRootTree();
 
-            M_bvh_tree_vector.insert(std::make_pair( buildingName , bvhBuilding ));
-            M_submeshes.insert(std::make_pair( buildingName , surfaceSubmesh ));            
-         
+                M_bvh_tree_vector.insert(std::make_pair( buildingName , bvhBuilding ));
+                M_submeshes.insert(std::make_pair( buildingName , surfaceSubmesh ));            
+                
+            }
         }
-        
+        else if( specs["/Buildings"_json_pointer].contains("fileVolumes")) // a csv containing the volume markers is provided
+        {
+            std::string buildingName;
+            // open the file
+                               
+            std::ifstream fileVolumes(Environment::expand(specs["Buildings"]["fileVolumes"].get<std::string>()));
+            
+            // read, line by line, the building marker
+            while ( getline(fileVolumes,buildingName) )
+            {
+                std::cout << fmt::format("{}\n",buildingName);
+                auto volumeSubmesh = createSubmesh(_mesh=mesh,_range=markedelements(mesh,buildingName),_update=0);    
+                auto surfaceSubmesh = createSubmesh(_mesh=volumeSubmesh,_range=boundaryfaces(volumeSubmesh),_update=0);
+                BVHTree<MeshType::nDim> bvhBuilding;
+                bvhBuilding.buildPrimitivesInfo(surfaceSubmesh);
+                bvhBuilding.buildRootTree();
+
+                M_bvh_tree_vector.insert(std::make_pair( buildingName , bvhBuilding ));
+                M_submeshes.insert(std::make_pair( buildingName , surfaceSubmesh ));            
+                
+            }
+
+        }
+        else if( specs["/Buildings"_json_pointer].contains("fileSurfaces") ) // a csv containing the surface markers is provided
+        {
+            std::string buildingName;
+            std::ifstream fileSurfaces(Environment::expand(specs["Buildings"]["fileSurfaces"].get<std::string>()));
+            std::cout << Environment::expand(specs["Buildings"]["fileSurfaces"].get<std::string>()) << std::endl;
+            // read, line by line, the building marker
+            while ( getline(fileSurfaces,buildingName) )
+            {
+                std::cout << fmt::format("{}\n",buildingName);
+                auto surfaceSubmesh = createSubmesh(_mesh=mesh,_range=markedfaces(mesh,buildingName),_update=0);
+                BVHTree<MeshType::nDim> bvhBuilding;
+                bvhBuilding.buildPrimitivesInfo(surfaceSubmesh);
+                bvhBuilding.buildRootTree();
+
+                M_bvh_tree_vector.insert(std::make_pair( buildingName , bvhBuilding ));
+                M_submeshes.insert(std::make_pair( buildingName , surfaceSubmesh ));            
+                
+            }
+        }
+    
         // Define the discretization of the azimuth and altitude vectors
         fixAzimuthAltitudeDiscretization(intervalsAzimuth, intervalsAltitude);
 
@@ -190,7 +236,7 @@ public:
         auto c = (el_p1+el_p2+el_p3)/3.;
         auto elem_area = elementArea(c, el_p1,el_p2,el_p3); 
         auto area = elementArea(point, el_p1,el_p2,el_p3);             
-        if (math::abs(area-elem_area)<1e-5)
+        if (math::abs(area-elem_area)/area<1e-5)
             return true;
         else
             return false;
@@ -199,9 +245,35 @@ public:
     // Compute shading masks for the buildings in the json file
     void computeMasks()
     {
-        for(std::string building_name : j_["Buildings"])
+        if( j_["/Buildings"_json_pointer].contains("list") ) // the list of volume markers is provided
+        {  
+            auto markersVolume = j_["Buildings"]["list"].get<std::vector<std::string>>();
+            for(std::string building_name : markersVolume)
+            {
+                computeMasksOneBuilding(building_name);//,M_bvh_tree_vector[building_name]);
+            }
+        }
+        else if( j_["/Buildings"_json_pointer].contains("fileVolumes")) // a csv containing the volume markers is provided
         {
-            computeMasksOneBuilding(building_name);//,M_bvh_tree_vector[building_name]);
+            std::string building_name;                               
+            std::ifstream fileVolumes(Environment::expand(j_["Buildings"]["fileVolumes"].get<std::string>()));
+            
+            // read, line by line, the building marker
+            while ( getline(fileVolumes,building_name) )
+            {
+                computeMasksOneBuilding(building_name);
+            }
+        }
+        else if( j_["/Buildings"_json_pointer].contains("fileSurfaces") ) // a csv containing the surface markers is provided
+        {
+            std::string building_name;
+            std::ifstream fileSurfaces(Environment::expand(j_["Buildings"]["fileSurfaces"].get<std::string>()));
+            
+            // read, line by line, the building marker
+            while ( getline(fileSurfaces,building_name) )
+            {
+                computeMasksOneBuilding(building_name);
+            }
         }
     }
 
