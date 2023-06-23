@@ -49,13 +49,10 @@ int main(int argc, char **argv)
 
     // RNG PCG
 
-    // Load the mesh
-    auto mesh2 = loadMesh( _mesh = new mesh_t );
-
     auto startrngpcg = std::chrono::high_resolution_clock::now();
 
     // Compute the shading masks
-    ShadingMaskPCG<mesh_t> sm2(mesh2,json_buildings);
+    ShadingMaskPCG<mesh_t> sm2(mesh,json_buildings);
     sm2.computeMasks();
 
     auto endrngpcg = std::chrono::high_resolution_clock::now();
@@ -63,14 +60,10 @@ int main(int argc, char **argv)
 
     // RNG XOSHIRO
 
-    // Load the mesh
-
-    auto mesh3 = loadMesh( _mesh = new mesh_t );
-
     auto startrngxoshiro = std::chrono::high_resolution_clock::now();
 
     // Compute the shading masks
-    ShadingMaskXOSHIRO<mesh_t> sm3(mesh3,json_buildings);
+    ShadingMaskXOSHIRO<mesh_t> sm3(mesh,json_buildings);
     sm3.computeMasks();
 
     auto endrngxoshiro = std::chrono::high_resolution_clock::now();
@@ -78,14 +71,10 @@ int main(int argc, char **argv)
 
     // RNG MIX
 
-    // Load the mesh
-
-    auto mesh4 = loadMesh( _mesh = new mesh_t );
-
     auto startrngmix = std::chrono::high_resolution_clock::now();
 
     // Compute the shading masks
-    ShadingMaskMIX<mesh_t> sm4(mesh4,json_buildings);
+    ShadingMaskMIX<mesh_t> sm4(mesh,json_buildings);
     sm4.computeMasks();
 
     auto endrngmix = std::chrono::high_resolution_clock::now();
