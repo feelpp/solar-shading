@@ -35,14 +35,15 @@ After building the sources, one can launch the in-app benchmarks when located at
 
 `./src/run_examples.sh`
 
+This will ask for the executable to use, each one compiled using different compilation flags:
+    - 1 : -Ofast -march=native
+    - 2 : -O3 -march=native 
+    - 3 : -O2 -march=native
+    - 4 : -Ofast -march=native -funroll-loops
+    - 5 : -O3 -march=native -funroll-loops
+    - 6 : -O2 -march=native -funroll-loops
+    - 7 : -Ofast -march=native -funroll-loops -funsafe-math-optimizations
+
 All resulting `.png` files are stored at 'results/ShadingMasks/'.
 
-The python script may not end properly, but the results are still saved, and one can execute :
-
-`^c` (control + c) to stop the script.
-
-CAREFUL: One may have to change the `FILES_PATH` variable in the run_examples.sh script to match the path given 
-by the output of the feelpp library, storing the matrices and csv files in a special local directory.
-
-
-
+Additionnal quality benchmarks will be added.

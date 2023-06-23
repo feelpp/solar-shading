@@ -1,8 +1,18 @@
+import argparse
 import pandas as pd
 import matplotlib.pyplot as plt
+import os
 
-# read the csv file
-data = pd.read_csv('/home/u4/csmi/2022/devora/solar-shading/benchmark/distributions/comparison.csv')
+# Parse command-line arguments
+parser = argparse.ArgumentParser()
+parser.add_argument('csv_file', help='Name of the CSV file')
+args = parser.parse_args()
+
+# Read the CSV file
+data = pd.read_csv(args.csv_file)
+
+file_name = os.path.splitext(args.csv_file)[0]
+
 
 # plot the method
 plt.figure(figsize=(20,12))
@@ -42,5 +52,5 @@ for i, method in enumerate(set(methods)):
 plt.xticks(rotation=45, ha='right', fontsize=8)
 
 plt.tight_layout()
-plt.savefig('comparison.png')
+plt.savefig(file_name + '.png')
 plt.show()

@@ -26,8 +26,9 @@ cd distributions
 chmod +x runbenchmark.sh
 ./runbenchmark.sh
 ```
+And then either type `uniform_int` or `uniform_real` when asked to choose the distribution to benchmark.
 
-After running this, the benchmarks can be found in the benchmark/distributions directory next to the scripts. The benchmarks are composed of two files, comparison.csv containing the results of the benchmarks and comparison.png containing the plots of the benchmarks in ascending order of execution time.
+After running this, the benchmarks can be found in the benchmark/distributions directory next to the scripts. The benchmarks are composed of two files, `uniform_int.csv` (or `uniform_real.csv`) containing the results of the benchmarks and `uniform_int.png` (or `uniform_real.png`) containing the plots of the benchmarks in ascending order of execution time.
 
 
 After each execution, the results are saved in these two files, but if you want to rerun the benchmark, you will have to respond 'Y' to the question 'Do you want to erase the previous results ?' in the script.

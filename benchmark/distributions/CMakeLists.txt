@@ -25,7 +25,7 @@
 cmake_minimum_required(VERSION 3.10) # Adjust this to your actual CMake version
 
 # Add an executable target called 'uniform' to be built from 'uniform.cpp'
-add_executable(uniform uniform.cpp)
+add_executable(uniform uniform_int.cpp uniform_real.cpp)
 
 # Include directories for the 'uniform' target
 target_include_directories(uniform PRIVATE

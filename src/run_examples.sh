@@ -9,13 +9,14 @@ ROOT_PATH="${SCRIPT_PATH%/src}"
 
 cd "$ROOT_PATH/build/default/src"
 
-./feelpp_ss_example_ShadingMasks_comparison --config-file "$ROOT_PATH/src/cases/exampleShadingMask/exampleShadingMask.cfg"
+read -p "Enter the number: " NUMBER
+
+EXECUTABLE="./feelpp_ss_example_ShadingMasks_comparison${NUMBER}"
+
+$EXECUTABLE --config-file "$ROOT_PATH/src/cases/exampleShadingMask/exampleShadingMask.cfg"
 
 PYTHON_SCRIPT="$ROOT_PATH/src/visualization/shadingMask_visualization.py"
 FILES_PATH="$ROOT_PATH/../feelppdb/exampleShadingMask/np_1/shadingMasks"
 DESTINATION="$ROOT_PATH/results/ShadingMasks"
 
-for FILE in "$FILES_PATH"/*.csv; do
-    NAME=$(basename "$FILE")
-    python3 $PYTHON_SCRIPT --file_path $FILE --dir_path $FILES_PATH --destination $DESTINATION
-done
+python3 $PYTHON_SCRIPT --dir_path $FILES_PATH --destination $DESTINATION

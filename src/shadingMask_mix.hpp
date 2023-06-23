@@ -1,9 +1,15 @@
 #include <feel/feelmesh/bvh.hpp>
 #include <feel/feelcore/environment.hpp>
+#include "../benchmark/extlibs/pcg-cpp/include/pcg_random.hpp"
+#include "../benchmark/extlibs/EigenRand/EigenRand/EigenRand"
+#include "../benchmark/extlibs/eigen/Eigen/Dense"
+#include "../benchmark/extlibs/eigen/Eigen/Core"
+
+
 namespace Feel { 
 
 template <typename MeshType>
-class ShadingMask 
+class ShadingMaskMIX 
 {
     typedef typename MeshType::ptrtype mesh_ptrtype;
     typedef typename MeshType::trace_mesh_ptrtype tr_mesh_ptrtype;
@@ -12,7 +18,7 @@ class ShadingMask
 public:    
     using value_type = double;
     
-    ShadingMask(mesh_ptrtype mesh, nl::json const& specs, int intervalsAzimuth=72, int intervalsAltitude=10 )
+    ShadingMaskMIX(mesh_ptrtype mesh, nl::json const& specs, int intervalsAzimuth=72, int intervalsAltitude=10 )
     {    
         // Read the number of rays per triangle and the number of threads
         j_ = specs;
@@ -38,19 +44,31 @@ public:
         fixAzimuthAltitudeDiscretization(intervalsAzimuth, intervalsAltitude);
 
         // Seed the random number generators to choose azimuth and altitude 
-        std::random_device rd;  
-        std::random_device rd2; 
-        std::mt19937 gen(rd()); 
-        std::mt19937 gen2(rd2()); 
+        // std::random_device rd;  
+        // std::random_device rd2; 
+        // std::mt19937 gen(rd()); 
+        // std::mt19937 gen2(rd2()); 
+        // gen.seed(std::chrono::high_resolution_clock::now()
+        //                     .time_since_epoch()
+        //                     .count()); 
+        // gen2.seed(std::chrono::high_resolution_clock::now()
+        //                     .time_since_epoch()
+        //                     .count());
+
+        // M_gen=gen;
+        // M_gen2=gen2;   
+
+        pcg32_fast gen;
+        pcg32_fast gen2;
         gen.seed(std::chrono::high_resolution_clock::now()
                             .time_since_epoch()
-                            .count()); 
+                            .count());
         gen2.seed(std::chrono::high_resolution_clock::now()
                             .time_since_epoch()
-                            .count());
+                            .count()); 
 
         M_gen=gen;
-        M_gen2=gen2;   
+        M_gen2=gen2;
     }
 
     // Subdivide the azimuth angles [0,360]° and altitude angles [0,90]° in subsets for easier computation of the shading masks
@@ -75,7 +93,7 @@ public:
     }
 
     // Choose a random pair of indices in the discretized azimuth and altitude vectors
-    void getRandomDirectionSM(std::vector<double> &random_direction, std::mt19937 & M_gen, std::mt19937 & M_gen2, int& index_azimuth, int& index_altitude)
+    void getRandomDirectionSM(std::vector<double> &random_direction, pcg32_fast & M_gen, pcg32_fast & M_gen2, int& index_azimuth, int& index_altitude)
     {    
         std::uniform_int_distribution<int> dist_azimuth(0,M_azimuthSize-1);
         std::uniform_int_distribution<int> dist_altitude(0,M_altitudeSize-1);
@@ -117,17 +135,20 @@ public:
                 p2(i)=column(element_points, 1)[i];
                 p3(i)=column(element_points, 2)[i];                
             }
-            std::cout << fmt::format("p1: {}\n",p1);
             v = p2-p1;
             u = p3-p1;
             while(true)
             {
                 unsigned seed2 = std::chrono::high_resolution_clock::now().time_since_epoch().count();             
-                unsigned seed3 = std::chrono::high_resolution_clock::now().time_since_epoch().count();             
-                std::default_random_engine generator3(seed2),generator4(seed3);
-                std::uniform_real_distribution<double> xi1(0,1),xi2(0,1);
-                double s = xi1(generator3);
-                double t = xi2(generator4);
+                unsigned seed3 = std::chrono::high_resolution_clock::now().time_since_epoch().count();  
+                Eigen::Rand::Vmt19937_64 urng3{ seed2 };
+                Eigen::Rand::Vmt19937_64 urng4{ seed3 };
+                Eigen::VectorXd S(1);
+                Eigen::VectorXd T(1);
+
+                double s = Eigen::Rand::uniformRealLike(S,urng3,0,1)[0];
+                double t = Eigen::Rand::uniformRealLike(T,urng4,0,1)[0];
+
                 // If the point is on the left of the diagonal, keep it, else take the symmetric one
                 bool in_triangle = (s + t <= 1);
                 if(in_triangle)
@@ -357,7 +378,7 @@ public:
         if (!boost::filesystem::exists(shadingMaskFolder))
             boost::filesystem::create_directory(shadingMaskFolder);
         
-        std::string matrix_filename = shadingMaskFolder+"/SM_Matrix_"+building_name+"_"+marker_name+".csv";
+        std::string matrix_filename = shadingMaskFolder+"/SM_Matrix_"+building_name+"_"+marker_name+"MIX.csv";
         matrix_file.open(matrix_filename,std::ios_base::out);
         for(int i=0; i<M_azimuthSize; i++)
         {
@@ -383,9 +404,14 @@ public:
 
     nl::json j_;
 
-    std::random_device M_rd; 
-    std::random_device M_rd2; 
-    std::mt19937 M_gen; 
-    std::mt19937 M_gen2; 
+    // std::random_device M_rd; 
+    // std::random_device M_rd2; 
+    // std::mt19937 M_gen; 
+    // std::mt19937 M_gen2; 
+
+    pcg32_fast M_gen; 
+    pcg32_fast M_gen2; 
+    std::random_device M_rd;
+    std::random_device M_rd2;
 };
 } // namespace Feel

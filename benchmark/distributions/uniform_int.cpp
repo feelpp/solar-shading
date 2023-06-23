@@ -44,7 +44,7 @@ int main(int argc, char *argv[]) {
 
 
     // Open the CSV file for writing
-    std::ofstream outputFile("comparison.csv", std::ofstream::app);
+    std::ofstream outputFile("uniform_int.csv", std::ofstream::app);
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Parameters Initialization ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     

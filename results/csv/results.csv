@@ -1,1 +1,25 @@
-RNG TYPE,EXECUTION TIME
+METHOD,TIME
+Shading mask STD RNG -Ofast -march=native,9.99015
+Shading mask PCG RNG -Ofast -march=native,8.34877
+Shading mask XOSHIRO RNG -Ofast -march=native,7.88745
+Shading mask MIX RNG -Ofast -march=native,9.741
+Shading mask STD RNG -Ofast -march=native,9.88132
+Shading mask PCG RNG -Ofast -march=native,9.80248
+Shading mask XOSHIRO RNG -Ofast -march=native,9.92391
+Shading mask MIX RNG -Ofast -march=native,10.1443
+Shading mask STD RNG -Ofast -march=native,10.9991
+Shading mask PCG RNG -Ofast -march=native,9.99749
+Shading mask XOSHIRO RNG -Ofast -march=native,9.81854
+Shading mask MIX RNG -Ofast -march=native,9.63068
+Shading mask STD RNG -Ofast -march=native,11.0136
+Shading mask PCG RNG -Ofast -march=native,10.4724
+Shading mask XOSHIRO RNG -Ofast -march=native,10.855
+Shading mask MIX RNG -Ofast -march=native,10.9804
+Shading mask STD RNG -Ofast -march=native -funroll-loops -funsafe-math-optimizations,11.7976
+Shading mask PCG RNG -Ofast -march=native -funroll-loops -funsafe-math-optimizations,10.2469
+Shading mask XOSHIRO RNG -Ofast -march=native -funroll-loops -funsafe-math-optimizations,9.38577
+Shading mask MIX RNG -Ofast -march=native -funroll-loops -funsafe-math-optimizations,10.0054
+Shading mask STD RNG -O3 -march=native,10.7028
+Shading mask PCG RNG -O3 -march=native,10.8316
+Shading mask XOSHIRO RNG -O3 -march=native,10.3154
+Shading mask MIX RNG -O3 -march=native,11.3336
