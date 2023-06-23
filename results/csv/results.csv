@@ -23,3 +23,7 @@ Shading mask STD RNG -O3 -march=native,10.7028
 Shading mask PCG RNG -O3 -march=native,10.8316
 Shading mask XOSHIRO RNG -O3 -march=native,10.3154
 Shading mask MIX RNG -O3 -march=native,11.3336
+Shading mask STD RNG -Ofast -march=native,25.8522
+Shading mask PCG RNG -Ofast -march=native,22.4726
+Shading mask XOSHIRO RNG -Ofast -march=native,20.1977
+Shading mask MIX RNG -Ofast -march=native,18.8925

@@ -117,7 +117,6 @@ public:
                 p2(i)=column(element_points, 1)[i];
                 p3(i)=column(element_points, 2)[i];                
             }
-            std::cout << fmt::format("p1: {}\n",p1);
             v = p2-p1;
             u = p3-p1;
             while(true)

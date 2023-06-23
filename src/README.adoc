@@ -47,3 +47,11 @@ This will ask for the executable to use, each one compiled using different compi
 All resulting `.png` files are stored at 'results/ShadingMasks/'.
 
 Additionnal quality benchmarks will be added.
+
+=== Visualization of the differences
+
+In order to visualize the differences between the shading masks, one can launch the bash script when located at the root of the project:
+
+`./src/check_diff.sh`
+
+The results are stored as .png files in the '/results/Differences' directory.
