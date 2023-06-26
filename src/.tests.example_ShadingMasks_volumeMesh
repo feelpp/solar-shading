@@ -1,0 +1,1 @@
+example_ShadingMasks_volumeMesh-1 --config-file ${CMAKE_CURRENT_SOURCE_DIR}/cases/exampleShadingMask/exampleShadingMaskVolume.cfg
