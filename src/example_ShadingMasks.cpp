@@ -9,7 +9,7 @@ using namespace Feel;
 int main(int argc, char **argv)
 {
     using namespace Feel;
-    using mesh_t = Mesh<Simplex<3>>;
+    using mesh_t = Mesh<Simplex<FEELPP_TOP_DIM,1,3>>;
 
     po::options_description shadingoptions( "Shading mask options" );
     shadingoptions.add_options()

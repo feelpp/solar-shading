@@ -6,7 +6,11 @@ template <typename MeshType>
 class ShadingMask 
 {
     typedef typename MeshType::ptrtype mesh_ptrtype;
-    typedef typename MeshType::trace_mesh_ptrtype tr_mesh_ptrtype;
+    
+    using tr_mesh_ptrtype = typename std::conditional<MeshType::nDim==MeshType::nRealDim,
+                                                typename MeshType::trace_mesh_ptrtype,
+                                                typename MeshType::ptrtype >::type ;
+    // typedef typename MeshType::trace_mesh_ptrtype tr_mesh_ptrtype;
     typedef typename matrix_node<double>::type matrix_node_type;
 
 public:    
@@ -20,63 +24,76 @@ public:
         M_Nthreads = specs["Nthreads"].get<int>() ;
 
         // For each building, save the surface mesh and build the corresponding BVH tree for ray search
-        if( specs["/Buildings"_json_pointer].contains("list") ) // the list of volume markers is provided
-        {            
-            auto markersVolume = specs["Buildings"]["list"].get<std::vector<std::string>>();
-            for(std::string buildingName : markersVolume)
-            {
-                std::cout << fmt::format("{}\n",buildingName);
-                auto volumeSubmesh = createSubmesh(_mesh=mesh,_range=markedelements(mesh,buildingName),_update=0);    
-                auto surfaceSubmesh = createSubmesh(_mesh=volumeSubmesh,_range=boundaryfaces(volumeSubmesh),_update=0);
-                BVHTree<MeshType::nDim> bvhBuilding;
-                bvhBuilding.buildPrimitivesInfo(surfaceSubmesh);
-                bvhBuilding.buildRootTree();
+        if constexpr( MeshType::nDim==MeshType::nRealDim )
+        {
+            if( specs["/Buildings"_json_pointer].contains("list") ) // the list of volume markers is provided
+            {            
+                auto markersVolume = specs["Buildings"]["list"].get<std::vector<std::string>>();
+                for(std::string buildingName : markersVolume)
+                {
+                    std::cout << fmt::format("{}\n",buildingName);
+                    auto volumeSubmesh = createSubmesh(_mesh=mesh,_range=markedelements(mesh,buildingName));    
+                    auto surfaceSubmesh = createSubmesh(_mesh=volumeSubmesh,_range=boundaryfaces(volumeSubmesh));
+                    BVHTree<MeshType::nDim,MeshType::nRealDim> bvhBuilding;
+                    bvhBuilding.buildPrimitivesInfo(surfaceSubmesh);
+                    bvhBuilding.buildRootTree();
 
-                M_bvh_tree_vector.insert(std::make_pair( buildingName , bvhBuilding ));
-                M_submeshes.insert(std::make_pair( buildingName , surfaceSubmesh ));            
+                    M_bvh_tree_vector.insert(std::make_pair( buildingName , bvhBuilding ));
+                    M_submeshes.insert(std::make_pair( buildingName , surfaceSubmesh ));            
+                    
+                }
+            }
+            else if( specs["/Buildings"_json_pointer].contains("fileVolumes")) // a csv containing the volume markers is provided
+            {
+                std::string buildingName;
+                // open the file
+                                
+                std::ifstream fileVolumes(Environment::expand(specs["Buildings"]["fileVolumes"].get<std::string>()));
                 
+                // read, line by line, the building marker
+                while ( getline(fileVolumes,buildingName) )
+                {
+                    std::cout << fmt::format("{}\n",buildingName);
+                    auto volumeSubmesh = createSubmesh(_mesh=mesh,_range=markedelements(mesh,buildingName));    
+                    auto surfaceSubmesh = createSubmesh(_mesh=volumeSubmesh,_range=boundaryfaces(volumeSubmesh));
+                    BVHTree<MeshType::nDim,MeshType::nRealDim> bvhBuilding;
+                    bvhBuilding.buildPrimitivesInfo(surfaceSubmesh);
+                    bvhBuilding.buildRootTree();
+
+                    M_bvh_tree_vector.insert(std::make_pair( buildingName , bvhBuilding ));
+                    M_submeshes.insert(std::make_pair( buildingName , surfaceSubmesh ));            
+                    
+                }
+
             }
         }
-        else if( specs["/Buildings"_json_pointer].contains("fileVolumes")) // a csv containing the volume markers is provided
+        else
         {
-            std::string buildingName;
-            // open the file
-                               
-            std::ifstream fileVolumes(Environment::expand(specs["Buildings"]["fileVolumes"].get<std::string>()));
-            
-            // read, line by line, the building marker
-            while ( getline(fileVolumes,buildingName) )
+            if( specs["/Buildings"_json_pointer].contains("fileSurfaces") ) // a csv containing the surface markers is provided
             {
-                std::cout << fmt::format("{}\n",buildingName);
-                auto volumeSubmesh = createSubmesh(_mesh=mesh,_range=markedelements(mesh,buildingName),_update=0);    
-                auto surfaceSubmesh = createSubmesh(_mesh=volumeSubmesh,_range=boundaryfaces(volumeSubmesh),_update=0);
-                BVHTree<MeshType::nDim> bvhBuilding;
-                bvhBuilding.buildPrimitivesInfo(surfaceSubmesh);
-                bvhBuilding.buildRootTree();
+                std::string buildingName;
+                std::ifstream fileSurfaces(Environment::expand(specs["Buildings"]["fileSurfaces"].get<std::string>()));
+                std::cout << Environment::expand(specs["Buildings"]["fileSurfaces"].get<std::string>()) << std::endl;
+                // read, line by line, the building marker
+                while ( getline(fileSurfaces,buildingName) )
+                {
+                    std::cout << fmt::format("{}\n",buildingName);
+                    auto surfaceSubmesh = createSubmesh(_mesh=mesh,_range=markedelements(mesh,buildingName));
+                    auto listMarkers = surfaceSubmesh->markerNames();
+                    // Delete the marker associated to the building 
+                    // to Keep only face markers
+                    auto it = listMarkers.find(buildingName);
+                    listMarkers.erase(it);
+                    surfaceSubmesh->setMarkerNames(listMarkers);
+                    
+                    BVHTree<MeshType::nDim,MeshType::nRealDim> bvhBuilding;
+                    bvhBuilding.buildPrimitivesInfo(surfaceSubmesh);
+                    bvhBuilding.buildRootTree();
 
-                M_bvh_tree_vector.insert(std::make_pair( buildingName , bvhBuilding ));
-                M_submeshes.insert(std::make_pair( buildingName , surfaceSubmesh ));            
-                
-            }
-
-        }
-        else if( specs["/Buildings"_json_pointer].contains("fileSurfaces") ) // a csv containing the surface markers is provided
-        {
-            std::string buildingName;
-            std::ifstream fileSurfaces(Environment::expand(specs["Buildings"]["fileSurfaces"].get<std::string>()));
-            std::cout << Environment::expand(specs["Buildings"]["fileSurfaces"].get<std::string>()) << std::endl;
-            // read, line by line, the building marker
-            while ( getline(fileSurfaces,buildingName) )
-            {
-                std::cout << fmt::format("{}\n",buildingName);
-                auto surfaceSubmesh = createSubmesh(_mesh=mesh,_range=markedfaces(mesh,buildingName),_update=0);
-                BVHTree<MeshType::nDim> bvhBuilding;
-                bvhBuilding.buildPrimitivesInfo(surfaceSubmesh);
-                bvhBuilding.buildRootTree();
-
-                M_bvh_tree_vector.insert(std::make_pair( buildingName , bvhBuilding ));
-                M_submeshes.insert(std::make_pair( buildingName , surfaceSubmesh ));            
-                
+                    M_bvh_tree_vector.insert(std::make_pair( buildingName , bvhBuilding ));
+                    M_submeshes.insert(std::make_pair( buildingName , surfaceSubmesh ));            
+                    
+                }
             }
         }
     
@@ -441,7 +458,7 @@ public:
         matrix_file.close();
     }
 
-    std::map<std::string,BVHTree<MeshType::nDim>> M_bvh_tree_vector;
+    std::map<std::string,BVHTree<MeshType::nDim,MeshType::nRealDim>> M_bvh_tree_vector;
     std::map<std::string,tr_mesh_ptrtype> M_submeshes;
     std::map<int,node_type> M_faces_to_normals;
 

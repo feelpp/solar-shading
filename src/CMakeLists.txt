@@ -22,6 +22,8 @@
 #
 #
 
-feelpp_add_application(example_ShadingMasks SRCS example_ShadingMasks.cpp LINK_LIBRARIES Feelpp::feelpp TESTS NO_MPI_TEST INSTALL)
+feelpp_add_application(example_ShadingMasks_surfaceMesh SRCS example_ShadingMasks.cpp DEFS FEELPP_TOP_DIM=2 LINK_LIBRARIES Feelpp::feelpp TESTS NO_MPI_TEST INSTALL)
+feelpp_add_application(example_ShadingMasks_volumeMesh SRCS example_ShadingMasks.cpp DEFS FEELPP_TOP_DIM=3 LINK_LIBRARIES Feelpp::feelpp TESTS NO_MPI_TEST INSTALL)
+
 
 feelpp_add_testcase(cases)
