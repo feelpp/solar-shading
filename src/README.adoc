@@ -1,0 +1,30 @@
+== Shading masks
+
+Shading masks are synthetic diagrams that represent the incident radiation on a given surface for all possible altitudes and azimuth angles of the incoming rays. They are normally represented using a circular diagram where:
+
+- the azimuth coordinate runs on the circumference;
+- the altitude coordinate runs from the circumference to the center of the circle;
+- white and light grey regions indicate none to little shading from the surroundings (buildings, trees, etc) for that specific interval of azimuth and altitude angles;
+- dark grey and black regions indicate heavy to complete coverage from the surroundings (buildings, trees, etc) for that specific interval of azimuth and altitude angles.
+
+In this implementation, BVH trees are used to check whether a given ray intersects or not the surfaces of the buildings.
+The shading masks are stored in CSV files as matrices of size stem:[nAzimuth \times nAltitude], where nAzimuth and nAltitude determine the discretization of the azimuth and altitude intervals.
+
+It is possible to visualize a given shading mask by using the _shading_mask_visualization.py_ Python script.
+One can specify a single csv file, a directory containing several csv files, and also the destination folder where the images are saved.
+
+
+
+- Marsh, Andrew. "The application of shading masks in building simulation." Proceedings of the Building Simulation 2005 Conference. 2005.
+
+=== Execution of the examples
+
+After building the sources, one can launch the example_shading_mask case
+
+`./feelpp_ktirio_example_shading_masks --config-file example_shading_mask/example_shading_mask.cfg`
+
+It will produce a mask per marked surface (floors are not marked). In order to visualize the results, one can launch the Python script
+
+`python3 visualization/shading_mask_visualization.py --dir_path <PATH_TO_SHADING_MASKS_RESULT_DIRECTORY> --destination <DIRECTORY_STORING_VISUALIZATION_RESULTS>`
+
+One can also launch this example via CTest.
