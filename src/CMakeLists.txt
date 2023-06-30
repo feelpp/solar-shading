@@ -22,6 +22,6 @@
 #
 #
 
-feelpp_add_application(example_ShadingMasks SRCS example_ShadingMasks.cpp LINK_LIBRARIES Feelpp::feelpp TESTS NO_MPI_TEST INSTALL)
+feelpp_add_application(example_shading_masks SRCS example_shading_masks.cpp LINK_LIBRARIES Feelpp::feelpp TESTS NO_MPI_TEST INSTALL)
 
 feelpp_add_testcase(cases)

@@ -1,0 +1,1 @@
+example_shading_masks-1 --config-file ${CMAKE_CURRENT_SOURCE_DIR}/cases/example_shading_masks/example_shading_masks.cfg
