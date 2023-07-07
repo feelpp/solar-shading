@@ -1,13 +1,30 @@
+#ifdef FROM_SHELL_SCRIPT
 #include <iostream>
 #include <vector>
 #include <random>
 #include <chrono>
 #include <fstream>
-#include "../extlibs/EigenRand/EigenRand/EigenRand"
-#include "../extlibs/Xoshiro-cpp/XoshiroCpp.hpp"
-#include "../extlibs/pcg-cpp/include/pcg_random.hpp"
-#include "../extlibs/eigen/Eigen/Dense"
-#include "../extlibs/eigen/Eigen/Core"
+
+#include "../../extlibs/EigenRand/EigenRand/EigenRand"
+#include "../../extlibs/Xoshiro-cpp/XoshiroCpp.hpp"
+#include "../../extlibs/pcg-cpp/include/pcg_random.hpp"
+#include "../../extlibs/eigen/Eigen/Dense"
+#include "../../extlibs/eigen/Eigen/Core"
+// #include <mkl.h>
+
+#else
+#include <iostream>
+#include <vector>
+#include <random>
+#include <chrono>
+#include <fstream>
+
+#include "EigenRand/EigenRand"
+#include "XoshiroCpp.hpp"
+#include "pcg_random.hpp"
+#include "Eigen/Dense"
+#include "Eigen/Core"
+#endif
 
 using namespace XoshiroCpp;
 
@@ -29,7 +46,7 @@ int main(int argc, char *argv[]) {
         flag = "default";
     }
 
-    std::ofstream outputFile("uniform_real.csv", std::ofstream::app);
+    std::ofstream outputFile("../../results/csv/uniform_real.csv", std::ofstream::app);
 
     const int numVectors = 100000000;
     
@@ -100,6 +117,18 @@ int main(int argc, char *argv[]) {
     auto durationXoshiroCpp = std::chrono::duration_cast<std::chrono::milliseconds>(endXoshiroCpp - startXoshiroCpp);
     outputFile << "\n" << flag << ",XoshiroCpp,"<< durationXoshiroCpp.count();
     outputFile.close();
+
+
+    #ifdef RFM_USE_REFRAME
+    // Write the results to the console
+    std::cout << flag << ",Eigen::VectorXi::Random,"<< durationEigen.count() << "\n" ;
+    std::cout << flag << ",std::uniform_int_distribution," << durationStdUniform.count() << "\n" ;
+    std::cout << flag << ",Mersenne Twister," << durationMersenne.count() << "\n" ;
+    std::cout << flag << ",EigenRanda,"<< durationEigenRand.count() << "\n" ;
+    // std::cout << flag << ",Intel MKL sequential," << durationMKL.count()<< "\n" ;
+    std::cout << flag << ",pcg-cpp," << durationPcgCpp.count() << "\n" ;
+    std::cout << flag << ",XoshiroCpp,"<< durationXoshiroCpp.count() << "\n" ;
+    #endif
 
     return 0;
 }

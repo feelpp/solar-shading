@@ -51,6 +51,7 @@ endif()
 add_subdirectory( src )
 add_subdirectory( docs )
 add_subdirectory( benchmark/distributions ) # add benchmark directory
+# add_subdirectory( benchmark/distributions/src )
 # add_subdirectory( benchmark/extlibs/EigenRand)
 # add_subdirectory( benchmark/extlibs)
 

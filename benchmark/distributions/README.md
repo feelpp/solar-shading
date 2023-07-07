@@ -12,11 +12,9 @@ More, the Intel oneAPI MKL library has to be installed and, either the environme
 -I/home/u4/csmi/2022/devora/intel/oneapi/mkl/2023.1.0/include # -L/home/u4/csmi/2022/devora/intel/oneapi/mkl/2023.1.0/lib/intel64 -lmkl_intel_lp64 -lmkl_sequential -lmkl_core -lpthread -lm -ldl
 ```
 
-# Warnings 
+# Benchmarking
 
-Intel's oneAPI MKL library isn't installed and hence isn't tested in the script.
-
-# Compilation and execution
+## With the Bash script
 
 When the prerequisites are met, the benchmarks can be compiled by running the following command:
 
@@ -34,3 +32,18 @@ After running this, the benchmarks can be found in the benchmark/distributions d
 After each execution, the results are saved in these two files, but if you want to rerun the benchmark, you will have to respond 'Y' to the question 'Do you want to erase the previous results ?' in the script.
 
 The `-march=native` flag is used to compile the benchmarks with the best possible optimization for the machine on which the benchmarks are run. If you want to compile the benchmarks for an execution on another machine, you can change this flag in the script by using `-mavx2` or `-msse4.2` for example. 
+
+## With Reframe
+
+After installing reframe on your machine and adding the `reframe` command to your path, you can run the benchmarks with the following command when located at the root of the repository:
+
+```bash
+cd benchmark/distributions
+reframe -c bencharking.py -r --performance-report
+```
+
+The results will be displayed in the terminal and individual performance logs are generated in the `benchmark/distributions/output/*/rfm_job.out` files.
+
+# Warnings 
+
+Intel's oneAPI MKL library isn't installed and hence isn't tested in the script.
