@@ -7,7 +7,6 @@ It is part of the documentation of docs.feelpp.org[{feelpp} docs] website.
 .To generate the documentation
 [source,shell]
 ----
- $ cd docs 
  $ npm install # <1>
  $ npm run antora # <2>
  $ npm run start # <3>
