@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Cmake environment :: My Solar Shading</title>
-    <link rel="canonical" href="https://feelpp.github.io/solar-shading/solar-shading/cmake.html">
+    <title>RNG&#8217;s :: My Solar Shading</title>
+    <link rel="canonical" href="https://feelpp.github.io/solar-shading/solar-shading/rng.html">
     <meta name="generator" content="Antora 3.1.3">
     <link rel="stylesheet" href="../_/css/site.css">
 <link rel="icon" href="../_/img/favicon.ico" type="image/x-icon">
@@ -135,7 +135,7 @@ MathJax.Hub.Config({
   <li class="nav-item" data-depth="1">
     <a class="nav-link" href="index.html">Introduction</a>
   </li>
-  <li class="nav-item is-current-page" data-depth="1">
+  <li class="nav-item" data-depth="1">
     <a class="nav-link" href="cmake.html">cmake environment</a>
   </li>
   <li class="nav-item" data-depth="1">
@@ -160,7 +160,7 @@ MathJax.Hub.Config({
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="introduction.html">Introduction</a>
   </li>
-  <li class="nav-item" data-depth="2">
+  <li class="nav-item is-current-page" data-depth="2">
     <a class="nav-link" href="rng.html">Random Number Generator</a>
   </li>
   <li class="nav-item" data-depth="2">
@@ -211,12 +211,13 @@ MathJax.Hub.Config({
   <nav class="breadcrumbs" aria-label="breadcrumbs">
   <ul>
     <li><a href="index.html">Feel++ Template Project</a></li>
-    <li><a href="cmake.html">cmake environment</a></li>
+    <li><a href="rapport.html">Rapport</a></li>
+    <li><a href="rng.html">Random Number Generator</a></li>
   </ul>
 </nav>
 
   
-    <div class="edit-this-page"><a href="https://github.com/feelpp/solar-shading/edit/7-add-project-report-to-antora-pages/docs/modules/ROOT/pages/cmake.adoc">Edit this Page</a></div>
+    <div class="edit-this-page"><a href="https://github.com/feelpp/solar-shading/edit/7-add-project-report-to-antora-pages/docs/modules/ROOT/pages/rng.adoc">Edit this Page</a></div>
   
   <div class="page-downloads">
   <span class="label">Download as</span>
@@ -237,81 +238,101 @@ MathJax.Hub.Config({
 </aside>
 
 <article class="doc">
-<h1 class="page">Cmake environment</h1>
-<div id="preamble">
+<h1 class="page">RNG&#8217;s</h1>
+<div class="sect1">
+<h2 id="_role_and_objectives"><a class="anchor" href="#_role_and_objectives"></a>1. Role and Objectives</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>The CMakeLists.txt is setup with Feel++.
-A sample Feel++ application is available in <code>src</code>.</p>
+<p>When dealing with solar shading masks computation, it&#8217;s strongly recommended to use the Monte-Carlo technic, namely during the ray-tracing part of the algorithm enabling one to backtrace the paths to find shaded locations due to the environment. But this comes at a cost, since it&#8217;s mathematically accurate only when tracing multiple rays in random directions, being the foundation of this method.</p>
+</div>
+<div class="paragraph">
+<p>Since this project is at district or even city scale, the use of a fast Random Number Generators (RNG) is necessary. Despite numerous benchmarks already been done, we decided to compare some of the fastest open-source libraries, all heavily relying on Vectorization, multi-threading or multicore processing, and performance-targeted compiling flags (such as <code>-03</code> to <code>-0fast</code>). Since Intel processors have specific instructions and extensions (such as Streaming SIMD Extensions, SSE2) and Advanced Vector Extensions (AVX), the MKL advanced Mathematics library naturally benefits of efficient vectorized operations.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_building"><a class="anchor" href="#_building"></a>1. Building</h2>
+<h2 id="_rng_speed_benchmark"><a class="anchor" href="#_rng_speed_benchmark"></a>2. RNG Speed Benchmark</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>The CMakeLists.txt is configured to build the application in <code>src</code>.
-The following commands can be used to build the application:</p>
+<p>We have to adopt rigorous coding methods, proving and explaining our reasoning behind every choice made during the internship. In order to settle on a specific method, benchmarks have to be performed.</p>
 </div>
-<div class="listingblock">
+<div class="sect2">
+<h3 id="_available_methods"><a class="anchor" href="#_available_methods"></a>2.1. Available Methods</h3>
+<div class="paragraph">
+<p>As said, numerous methods are open-source and available to use, built upon different fundamentals. The Xoshiro-Cpp is a lightweight, high-performance random number generator known for its speed and low memory consumption. The Mersenne Twister, on the other hand, is widely used for its long period and good statistical properties. std::random provides a standardized interface for random number generation in C++, offering various generators including Mersenne Twister. Eigen::Rand is a random number generator headers library strongly relying on Eigen&#8217;s vectorization capabilities, useful for generating random matrices in numerical computations. Intel MKL offers high-performance, vectorized random number generation routines optimized for scientific and numerical computing while <code>pcg-cpp</code> is a Permuted Congruential Generator implementation balancing speed and randomness for simulations and gaming.</p>
+</div>
+<div class="paragraph">
+<p>Below you can see a first execution time comparison, using the <code>std::chrono</code> library to measure the time taken by each method to generate 1000000 random numbers. The code was compiled using different usual flags, such as <code>-O3</code>, <code>-Ofast</code>, <code>-O2</code> and <code>-O1</code>.</p>
+</div>
+<div class="imageblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"> $ cmake --preset default <i class="conum" data-value="1"></i><b>(1)</b>
- $ cmake --build --preset default <i class="conum" data-value="2"></i><b>(2)</b>
- $ cmake --build --preset default -t install <i class="conum" data-value="3"></i><b>(3)</b></code></pre>
+<img src="_images/colorcompare.png" alt="Barplot comparing execution time][600">
 </div>
 </div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Configure the project</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Build the project</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>Install the project</td>
-</tr>
-</table>
+<div class="paragraph">
+<p>We can observe that all of the presented methods, except for Eigen&#8217;s one, are outperforming the standard library.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_different_flags"><a class="anchor" href="#_different_flags"></a>2.2. Different Flags</h3>
+<div class="paragraph">
+<p>Since Intel&#8217;s oneAPI MKL library is by far the highest speed RNG, we benchmarked it using more specific flags, such as <code>march=native</code> in order to enable all the processor&#8217;s extensions, and switching between <code>sequential</code> and <code>threaded</code> modes. The results are shown below:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/intel.png" alt="intel" width="600">
+</div>
+</div>
+<div class="paragraph">
+<p>And below the second speed test done on Gaia, a system composeed of 192 AMD EPYC 7552 48-Core Processors. During this second benchmark, we cycled through most of the different compilation flags combinations, and the results are shown below:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/AMDspeed.png" alt="600">
+</div>
+</div>
+<div class="paragraph">
+<p><a href="https://caiorss.github.io/C-Cpp-Notes/compiler-flags-options.html">Here</a> is a website describing the use-cases of each compilation flag and what they do.</p>
+</div>
+<div class="paragraph">
+<p>The <code>-Ofast</code> and <code>-O3</code> flags do the following work for the user:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Loop unrolling: This optimization involves repeating the body of a loop multiple times, which reduces loop overhead and enables better parallelism.</p>
+</li>
+<li>
+<p>Code redundancy elimination: The compiler detects portions of code that are needlessly repeated and replaces them with reused references, reducing the amount of executed code.</p>
+</li>
+<li>
+<p>Vectorization: Loops are transformed to use SIMD (Single Instruction, Multiple Data) instructions to perform simultaneous operations on multiple data elements. This effectively exploits the parallel computing capabilities of modern processors.</p>
+</li>
+<li>
+<p>Loop fusion: Independent loops are merged into a single loop, reducing overhead and improving performance by reducing the number of iterations.</p>
+</li>
+<li>
+<p>Function inlining: Function calls are replaced with the body of the function itself, avoiding the overhead of function calls.
+Unused variable elimination: Variables that are not used in the code are detected and removed, reducing memory consumption.</p>
+</li>
+<li>
+<p>Arithmetic operation optimization: The compiler can perform mathematical transformations to simplify expressions and reduce the number of necessary operations.</p>
+</li>
+</ul>
+</div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_packaging"><a class="anchor" href="#_packaging"></a>2. Packaging</h2>
+<h2 id="_rng_quality_benchmark"><a class="anchor" href="#_rng_quality_benchmark"></a>3. RNG Quality Benchmark</h2>
 <div class="sectionbody">
-<div class="paragraph">
-<p>CPack is configured and allows to generate a binary and source package.
-Use the following commands to generate the binary package:</p>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>$ cmake --build --preset default -t package</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Use the following commands to generate the source package:</p>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>$ cmake --build --preset default -t package_source</pre>
-</div>
-</div>
+
 </div>
 </div>
 <div class="sect1">
-<h2 id="_testing"><a class="anchor" href="#_testing"></a>3. Testing</h2>
+<h2 id="_conclusion"><a class="anchor" href="#_conclusion"></a>4. Conclusion</h2>
 <div class="sectionbody">
-<div class="paragraph">
-<p>CTest is configured.
-Use the following command to run the tests:</p>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>$ cmake --build --preset default -t test</pre>
-</div>
-</div>
+
 </div>
 </div>
 </article>
