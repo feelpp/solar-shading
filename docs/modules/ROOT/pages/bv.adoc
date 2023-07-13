@@ -3,14 +3,14 @@
 **Bounding Volumes:** it's a single simple volume encapsulating one or several objects of more complex nature. The idea is that they have way cheaper overlap tests than the complex ones, very useful when calculating the Ray-Object intersections during traversal. This will result in very fast overlapping rejections.
 
 []
-image::images/Capture d’écran 2023-06-05 à 15.16.51.png[]
+image::BoundingVolumes.png[]
 
 == Axis-Aligned Bounding Boxes
 
 There are 3 main manners of defining such boxes. The overlap tests are straightforward: 2 AABBs only overlap if they overlap on all 3 (or 2 in 2D) axes.
 
 []
-image::images/Capture d’écran 2023-06-05 à 15.26.19.png[500]
+image::AABBs.png[500]
 
 ----
 ADD CODE SAMPLES FOR THE INTERSECTION TESTS

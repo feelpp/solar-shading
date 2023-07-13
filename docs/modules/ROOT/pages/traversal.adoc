@@ -102,7 +102,11 @@ void traverse(ray, node) {
 ----
 ====
 
-image::images/Capture d’écran 2023-06-16 à 09.47.29.png[]
+image::BVlayers.png[]
+
+And such spacial divisions can lead to a similar tree as the following:
+
+image::BVlayerstree.png[]
 
 == Stack-less GPU friendly Algorithm
 
@@ -205,6 +209,8 @@ struct Tree {
 	Tree *rightPtr;
 };
 ----
+
+A stack is only used once, in order to identify the order of traversal, but will never be used on GPUs.
 
 This representation also leverages the use of pointers, only using one to point to the right child, which would be accessed only later during traversal since we use a `depth-first` search if the intersection test was successful for a given node.
 

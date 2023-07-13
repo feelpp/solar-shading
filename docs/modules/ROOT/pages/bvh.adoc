@@ -20,7 +20,7 @@ BVH has become popular in many use cases, in particular when using ray-tracing, 
 A visual definition of a BVH structure using Axis-Aligned Bounding-Boxes.
 
 []
-image::images/Capture d’écran 2023-06-27 à 10.13.01.png[]
+image::AABBs.png[]
 
 In this context, `N1` would be the bounding volume for the entire object or scene, `N2` and `N3` would be those respectively containing `N4` and `N5`, and so on, until we reach the leaves of the tree, which are directly the bounding boxes of the primitives.
 
@@ -30,16 +30,15 @@ In this context, `N1` would be the bounding volume for the entire object or scen
 
 
 []
-image::images/Capture d’écran 2023-06-18 à 21.41.30.png[width=500]
+image::constructmet.png[width=500]
 
 []
-image::images/Capture d’écran 2023-06-05 à 15.26.19.png[width=500]
+image::constructmetbis.png[width=500]
 
 === Recursive Top-Down Construction
 
 In the code snippet below, written by Luca Berti, a recursive top-down construction algorithm was proposed for further improvements. We can see that he adopts a recursive build function, which is called to create each node of the tree: if there is only one primitive, then a leaf is build, else, an internal node is created and the build function is called recursively on the left and right child nodes. Here is the proposed implementation:
 
-image::images/code.png[]
 
 [source,cpp]
 ----
@@ -99,7 +98,7 @@ Other splitting algorithms can be used, such as the Surface Area Heuristic (SAH)
 Instead of starting with all scene primitives in one cluster and recursively splitting them, bottom-up construction algorithms start with each primitive in its own cluster and recursively merge the closest pairs. This is done either until the desired number of clusters is reached, or each cluster contains a maximum number of primitives. The clusters are then used as the primitives for the next level of the tree. This process is repeated until the root node is reached.
 
 ----
-ADD COMPLETE DEFINITION AND WHY IT WILL NOT BE USED
+ADD COMPLETE DEFINITION AND WHY IT WONT BE USED
 ----
 
 Below is an example of a bottom-up construction algorithm:
@@ -133,7 +132,7 @@ Morton Curves
 
 Morton curves map multidimensional data to one dimension while preserving the locality of the data points. They can be considered as a special 1-dimensional path traversing multidimensional data. Displayed below is an example of a Z-order curve (also known as a Morton curve) in a two-dimensional plane.
 
-image::images/Capture d’écran 2023-06-28 à 14.09.20.png[width=250px]
+image::morton.png[width=250px]
 
 ====
 
@@ -153,14 +152,14 @@ One straightforward approach is to choose the axis with the longest extent of th
 ==== Axis Cycling
 Another method involves cycling through the three axes (X, Y, Z) and selecting the next axis in a cyclic manner for each spatial split. This approach ensures that the splitting axes are evenly distributed and can help maintain overall balance in the BVH construction.  This is the approach proposed by Luca Berti, presented in the original code of this project, like seen during the call to the recursive build function:
 
-image::images/codesnippet.png[width=800px]
+image::codesnippet.png[]
 
 The 2nd value representing the cutting dimension is cycled between 0, 1 and 2, representing the x, y and z axes of our 3 dimensional euclidean space, by using `(cut_dimension+1)%nDim` in the recursive calls. At each call, it is incremented by 1, enabling a different splitting axis to be used at *each level* of the tree. After choosing the splitting axis, the median value along that axis is computed and used as the splitting position, also know as a median cut, discussed right below.
 
 ==== Median Cut
 The median cut strategy involves computing the median value along a specific axis and using it as the splitting position. This method aims to divide the scene into two halves containing an equal number of objects, which can help achieve good load balancing. This is implemented in the following line of the recursive build method, when calling the `std::nth_element` function:
 
-image::images/mediancut.png[width=800px]
+image::mediancut.png[width=800px]
 
 === Cost Functions
 
@@ -266,13 +265,13 @@ array[3] = *(root->left->left);
 This way, we always know that a parent's children can be found at positions \(2i+1\) and \(2i+2\) in the array, usually inducing wasted memory unless dealing with a complete tree.
 
 []
-image::images/Capture d’écran 2023-06-19 à 21.58.58.png[400]
+image::arrayrep.png[400]
 
 ==== Preorder Traversal Order
 When preordering them in traversal order, the left child will always follow its parent, and only one link is needed to point to the right child.
 
 []
-image::images/Capture d’écran 2023-06-20 à 09.24.17.png[400]
+image::preordertraversal.png[400]
 
 [source,c++]
 ----
@@ -315,7 +314,7 @@ Flattening the tree in this way allows us to store the tree in a single array, w
 When using modern architecture, execution time is mostly limited by cache issues when fetching data from memory. One possible way of adopting a cache-friendlier solution would be by merging the sets of binary tree nodes into a 'tri-node' containing the parent and its children, preventing it from needing internal links. Below we can see an example representing a complete 4-level binary tree with 14 internal links with a 2-level tri-node tree storing only 4 internal links. Even better, this representation can also be combined with other optimizing structures seen before.
 
 []
-image::images/Capture d’écran 2023-06-20 à 09.32.16.png[600]
+image::cachefriendly.png[600]
 
 Flattening a tri-node tree is similar to flattening a binary tree, except that we need to store the parent's index in the array as well as the left and right child flags. The right child pointer is replaced by a flag indicating whether the parent has a right child or not, the left and parent's one are replaced in the same manner. The root node is a special case, since it has no parent, signified by a special flag. Three new structures (`GPUNode`, `GPURay` and `GPUTree`) were introduced, storing only critical information for it to be of small enough size to be copied-by-value to the GPU.
 
@@ -327,7 +326,7 @@ Another way to optimize the ray generation would be to exploit the graphics card
 
 This could be taken further, by assigning parts of a matrix to a specific block in the GPU, leveraging the constant memory and launching the frustum of rays in the respective direction defined by the block-assigned resulting matrix. This way, the rays are processed in a more coherent manner, and the GPU's constant memory is used to its full potential. Moreover, the frustum could be instantiated directly on the GPU, and the identical rays could be transformed and translated through random values, generated by the mersene twister algorithm that can be implemented on a CUDA kernel, and therefore be naturally processed in parallel. This would result in a more efficient memory transfer, since the rays shouldn't be transferred back to the CPU, but only the resulting intersected leaves.
 
-image::images/Nvidia-GPU-memory-structure.png[600]
+image::Nvidia-GPU-memory-structure.png[600]
 
 ----
 ADD DETAILED EXPLANATION OF THE PROCESS AND STRUCTURES THAT WILL ARE IMPLEMENTED ON GPU
