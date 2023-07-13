@@ -1,0 +1,37 @@
+= Tools
+
+The parallelization process on GPUs is a crucial part of this project, but many different architectures exist and hence many different approaches to parallelization are possible. These can be implement in various ways, but different APIs also imply differents capabilities and constraints. So depending on the available hardware, different approaches will be used. Below are listed the different APIs that will be used in this project, their advantages and drawbacks, and how they will be used.
+
+== NVIDIA OptiX 
+
+OptiX for Ray Tracing: OptiX is a ray tracing framework developed by NVIDIA. It provides a higher-level programming model specifically designed for ray tracing applications. OptiX abstracts away many of the complexities of ray tracing and provides a simplified interface for developing ray tracing applications. It handles tasks such as BVH construction, ray traversal, and intersection testing, allowing developers to focus more on the application logic rather than low-level implementation details.
+
+OptiX provides features like programmable shaders (ray generation, closest hit, any hit, miss), support for complex geometry and instancing, and built-in acceleration structures. It also integrates with other GPU-accelerated libraries and APIs, such as CUDA and OpenGL, enabling efficient data exchange between different GPU-accelerated tasks.
+
+If you are primarily working on ray tracing applications, OptiX can significantly simplify the developmentprocess and provide performance optimizations specific to ray tracing workloads.
+
+- BVH Construction: OptiX provides built-in acceleration structure construction algorithms, such as bounding volume hierarchy (BVH) construction. These algorithms are highly optimized and take advantage of the underlying GPU architecture to accelerate the construction process.
+- Ray Traversal: OptiX optimizes the ray traversal process by using advanced techniques like stackless traversal and GPU-specific optimizations. These techniques minimize memory accesses and thread divergence, improving performance during the traversal phase.
+- Intersection Testing: OptiX allows developers to write custom intersection testing programs using programmable shaders. This flexibility enables the implementation of efficient intersection tests tailored to the specific geometry and shading requirements of the application.
+
+In addition to performance optimizations, OptiX also provides parallelization capabilities at several levels : over the GPUs and over the threads, each handling the generation and traversal of one ray, just like it was done in the self-implemented CUDA version. OptiX automatically parallelizes the ray tracing workloads across multiple GPU threads. Each thread processes a different ray, allowing for high levels of parallelism. This parallelization is handled by the OptiX runtime, abstracting away the complexities of parallel programming on the GPU.
+
+OptiX provides a flexible memory management system that allows developers to efficiently manage memory usage during BVH construction and traversal. It provides options to control the memory allocation strategy, such as specifying the maximum amount of memory to be used for the BVH construction, allowing the user to optimize memory consumption based on the available GPU memory, which also works when working with GPU clusters.
+
+NVIDIA GPUs use a SIMT (Single Instruction, Multiple Thread) execution model. The SIMT model is similar to SIMD (Single Instruction, Multiple Data) in that it allows executing the same instruction on multiple data elements in parallel. However, SIMT provides more flexibility by allowing threads to follow different execution paths based on conditional statements or data dependencies.
+
+In SIMT, threads are organized into groups called warps, where each warp consists of multiple threads that execute the same instruction. The warp is the basic unit of execution in NVIDIA GPUs, and all threads within a warp execute in lockstep. Each thread within a warp operates on its own data, and the SIMD-like execution happens at the warp level.
+
+While all threads within a warp execute the same instruction, they may diverge based on conditional statements. In such cases, the GPU dynamically partitions the warp into smaller groups, known as active warps, to handle divergent execution paths efficiently. This allows the GPU to hide latency and maximize parallelism by executing other warps while some warps are waiting for conditional branches or memory operations.
+
+Overall, the SIMT execution model in NVIDIA GPUs provides a balance between SIMD-style parallelism and thread-level flexibility, enabling efficient execution of parallel workloads across thousands of threads. 
+
+When coding with the OptiX API, access is granted to optimized methods using speculative traversal methods on the warps, meaning that instead of incrementing the states linearly during traversal, the API will estimate the next state to transfer to, using speculative probabilities in order to optimize the number of threads that can be treated in parallel.
+
+== CUDA
+
+CUDA is a parallel computing platform and programming model developed by NVIDIA. It allows developers to write high-performance GPU-accelerated code using the CUDA programming language. CUDA provides low-level access to GPU hardware and is suitable for a wide range of general-purpose GPU computing tasks beyond ray tracing.
+
+With CUDA, you have fine-grained control over the GPU and can leverage its parallel processing capabilities for various applications, such as scientific simulations, image and video processing, machine learning, and more.
+
+CUDA allows you to optimize code at a low level and provides flexibility to customize algorithms and data structures based on specific requirements. It is well-suited for those who need fine-grained control over the GPU or want to work with specific GPU features that are not directly exposed by higher-level frameworks like OptiX.

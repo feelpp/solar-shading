@@ -44,3 +44,6 @@ jupyter/
 auto-save-list
 tramp
 .\#*
+
+# Result files
+results/ShadingMasks/*.png
