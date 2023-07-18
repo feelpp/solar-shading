@@ -55,3 +55,4 @@ results/csv/*.png
 benchmark/distributions/__pycache__/*
 benchmark/distributions/output/*
 benchmark/distributions/perflogs/*
+benchmark/distributions/stage/*

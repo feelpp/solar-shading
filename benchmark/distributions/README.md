@@ -16,33 +16,38 @@ More, the Intel oneAPI MKL library has to be installed and, either the environme
 
 ## With the Bash script
 
-When the prerequisites are met, the benchmarks can be compiled by running the following command:
-
-```bash
-cd benchmark
-cd distributions
-chmod +x runbenchmark.sh
-./runbenchmark.sh
-```
-And then either type `uniform_int` or `uniform_real` when asked to choose the distribution to benchmark.
-
-After running this, the benchmarks can be found in the benchmark/distributions directory next to the scripts. The benchmarks are composed of two files, `uniform_int.csv` (or `uniform_real.csv`) containing the results of the benchmarks and `uniform_int.png` (or `uniform_real.png`) containing the plots of the benchmarks in ascending order of execution time.
-
-
-After each execution, the results are saved in these two files, but if you want to rerun the benchmark, you will have to respond 'Y' to the question 'Do you want to erase the previous results ?' in the script.
-
 The `-march=native` flag is used to compile the benchmarks with the best possible optimization for the machine on which the benchmarks are run. If you want to compile the benchmarks for an execution on another machine, you can change this flag in the script by using `-mavx2` or `-msse4.2` for example. 
 
+To run the unique benchmarks for the int and real distributions, one can launch the `benchmark.sh` script:
+
+```bash
+cd benchmark/distributions
+chmod +x benchmark.sh
+./benchmark.sh
+int # or real after asked to choose the distribution to benchmark
+```
+After running this, the benchmark's results can be found in the results/csv directory at the root of this repo. The benchmarks are composed of two files, `uniform_int.csv` (or `uniform_real.csv`) containing the results of the benchmarks and `uniform_int.png` (or `uniform_real.png`) containing the plots of the benchmarks in ascending order of execution time (available inthe results/images folder).
+
+The `-march=native` flag is used to compile the benchmarks with the best possible optimization for the machine on which the benchmarks are run. If you want to compile the benchmarks for an execution on another machine, you can change this flag in the script by using `-mavx2` or `-msse4.2` for example. 
 ## With Reframe
 
 After installing reframe on your machine and adding the `reframe` command to your path, you can run the benchmarks with the following command when located at the root of the repository:
 
 ```bash
 cd benchmark/distributions
-reframe -c bencharking.py -r --performance-report
+reframe -c benchmarking_int.py -r --performance-report
 ```
 
 The results will be displayed in the terminal and individual performance logs are generated in the `benchmark/distributions/output/*/rfm_job.out` files.
+
+One can also run the benchmarks for the real distributions with the following command:
+
+```bash
+cd benchmark/distributions
+reframe -c benchmarking_real.py -r --performance-report
+```
+
+The generated files are located at the same place as for the integer distributions.
 
 # Warnings 
 

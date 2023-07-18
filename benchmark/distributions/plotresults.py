@@ -5,13 +5,14 @@ import os
 
 # Parse command-line arguments
 parser = argparse.ArgumentParser()
-parser.add_argument('csv_file', help='Name of the CSV file')
+parser.add_argument('--csv_file', help='Name of the CSV file')
+parser.add_argument('--output_dir', help='Name of the output file')
 args = parser.parse_args()
 
 # Read the CSV file
 data = pd.read_csv(args.csv_file)
 
-file_name = os.path.splitext(args.csv_file)[0]
+file_name = '/uniform_int'
 
 
 # plot the method
@@ -52,5 +53,5 @@ for i, method in enumerate(set(methods)):
 plt.xticks(rotation=45, ha='right', fontsize=8)
 
 plt.tight_layout()
-plt.savefig(file_name + '.png')
+plt.savefig(args.output_dir + file_name + '.png')
 plt.show()

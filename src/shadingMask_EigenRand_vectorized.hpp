@@ -1,10 +1,11 @@
 #include <feel/feelmesh/bvh.hpp>
 #include <feel/feelcore/environment.hpp>
-#include "../benchmark/extlibs/pcg-cpp/include/pcg_random.hpp"
+#include "../benchmark/extlibs/EigenRand/EigenRand/EigenRand"
+
 namespace Feel { 
 
 template <typename MeshType>
-class ShadingMaskPCG 
+class ShadingMaskERV
 {
     typedef typename MeshType::ptrtype mesh_ptrtype;
     typedef typename MeshType::trace_mesh_ptrtype tr_mesh_ptrtype;
@@ -13,7 +14,7 @@ class ShadingMaskPCG
 public:    
     using value_type = double;
     
-    ShadingMaskPCG(mesh_ptrtype mesh, nl::json const& specs, int intervalsAzimuth=72, int intervalsAltitude=10 )
+    ShadingMaskERV(mesh_ptrtype mesh, nl::json const& specs, int intervalsAzimuth=72, int intervalsAltitude=10 )
     {    
         // Read the number of rays per triangle and the number of threads
         j_ = specs;
@@ -31,11 +32,18 @@ public:
             bvhBuilding.buildRootTree();
 
             M_bvh_tree_vector.insert(std::make_pair( buildingName , bvhBuilding ));
-            M_submeshes.insert(std::make_pair( buildingName , surfaceSubmesh )); 
+            M_submeshes.insert(std::make_pair( buildingName , surfaceSubmesh ));
         }
         
         // Define the discretization of the azimuth and altitude vectors
         fixAzimuthAltitudeDiscretization(intervalsAzimuth, intervalsAltitude);
+
+        Eigen::Rand::P8_mt19937_64 M_urng { 42 };
+        
+        Eigen::Rand::UniformIntGen<int> M_unif_gen_azi{ 0, M_azimuthSize-1 };
+        Eigen::Rand::UniformIntGen<int> M_unif_gen_alti{ 0, M_altitudeSize-1 };
+        Eigen::Rand::UniformRealGen<double> M_unif_gen_real1 { 0, 1 };
+        Eigen::Rand::UniformRealGen<double> M_unif_gen_real2 { 0, 1 };
     }
 
     // Subdivide the azimuth angles [0,360]° and altitude angles [0,90]° in subsets for easier computation of the shading masks
@@ -59,20 +67,21 @@ public:
     }
 
     // Choose a random pair of indices in the discretized azimuth and altitude vectors
-    void getRandomDirectionSM(std::vector<double> &random_direction, int& index_azimuth, int& index_altitude, std::uniform_int_distribution<int>& unif_azi, std::uniform_int_distribution<int>& unif_alt, pcg32_fast& gen, pcg32_fast& gen2)
+    void getRandomDirectionSM(std::vector<double> &random_direction, int& index_azimuth, int& index_altitude)
     {
         int size = random_direction.size();
 
         if(random_direction.size()==3)
         {
-            index_azimuth = unif_azi(gen);
-            index_altitude = unif_alt(gen2);
+            index_azimuth = M_unif_gen_azi(M_urng);
+            index_altitude = M_unif_gen_alti(M_urng);
             double phi = -( M_azimuthAngles[index_azimuth] ) + M_PI*0.5 ; // recover spherical coordinate from azimuth angle
             double theta = M_PI*0.5 - M_altitudeAngles[index_altitude]; // recover spherical coordinate from altitude 
 
             random_direction[0]=math::sin(theta)*math::cos(phi);
             random_direction[1]=math::sin(theta)*math::sin(phi);
             random_direction[2]=math::cos(theta);
+
         }
         else
         {
@@ -80,7 +89,32 @@ public:
         }    
     }
 
-    Eigen::VectorXd get_random_point(matrix_node_type const& element_points, std::uniform_real_distribution<double>& unif_real1, std::uniform_real_distribution<double>& unif_real2, pcg32_fast& gen, pcg32_fast& gen2)
+    // Compute the random directions 
+    Eigen::MatrixXd get_random_directions(Eigen::VectorXi & index_azimuth, Eigen::VectorXi & index_altitude, int n_rays_thread)
+    {
+        Eigen::Rand::UniformIntGen<int> M_unif_gen_azi{ 0, M_azimuthSize-1 };
+        Eigen::Rand::UniformIntGen<int> M_unif_gen_alti{ 0, M_altitudeSize-1 };
+        Eigen::MatrixXd random_directions(n_rays_thread,3);
+
+        index_azimuth = M_unif_gen_azi.generate<Eigen::VectorXi>(n_rays_thread,1,M_urng);
+        index_altitude = M_unif_gen_alti.generate<Eigen::VectorXi>(n_rays_thread,1,M_urng);
+        
+        // Some critical errors occur when generating numbers with the pcg generator
+        // Some generated numbers are way out of the range of the azimuth and altitude vectors
+        // This is a temporary fix, even if not ideal, we verify all generated values and replace them if not suitable
+
+        for(int i = 0; i < n_rays_thread ; i++)
+        {
+            double phi = -( M_azimuthAngles[index_azimuth(i)] ) + M_PI*0.5 ; // recover spherical coordinate from azimuth angle
+            double theta = M_PI*0.5 - M_altitudeAngles[index_altitude(i)]; // recover spherical coordinate from altitude
+            random_directions(i,0)=math::sin(theta)*math::cos(phi);
+            random_directions(i,1)=math::sin(theta)*math::sin(phi);
+            random_directions(i,2)=math::cos(theta);
+        }
+        return random_directions;
+    }
+
+    Eigen::VectorXd get_random_point(matrix_node_type const& element_points)
     {            
         int dimension;
 
@@ -100,8 +134,8 @@ public:
             u = p3-p1;
             while(true)
             {
-                double s = unif_real1(gen);
-                double t = unif_real2(gen2);
+                double s = M_unif_gen_real(M_urng);
+                double t = M_unif_gen_real1(M_urng);
                 // If the point is on the left of the diagonal, keep it, else take the symmetric one
                 bool in_triangle = (s + t <= 1);
                 if(in_triangle)
@@ -124,6 +158,63 @@ public:
             for(int i=0;i<dimension;i++)
             {
                 p1(i)=column(element_points, 0)[i];
+            }
+            throw std::logic_error( "Problem in the computation of the random point" );
+            return p1;
+        }
+    }
+
+    Eigen::MatrixXd get_random_points(matrix_node_type const& element_points, int n_rays_thread)
+    {
+        int dimension;
+        dimension = column(element_points, 0).size();
+
+        if(dimension==3)
+        {
+            Eigen::MatrixXd random_points(n_rays_thread, 3);
+            Eigen::VectorXd p1(dimension),p2(dimension),p3(dimension),v(dimension),u(dimension),p(dimension);
+            for(int i=0;i<3;i++)
+            {
+                p1(i)=column(element_points, 0)[i];
+                p2(i)=column(element_points, 1)[i];
+                p3(i)=column(element_points, 2)[i];                
+            }
+            v = p2-p1;
+            u = p3-p1;
+            while(true)
+            {   
+                Eigen::VectorXd S = M_unif_gen_real.generate<Eigen::VectorXd>(n_rays_thread,1,M_urng);
+                Eigen::VectorXd T = M_unif_gen_real1.generate<Eigen::VectorXd>(n_rays_thread,1,M_urng);
+                // If the point is on the left of the diagonal, keep it, else take the symmetric one
+                for (int j=0 ; j<n_rays_thread ; j++)
+                {
+                    bool in_triangle = (S(j) + T(j) <= 1);
+                    if(in_triangle)
+                        p = p1 + S(j) * u + T(j) * v;  
+                    else 
+                        p= p1 + (1 - S(j)) * u + (1 - T(j)) * v;
+
+                    if (isOnSurface(p,p1,p2,p3))
+                        random_points.row(j) = p;
+                    else
+                    {
+                        throw std::logic_error("Point not on triangle, but it must be");
+                        random_points.row(j) = p1;
+                    }  
+                }
+                return random_points;
+            }
+        }
+        else
+        {
+            Eigen::MatrixXd p1(n_rays_thread, 3);
+            p1.setZero();
+            for(int i=0; i < n_rays_thread; i++)
+            {
+                for(int j=0;j<dimension;j++)
+                {
+                    p1(i,j)=column(element_points, 0)[j];
+                }
             }
             throw std::logic_error( "Problem in the computation of the random point" );
             return p1;
@@ -183,7 +274,7 @@ public:
     void computeMasksOneBuilding(std::string building_name)//, BVHTree<MeshType::nDim> bvh_tree)
     {
         int dim = M_submeshes[building_name]->realDimension();
-        std::vector<double> random_direction(dim);  
+        Eigen::MatrixXd random_directions(M_Nrays/M_Nthreads,dim);
 
         std::cout << "Submeshes markers" << M_submeshes[building_name]->markerNames() << std::endl;
         
@@ -193,64 +284,56 @@ public:
 
         for(auto  [marker,marker_id] : M_submeshes[building_name]->markerNames())
         {
-
             SM_table_marker.setZero();            
             Angle_table_marker.setZero();
             auto ray_submesh = createSubmesh(_mesh=M_submeshes[building_name],_range=markedelements(M_submeshes[building_name],marker));
             
             // Launch Nrays from each triangle of each marker
             for(auto const &el : ray_submesh->elements() ) // from each element of the submesh, launch M_Nrays randomly oriented            
-            {                
-
+            {
                     auto rays_from_element = [&,marker=marker](int n_rays_thread){
-
-                        pcg32_fast gen;
-                        pcg32_fast gen2;
-                        gen.seed(std::random_device{}());
-                        gen2.seed(std::random_device{}());
-                        std::uniform_int_distribution<int> unif_azi(0, M_azimuthSize-1);
-                        std::uniform_int_distribution<int> unif_alt(0, M_altitudeSize-1);
-                        std::uniform_real_distribution<double> unif_real1(0,1);
-                        std::uniform_real_distribution<double> unif_real2(0,1);
 
                         Eigen::MatrixXd SM_table(M_azimuthSize,M_altitudeSize);
                         SM_table.setZero();
 
                         Eigen::MatrixXd Angle_table(M_azimuthSize,M_altitudeSize);
                         Angle_table.setZero();
-                        
-                        int index_altitude;
-                        int index_azimuth;                                                 
-                        for(int i=0;i<n_rays_thread;i++)
+
+                        Eigen::VectorXi index_altitude(n_rays_thread);
+                        Eigen::VectorXi index_azimuth(n_rays_thread); 
+                        // index_altitude.setZero();
+                        // index_azimuth.setZero();
+
+                        Eigen::MatrixXd random_directions(n_rays_thread,3);
+                        Eigen::MatrixXd random_origins(n_rays_thread,3);
+
+                        random_origins = get_random_points(el.second.vertices(),n_rays_thread);
+                        random_directions = get_random_directions(index_azimuth, index_altitude, n_rays_thread);
+                        for(int j=0;j<n_rays_thread;j++)
                         {
-                            // Construct the ray emitting from a random point of the element
-                            auto random_origin = get_random_point(el.second.vertices(), unif_real1, unif_real2, gen, gen2);
-                                        
                             Eigen::VectorXd rand_dir(dim); 
                             Eigen::VectorXd p1(dim),p2(dim),p3(dim),origin(3);
                             bool inward_ray=false;
                             if(dim==3)
                             {
-                                getRandomDirectionSM(random_direction,index_azimuth,index_altitude, unif_azi, unif_alt, gen, gen2);
                                 for(int i=0;i<dim;i++)
                                 {
                                     p1(i)=column(el.second.vertices(), 0)[i];
                                     p2(i)=column(el.second.vertices(), 1)[i];
-                                    p3(i)=column(el.second.vertices(), 2)[i];                        
-                                    origin(i) = random_origin[i];
-                                    rand_dir(i) = random_direction[i];
-                                }                               
+                                    p3(i)=column(el.second.vertices(), 2)[i];
+                                    rand_dir(i) = random_directions(j,i);
+                                    origin(i) = random_origins(j,i);
+                                }
                                 auto element_normal = ((p3-p1).head<3>()).cross((p2-p1).head<3>());
                                 element_normal.normalize();
                                 if(rand_dir.dot(element_normal)>=0)
                                 {
                                     inward_ray=true;
                                 }
-                                                        
                             }
 
                             BVHRay ray(origin,rand_dir);
-                            
+
                             int closer_intersection_element = -1;
                             if(inward_ray)
                             {
@@ -267,30 +350,29 @@ public:
                             }
                             // If there is an intersection, increase the shading mask table entry by 1 and augment the angle table by 1 as well
                             if ( closer_intersection_element >=0 )    
-                            {                            
-                                SM_table(index_azimuth,index_altitude)++;
-                                Angle_table(index_azimuth,index_altitude)++;
+                            {
+                                // the index values were verified, they are correct           
+                                SM_table(index_azimuth(j),index_altitude(j))++;
+                                Angle_table(index_azimuth(j),index_altitude(j))++;
                             }    
                             else
                             {
-                                Angle_table(index_azimuth,index_altitude)++;
+                                Angle_table(index_azimuth(j),index_altitude(j))++;
                             }                                               
                         }
-
                         return std::make_pair(SM_table,Angle_table);
                     };
-
                 // Execute the lambda function on multiple threads using
                 // std::async and std::future to collect the results
                 std::vector<int> n_rays_thread;
                 n_rays_thread.push_back(M_Nrays - (M_Nthreads-1) * (int)(M_Nrays / M_Nthreads));
                 for(int t= 1; t < M_Nthreads; ++t){
-                   n_rays_thread.push_back( M_Nrays / M_Nthreads);
+                    n_rays_thread.push_back( M_Nrays / M_Nthreads);
                 }
                 
                 // Used to store the future results
                 std::vector< std::future< std::pair<Eigen::MatrixXd, Eigen::MatrixXd > > > futures;
-                
+
                 for(int t = 0; t < M_Nthreads; ++t){
                     
                     // Start a new asynchronous task
@@ -314,7 +396,6 @@ public:
             // Shading mask value 0 means that the surface is not shadowed, value 1 it is fully shadowed
             // Save the shading mask table to a csv file 
             saveShadingMask(building_name,marker,shadingMatrix.matrix());
-
         }
     }
 
@@ -332,7 +413,7 @@ public:
         if (!boost::filesystem::exists(shadingMaskFolder))
             boost::filesystem::create_directory(shadingMaskFolder);
         
-        std::string matrix_filename = shadingMaskFolder+"/SM_Matrix_"+building_name+"_"+marker_name+"PCG.csv";
+        std::string matrix_filename = shadingMaskFolder+"/SM_Matrix_"+building_name+"_"+marker_name+"EIGENRANDVECTORIZED.csv";
         matrix_file.open(matrix_filename,std::ios_base::out);
         for(int i=0; i<M_azimuthSize; i++)
         {
@@ -357,5 +438,12 @@ public:
     int M_Nthreads;
 
     nl::json j_;
+
+
+    Eigen::Rand::P8_mt19937_64 M_urng; // Random number generator
+    Eigen::Rand::UniformIntGen<int> M_unif_gen_azi;
+    Eigen::Rand::UniformIntGen<int> M_unif_gen_alti;
+    Eigen::Rand::UniformRealGen<double> M_unif_gen_real;
+    Eigen::Rand::UniformRealGen<double> M_unif_gen_real1;
 };
 } // namespace Feel

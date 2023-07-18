@@ -9,11 +9,38 @@ ROOT_PATH="${SCRIPT_PATH%/src}"
 
 cd "$ROOT_PATH/build/default/src"
 
-read -p "Enter the number: " NUMBER
+echo "Select the config file: "
+echo "1. exampleShadingMask"
+echo "2. 19buildingsStrasbourg"
+read -p "Enter the number (1 or 2): " NUMBER1
+
+case "$NUMBER1" in
+  1)
+    CONFIG_FILE="$ROOT_PATH/src/cases/exampleShadingMask/exampleShadingMask.cfg"
+    ;;
+  2)
+    CONFIG_FILE="$ROOT_PATH/src/cases/19buildingsStrasbourg/19buildingsStrasbourg.cfg"
+    ;;
+  *)
+    echo "Invalid input! Enter 1 or 2."
+    exit 1
+esac
+
+echo "Select the compilation flags to be used:"
+echo "- 1 : -Ofast -march=native"
+echo "- 2 : -O3 -march=native"
+echo "- 3 : -O2 -march=native"
+echo "- 4 : -Ofast -march=native -funroll-loops"
+echo "- 5 : -O3 -march=native -funroll-loops"
+echo "- 6 : -O2 -march=native -funroll-loops"
+echo "- 7 : -Ofast -march=native -funroll-loops -funsafe-math-optimizations"
+read -p "Enter the number (1 to 7): " NUMBER
 
 EXECUTABLE="./feelpp_ss_example_ShadingMasks_comparison${NUMBER}"
 
-$EXECUTABLE --config-file "$ROOT_PATH/src/cases/exampleShadingMask/exampleShadingMask.cfg"
+echo "Running the command : $EXECUTABLE --config-file $CONFIG_FILE"
+
+$EXECUTABLE --config-file $CONFIG_FILE
 
 PYTHON_SCRIPT="$ROOT_PATH/src/visualization/shadingMask_visualization.py"
 FILES_PATH="$ROOT_PATH/../feelppdb/exampleShadingMask/np_1/shadingMasks"
