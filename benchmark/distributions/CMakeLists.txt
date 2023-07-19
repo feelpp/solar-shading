@@ -21,17 +21,3 @@
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #
 #
-
-cmake_minimum_required(VERSION 3.10) # Adjust this to your actual CMake version
-
-# Add an executable target called 'uniform' to be built from 'uniform.cpp'
-add_executable(uniform src/uniform_int.cpp src/uniform_real.cpp)
-
-# Include directories for the 'uniform' target
-target_include_directories(uniform PRIVATE
-    ${CMAKE_SOURCE_DIR}/benchmark/extlibs/eigen
-    ${CMAKE_SOURCE_DIR}/benchmark/extlibs/EigenRand
-    ${CMAKE_SOURCE_DIR}/benchmark/extlibs/pcg-cpp/include
-    ${CMAKE_SOURCE_DIR}/benchmark/extlibs/Xoshiro-cpp
-    ${CMAKE_SOURCE_DIR}/benchmark/extlibs/eigen/Eigen # Add this line for the Core subdirectory of Eigen
-)
