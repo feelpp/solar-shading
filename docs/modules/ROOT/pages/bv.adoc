@@ -1,6 +1,11 @@
 == Preliminaries
 
-**Bounding Volumes:** it's a single simple volume encapsulating one or several objects of more complex nature. The idea is that they have way cheaper overlap tests than the complex ones, very useful when calculating the Ray-Object intersections during traversal. This will result in very fast overlapping rejections.
+.Bounding Volumes
+[.def#def:BV]
+****
+[stem]
+A **Bounding Volume** is a single simple volume encapsulating one or several objects of more complex nature. The idea is that they have way cheaper overlap tests than the complex ones, very useful when calculating the Ray-Object intersections during traversal. This will result in very fast overlapping rejections.
+****
 
 []
 image::BoundingVolumes.png[]

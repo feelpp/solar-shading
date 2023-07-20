@@ -152,14 +152,27 @@ One straightforward approach is to choose the axis with the longest extent of th
 ==== Axis Cycling
 Another method involves cycling through the three axes (X, Y, Z) and selecting the next axis in a cyclic manner for each spatial split. This approach ensures that the splitting axes are evenly distributed and can help maintain overall balance in the BVH construction.  This is the approach proposed by Luca Berti, presented in the original code of this project, like seen during the call to the recursive build function:
 
-image::codesnippet.png[]
+[source,c++]
+----
+node->buildInternalNode(current_parent,(cut_dimension+1)%nDim,
+                                        recursiveBuild( node, (cut_dimension+1)%nDim, start_index_primitive, mid, orderedPrims),
+                                        recursiveBuild( node, (cut_dimension+1)%nDim, mid, end_index_primitive, orderedPrims));
+----
 
 The 2nd value representing the cutting dimension is cycled between 0, 1 and 2, representing the x, y and z axes of our 3 dimensional euclidean space, by using `(cut_dimension+1)%nDim` in the recursive calls. At each call, it is incremented by 1, enabling a different splitting axis to be used at *each level* of the tree. After choosing the splitting axis, the median value along that axis is computed and used as the splitting position, also know as a median cut, discussed right below.
 
 ==== Median Cut
 The median cut strategy involves computing the median value along a specific axis and using it as the splitting position. This method aims to divide the scene into two halves containing an equal number of objects, which can help achieve good load balancing. This is implemented in the following line of the recursive build method, when calling the `std::nth_element` function:
 
-image::mediancut.png[width=800px]
+[source,c++]
+----
+auto mid = (start_index_primitive + end_index_primitive) / 2;
+std::nth_element(&M_primitiveInfo[start_index_primitive], &M_primitiveInfo[mid], 
+        &M_primitiveInfo[end_index_primitive-1]+1,
+            [cut_dimension](const BVHPrimitiveInfo &a, const BVHPrimitiveInfo &b) { 
+                return a.M_centroid[cut_dimension] < b.M_centroid[cut_dimension];
+            });
+----
 
 === Cost Functions
 

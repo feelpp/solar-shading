@@ -10,14 +10,14 @@ My work can be separated into two quasi-independent parts:
 
 - Code Vectorization using Eigen library
 - Use suitable RNG's for random number generation
-- Ray-tracing parallelization using OpenMP (which is already needed for the RNG)
+- Ray-tracing parallelization using OpenMP 
 - Choose a suitable storage way for the BVH structure (possibly already choose a good one for NVIDIA's OptiX Ray Tracing API)
 - Benchmarking for speed and quality purposes
 
 **IMPLEMENTATION:**
 
 - Solar radiation (heat transfer) code integration
-- View factors computation (very similar to both others)
+- View factors computation
 - Rewrite the whole code to be used in the OptiX API enabling strong Ray-Tracing capabilities
 
 == Tools
