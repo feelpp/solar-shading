@@ -1,7 +1,7 @@
 #include "shadingMask_PCG.hpp"
 #include "shadingMask_EigenRand_vectorized.hpp"
 #include "shadingMask_EigenRand_cast.hpp"
-// #undef jump
+#undef jump
 #include "shadingMask_XOSHIRO.hpp"
 #include "shadingMask.hpp"
 #include "shadingMask_mix.hpp"

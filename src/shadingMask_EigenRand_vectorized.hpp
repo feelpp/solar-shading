@@ -37,13 +37,6 @@ public:
         
         // Define the discretization of the azimuth and altitude vectors
         fixAzimuthAltitudeDiscretization(intervalsAzimuth, intervalsAltitude);
-
-        Eigen::Rand::P8_mt19937_64 M_urng { 42 };
-        
-        Eigen::Rand::UniformIntGen<int> M_unif_gen_azi{ 0, M_azimuthSize-1 };
-        Eigen::Rand::UniformIntGen<int> M_unif_gen_alti{ 0, M_altitudeSize-1 };
-        Eigen::Rand::UniformRealGen<double> M_unif_gen_real1 { 0, 1 };
-        Eigen::Rand::UniformRealGen<double> M_unif_gen_real2 { 0, 1 };
     }
 
     // Subdivide the azimuth angles [0,360]° and altitude angles [0,90]° in subsets for easier computation of the shading masks
@@ -66,38 +59,13 @@ public:
         }
     }
 
-    // Choose a random pair of indices in the discretized azimuth and altitude vectors
-    void getRandomDirectionSM(std::vector<double> &random_direction, int& index_azimuth, int& index_altitude)
+    
+    Eigen::MatrixXd get_random_directions(Eigen::VectorXi & index_azimuth, Eigen::VectorXi & index_altitude, int n_rays_thread, Eigen::Rand::UniformIntGen<int>& unif_gen_azi, Eigen::Rand::UniformIntGen<int>& unif_gen_alti, Eigen::Rand::P8_mt19937_64& urng_azi, Eigen::Rand::P8_mt19937_64& urng_alti )
     {
-        int size = random_direction.size();
-
-        if(random_direction.size()==3)
-        {
-            index_azimuth = M_unif_gen_azi(M_urng);
-            index_altitude = M_unif_gen_alti(M_urng);
-            double phi = -( M_azimuthAngles[index_azimuth] ) + M_PI*0.5 ; // recover spherical coordinate from azimuth angle
-            double theta = M_PI*0.5 - M_altitudeAngles[index_altitude]; // recover spherical coordinate from altitude 
-
-            random_direction[0]=math::sin(theta)*math::cos(phi);
-            random_direction[1]=math::sin(theta)*math::sin(phi);
-            random_direction[2]=math::cos(theta);
-
-        }
-        else
-        {
-            throw std::logic_error( "Wrong dimension " + std::to_string(random_direction.size()) + " for the random direction" );
-        }    
-    }
-
-    // Compute the random directions 
-    Eigen::MatrixXd get_random_directions(Eigen::VectorXi & index_azimuth, Eigen::VectorXi & index_altitude, int n_rays_thread)
-    {
-        Eigen::Rand::UniformIntGen<int> M_unif_gen_azi{ 0, M_azimuthSize-1 };
-        Eigen::Rand::UniformIntGen<int> M_unif_gen_alti{ 0, M_altitudeSize-1 };
         Eigen::MatrixXd random_directions(n_rays_thread,3);
 
-        index_azimuth = M_unif_gen_azi.generate<Eigen::VectorXi>(n_rays_thread,1,M_urng);
-        index_altitude = M_unif_gen_alti.generate<Eigen::VectorXi>(n_rays_thread,1,M_urng);
+        index_azimuth = unif_gen_azi.generate<Eigen::VectorXi>(n_rays_thread,1,urng_azi);
+        index_altitude = unif_gen_alti.generate<Eigen::VectorXi>(n_rays_thread,1,urng_alti);
         
         // Some critical errors occur when generating numbers with the pcg generator
         // Some generated numbers are way out of the range of the azimuth and altitude vectors
@@ -114,57 +82,7 @@ public:
         return random_directions;
     }
 
-    Eigen::VectorXd get_random_point(matrix_node_type const& element_points)
-    {            
-        int dimension;
-
-        dimension = column(element_points, 0).size();
-        
-        if(dimension==3)
-        {
-            // Choose points in a parallelogram, uniformly
-            Eigen::VectorXd p1(dimension),p2(dimension),p3(dimension),v(dimension),u(dimension),p(dimension);
-            for(int i=0;i<3;i++)
-            {
-                p1(i)=column(element_points, 0)[i];
-                p2(i)=column(element_points, 1)[i];
-                p3(i)=column(element_points, 2)[i];                
-            }
-            v = p2-p1;
-            u = p3-p1;
-            while(true)
-            {
-                double s = M_unif_gen_real(M_urng);
-                double t = M_unif_gen_real1(M_urng);
-                // If the point is on the left of the diagonal, keep it, else take the symmetric one
-                bool in_triangle = (s + t <= 1);
-                if(in_triangle)
-                    p = p1 + s * u + t * v;  
-                else 
-                    p= p1 + (1 - s) * u + (1 - t) * v;
-
-                if (isOnSurface(p,p1,p2,p3))
-                    return p;
-                else
-                {
-                    throw std::logic_error("Point not on triangle, but it must be");
-                    return p1;
-                }   
-            }
-        }
-        else
-        {
-            Eigen::VectorXd p1(dimension);
-            for(int i=0;i<dimension;i++)
-            {
-                p1(i)=column(element_points, 0)[i];
-            }
-            throw std::logic_error( "Problem in the computation of the random point" );
-            return p1;
-        }
-    }
-
-    Eigen::MatrixXd get_random_points(matrix_node_type const& element_points, int n_rays_thread)
+    Eigen::MatrixXd get_random_points(matrix_node_type const& element_points, int n_rays_thread, Eigen::Rand::UniformRealGen<double>& unif_gen_real1, Eigen::Rand::UniformRealGen<double>& unif_gen_real2, Eigen::Rand::P8_mt19937_64& urng_real1, Eigen::Rand::P8_mt19937_64& urng_real2)
     {
         int dimension;
         dimension = column(element_points, 0).size();
@@ -183,8 +101,8 @@ public:
             u = p3-p1;
             while(true)
             {   
-                Eigen::VectorXd S = M_unif_gen_real.generate<Eigen::VectorXd>(n_rays_thread,1,M_urng);
-                Eigen::VectorXd T = M_unif_gen_real1.generate<Eigen::VectorXd>(n_rays_thread,1,M_urng);
+                Eigen::VectorXd S = unif_gen_real1.generate<Eigen::VectorXd>(n_rays_thread,1,urng_real1);
+                Eigen::VectorXd T = unif_gen_real2.generate<Eigen::VectorXd>(n_rays_thread,1,urng_real2);
                 // If the point is on the left of the diagonal, keep it, else take the symmetric one
                 for (int j=0 ; j<n_rays_thread ; j++)
                 {
@@ -293,6 +211,16 @@ public:
             {
                     auto rays_from_element = [&,marker=marker](int n_rays_thread){
 
+                        Eigen::Rand::UniformIntGen<int> unif_gen_azi(0,M_azimuthSize-1);
+                        Eigen::Rand::UniformIntGen<int> unif_gen_alti(0,M_altitudeSize-1);
+                        Eigen::Rand::P8_mt19937_64 urng_azi{ std::random_device{}() };
+                        Eigen::Rand::P8_mt19937_64 urng_alti{ std::random_device{}() };
+
+                        Eigen::Rand::UniformRealGen<double> unif_gen_real1(0.,1.);
+                        Eigen::Rand::UniformRealGen<double> unif_gen_real2(0.,1.);
+                        Eigen::Rand::P8_mt19937_64 urng_real1{ std::random_device{}() };
+                        Eigen::Rand::P8_mt19937_64 urng_real2{ std::random_device{}() };
+
                         Eigen::MatrixXd SM_table(M_azimuthSize,M_altitudeSize);
                         SM_table.setZero();
 
@@ -300,15 +228,13 @@ public:
                         Angle_table.setZero();
 
                         Eigen::VectorXi index_altitude(n_rays_thread);
-                        Eigen::VectorXi index_azimuth(n_rays_thread); 
-                        // index_altitude.setZero();
-                        // index_azimuth.setZero();
+                        Eigen::VectorXi index_azimuth(n_rays_thread);
 
                         Eigen::MatrixXd random_directions(n_rays_thread,3);
                         Eigen::MatrixXd random_origins(n_rays_thread,3);
 
-                        random_origins = get_random_points(el.second.vertices(),n_rays_thread);
-                        random_directions = get_random_directions(index_azimuth, index_altitude, n_rays_thread);
+                        random_origins = get_random_points(el.second.vertices(),n_rays_thread, unif_gen_real1, unif_gen_real2, urng_real1, urng_real2);
+                        random_directions = get_random_directions(index_azimuth, index_altitude, n_rays_thread, unif_gen_azi, unif_gen_alti, urng_azi, urng_alti);
                         for(int j=0;j<n_rays_thread;j++)
                         {
                             Eigen::VectorXd rand_dir(dim); 
@@ -438,12 +364,5 @@ public:
     int M_Nthreads;
 
     nl::json j_;
-
-
-    Eigen::Rand::P8_mt19937_64 M_urng; // Random number generator
-    Eigen::Rand::UniformIntGen<int> M_unif_gen_azi;
-    Eigen::Rand::UniformIntGen<int> M_unif_gen_alti;
-    Eigen::Rand::UniformRealGen<double> M_unif_gen_real;
-    Eigen::Rand::UniformRealGen<double> M_unif_gen_real1;
 };
 } // namespace Feel

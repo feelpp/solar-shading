@@ -184,7 +184,6 @@ public:
     // Compute shading masks for one building only
     void computeMasksOneBuilding(std::string building_name)//, BVHTree<MeshType::nDim> bvh_tree)
     {
-        Eigen::initParallel();
         int dim = M_submeshes[building_name]->realDimension();
         std::vector<double> random_direction(dim);  
 

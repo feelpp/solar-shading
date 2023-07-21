@@ -68,6 +68,6 @@ printf "========================================================================
 printf "%-25s %-10s %s\n" "METHOD" "TIME (seconds)" "FLAGS"
 printf "==============================================================================\n"
 for method in "${!best_times_map[@]}"; do
-    printf "%-25s %-10s %s\n" "$method:" "${best_times_map[$method]} s" "'${best_flags_map[$method]}'"
+    printf "%-25s %-15s %s\n" "$method:" "${best_times_map[$method]} s" "'${best_flags_map[$method]}'"
 done
 printf "==============================================================================\n"

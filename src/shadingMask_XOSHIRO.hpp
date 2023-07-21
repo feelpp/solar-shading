@@ -34,40 +34,10 @@ public:
             bvhBuilding.buildRootTree();
 
             M_bvh_tree_vector.insert(std::make_pair( buildingName , bvhBuilding ));
-            M_submeshes.insert(std::make_pair( buildingName , surfaceSubmesh ));            
-         
+            M_submeshes.insert(std::make_pair( buildingName , surfaceSubmesh ));
         }
-        
         // Define the discretization of the azimuth and altitude vectors
         fixAzimuthAltitudeDiscretization(intervalsAzimuth, intervalsAltitude);
-
-        // Seed the random number generators to choose azimuth and altitude 
-        // std::random_device rd;  
-        // std::random_device rd2; 
-        // std::mt19937 gen(rd()); 
-        // std::mt19937 gen2(rd2()); 
-        // gen.seed(std::chrono::high_resolution_clock::now()
-        //                     .time_since_epoch()
-        //                     .count()); 
-        // gen2.seed(std::chrono::high_resolution_clock::now()
-        //                     .time_since_epoch()
-        //                     .count());
-
-        // M_gen=gen;
-        // M_gen2=gen2;  
-
-        std::uint64_t seed = std::chrono::high_resolution_clock::now()
-                            .time_since_epoch()
-                            .count();
-        std::uint64_t seed2 = std::chrono::high_resolution_clock::now()
-                            .time_since_epoch()
-                            .count();
-
-        Xoshiro256PlusPlus gen(seed);
-        Xoshiro256PlusPlus gen2(seed2);
-
-        M_gen=gen;
-        M_gen2=gen2;
     }
 
     // Subdivide the azimuth angles [0,360]° and altitude angles [0,90]° in subsets for easier computation of the shading masks
@@ -87,22 +57,18 @@ public:
         for(int i=0; i<intervalsAltitude; i++)
         {
             M_altitudeAngles[i] = i * deltaAltitude;        
-        } 
-                  
+        }
     }
 
     // Choose a random pair of indices in the discretized azimuth and altitude vectors
-    void getRandomDirectionSM(std::vector<double> &random_direction, Xoshiro256PlusPlus & M_gen, Xoshiro256PlusPlus & M_gen2, int& index_azimuth, int& index_altitude)
-    {    
-        std::uniform_int_distribution<int> dist_azimuth(0,M_azimuthSize-1);
-        std::uniform_int_distribution<int> dist_altitude(0,M_altitudeSize-1);
-
+    void getRandomDirectionSM(std::vector<double> &random_direction, std::uniform_int_distribution<int>& unif_azi, std::uniform_int_distribution<int>& unif_alti, Xoshiro256PlusPlus & gen1, Xoshiro256PlusPlus & gen2, int& index_azimuth, int& index_altitude)
+    {
         int size = random_direction.size();
 
         if(random_direction.size()==3)
         {
-            index_azimuth = dist_azimuth(M_gen);
-            index_altitude = dist_altitude(M_gen2);
+            index_azimuth = unif_azi(gen1);
+            index_altitude = unif_alti(gen2);
             double phi = -( M_azimuthAngles[index_azimuth] ) + M_PI*0.5 ; // recover spherical coordinate from azimuth angle
             double theta = M_PI*0.5 - M_altitudeAngles[index_altitude]; // recover spherical coordinate from altitude 
 
@@ -118,7 +84,7 @@ public:
 
     }   
 
-    Eigen::VectorXd get_random_point(matrix_node_type const& element_points)
+    Eigen::VectorXd get_random_point(matrix_node_type const& element_points, std::uniform_real_distribution<double>& unif1, std::uniform_real_distribution<double>& unif2, Xoshiro256PlusPlus & gen1, Xoshiro256PlusPlus & gen2)
     {            
         int dimension;
 
@@ -138,12 +104,8 @@ public:
             u = p3-p1;
             while(true)
             {
-                unsigned seed2 = std::chrono::high_resolution_clock::now().time_since_epoch().count();             
-                unsigned seed3 = std::chrono::high_resolution_clock::now().time_since_epoch().count();             
-                std::default_random_engine generator3(seed2),generator4(seed3);
-                std::uniform_real_distribution<double> xi1(0,1),xi2(0,1);
-                double s = xi1(generator3);
-                double t = xi2(generator4);
+                double s = unif1(gen1);
+                double t = unif2(gen2);
                 // If the point is on the left of the diagonal, keep it, else take the symmetric one
                 bool in_triangle = (s + t <= 1);
                 if(in_triangle)
@@ -225,6 +187,7 @@ public:
     // Compute shading masks for one building only
     void computeMasksOneBuilding(std::string building_name)//, BVHTree<MeshType::nDim> bvh_tree)
     {
+        Eigen::initParallel();
         int dim = M_submeshes[building_name]->realDimension();
         std::vector<double> random_direction(dim);  
 
@@ -247,6 +210,15 @@ public:
 
                     auto rays_from_element = [&,marker=marker](int n_rays_thread){
 
+                        Xoshiro256PlusPlus gen1(std::random_device{}());
+                        Xoshiro256PlusPlus gen2(std::random_device{}());
+                        Xoshiro256PlusPlus gen3(std::random_device{}());
+                        Xoshiro256PlusPlus gen4(std::random_device{}());
+                        std::uniform_int_distribution<int> unif_azi(0, M_azimuthSize-1);
+                        std::uniform_int_distribution<int> unif_alti(0, M_altitudeSize-1);
+                        std::uniform_real_distribution<double> unif_real1(0., 1.);
+                        std::uniform_real_distribution<double> unif_real2(0., 1.);
+
                         Eigen::MatrixXd SM_table(M_azimuthSize,M_altitudeSize);
                         SM_table.setZero();
 
@@ -259,13 +231,13 @@ public:
                         {              
 
                             // Construct the ray emitting from a random point of the element
-                            auto random_origin = get_random_point(el.second.vertices());
-                                        
+                            auto random_origin = get_random_point(el.second.vertices(), unif_real1, unif_real2, gen3, gen4);
                             Eigen::VectorXd rand_dir(dim); 
                             Eigen::VectorXd p1(dim),p2(dim),p3(dim),origin(3);
                             bool inward_ray=false;
                             if(dim==3)
                             {
+                                getRandomDirectionSM(random_direction, unif_azi, unif_alti, gen1, gen2, index_azimuth, index_altitude);                            
                                 for(int i=0;i<dim;i++)
                                 {
                                     p1(i)=column(el.second.vertices(), 0)[i];
@@ -275,21 +247,12 @@ public:
                                     rand_dir(i) = random_direction[i];
                                 }                               
                                 auto element_normal = ((p3-p1).head<3>()).cross((p2-p1).head<3>());
-                                element_normal.normalize();                                     
-
-                                // Choose the direction randomly among the latitude and azimuth
-                                getRandomDirectionSM(random_direction,M_gen,M_gen2,index_azimuth,index_altitude);                            
-                                for(int i=0;i<dim;i++)
-                                {
-                                    rand_dir(i) = random_direction[i];
-                                }             
+                                element_normal.normalize();
                                 if(rand_dir.dot(element_normal)>=0)
                                 {
                                     inward_ray=true;
                                 }
-                                                        
                             }
-
                             BVHRay ray(origin,rand_dir);
                             
                             int closer_intersection_element = -1;
@@ -326,7 +289,7 @@ public:
                 std::vector<int> n_rays_thread;
                 n_rays_thread.push_back(M_Nrays - (M_Nthreads-1) * (int)(M_Nrays / M_Nthreads));
                 for(int t= 1; t < M_Nthreads; ++t){
-                   n_rays_thread.push_back( M_Nrays / M_Nthreads);
+                    n_rays_thread.push_back( M_Nrays / M_Nthreads);
                 }
                 
                 // Used to store the future results
@@ -398,15 +361,5 @@ public:
     int M_Nthreads;
 
     nl::json j_;
-
-    // std::random_device M_rd; 
-    // std::random_device M_rd2; 
-    // std::mt19937 M_gen; 
-    // std::mt19937 M_gen2; 
-
-    Xoshiro256PlusPlus M_gen;
-    Xoshiro256PlusPlus M_gen2;
-    std::random_device M_rd;
-    std::random_device M_rd2;
 };
 } // namespace Feel

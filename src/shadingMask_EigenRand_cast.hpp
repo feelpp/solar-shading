@@ -37,15 +37,6 @@ public:
         
         // Define the discretization of the azimuth and altitude vectors
         fixAzimuthAltitudeDiscretization(intervalsAzimuth, intervalsAltitude);
-
-        // Seed the random number generators to choose azimuth and altitude
-        Eigen::Rand::P8_mt19937_64 M_urng { 42 };
-
-        // if UniformIntGen is only initialized here, it generates only zeros
-        Eigen::Rand::UniformRealGen<double> M_unif_gen_azi{ 0.0, static_cast<double>(M_azimuthSize-1e6) };
-        Eigen::Rand::UniformRealGen<double> M_unif_gen_alti{ 0.0, static_cast<double>(M_altitudeSize-1e6) };
-        Eigen::Rand::UniformRealGen<double> M_unif_gen_real1 { 0.0, 1.0 };
-        Eigen::Rand::UniformRealGen<double> M_unif_gen_real2 { 0.0, 1.0 };
     }
 
     // Subdivide the azimuth angles [0,360]° and altitude angles [0,90]° in subsets for easier computation of the shading masks
@@ -69,24 +60,20 @@ public:
     }
 
     // Choose a random pair of indices in the discretized azimuth and altitude vectors
-    void getRandomDirectionSM(std::vector<double> &random_direction, int& index_azimuth, int& index_altitude)
+    void getRandomDirectionSM(std::vector<double> &random_direction, int& index_azimuth, int& index_altitude, Eigen::Rand::UniformRealGen<double>& unif_azi, Eigen::Rand::UniformRealGen<double>& unif_alti, Eigen::Rand::P8_mt19937_64 &urng1, Eigen::Rand::P8_mt19937_64 &urng2)
     {
         int size = random_direction.size();
-        // has to be initialized here, else the random generator generates only zeros 
-        Eigen::Rand::UniformRealGen<double> M_unif_gen_azi{ 0.0, static_cast<double>(M_azimuthSize) };
-        Eigen::Rand::UniformRealGen<double> M_unif_gen_alti{ 0.0, static_cast<double>(M_altitudeSize) };
 
         if(random_direction.size()==3)
         {
-            index_azimuth = static_cast<int>(M_unif_gen_azi(M_urng));
-            index_altitude = static_cast<int>(M_unif_gen_alti(M_urng));
+            index_azimuth = static_cast<int>(unif_azi(urng1));
+            index_altitude = static_cast<int>(unif_alti(urng2));
             double phi = -( M_azimuthAngles[index_azimuth] ) + M_PI*0.5 ; // recover spherical coordinate from azimuth angle
             double theta = M_PI*0.5 - M_altitudeAngles[index_altitude]; // recover spherical coordinate from altitude 
 
             random_direction[0]=math::sin(theta)*math::cos(phi);
             random_direction[1]=math::sin(theta)*math::sin(phi);
             random_direction[2]=math::cos(theta);
-
         }
         else
         {
@@ -95,7 +82,7 @@ public:
 
     }   
 
-    Eigen::VectorXd get_random_point(matrix_node_type const& element_points)
+    Eigen::VectorXd get_random_point(matrix_node_type const& element_points, Eigen::Rand::UniformRealGen<double>& unif_real1, Eigen::Rand::UniformRealGen<double>& unif_real2, Eigen::Rand::P8_mt19937_64 &urng1, Eigen::Rand::P8_mt19937_64 &urng2)
     {            
         int dimension;
 
@@ -115,8 +102,8 @@ public:
             u = p3-p1;
             while(true)
             {
-                double s = M_unif_gen_real(M_urng);
-                double t = M_unif_gen_real1(M_urng);
+                double s = unif_real1(urng1);
+                double t = unif_real2(urng2);
                 // If the point is on the left of the diagonal, keep it, else take the symmetric one
                 bool in_triangle = (s + t <= 1);
                 if(in_triangle)
@@ -219,6 +206,16 @@ public:
             {
                     auto rays_from_element = [&,marker=marker](int n_rays_thread){
 
+                        Eigen::Rand::UniformRealGen<double> unif_gen_azi(0.0,static_cast<double>(M_azimuthSize));
+                        Eigen::Rand::UniformRealGen<double> unif_gen_alti(0.0,static_cast<double>(M_altitudeSize));
+                        Eigen::Rand::P8_mt19937_64 urng_azi{ std::random_device{}() };
+                        Eigen::Rand::P8_mt19937_64 urng_alti{ std::random_device{}() };
+
+                        Eigen::Rand::UniformRealGen<double> unif_gen_real1(0.,1.);
+                        Eigen::Rand::UniformRealGen<double> unif_gen_real2(0.,1.);
+                        Eigen::Rand::P8_mt19937_64 urng_real1{ std::random_device{}() };
+                        Eigen::Rand::P8_mt19937_64 urng_real2{ std::random_device{}() };
+
                         Eigen::MatrixXd SM_table(M_azimuthSize,M_altitudeSize);
                         SM_table.setZero();
 
@@ -231,15 +228,16 @@ public:
                         {              
 
                             // Construct the ray emitting from a random point of the element
-                            auto random_origin = get_random_point(el.second.vertices());
+                            auto random_origin = get_random_point(el.second.vertices(), unif_gen_real1, unif_gen_real2, urng_real1, urng_real2);
                                         
                             Eigen::VectorXd rand_dir(dim); 
                             Eigen::VectorXd p1(dim),p2(dim),p3(dim),origin(3);
                             bool inward_ray=false;
                             if(dim==3)
                             {
+                                getRandomDirectionSM(random_direction,index_azimuth,index_altitude, unif_gen_azi, unif_gen_alti, urng_azi, urng_alti);
                                 for(int i=0;i<dim;i++)
-                                {
+                                {                
                                     p1(i)=column(el.second.vertices(), 0)[i];
                                     p2(i)=column(el.second.vertices(), 1)[i];
                                     p3(i)=column(el.second.vertices(), 2)[i];                        
@@ -247,14 +245,7 @@ public:
                                     rand_dir(i) = random_direction[i];
                                 }                               
                                 auto element_normal = ((p3-p1).head<3>()).cross((p2-p1).head<3>());
-                                element_normal.normalize();                                     
-
-                                // Choose the direction randomly among the latitude and azimuth
-                                getRandomDirectionSM(random_direction,index_azimuth,index_altitude);                            
-                                for(int i=0;i<dim;i++)
-                                {
-                                    rand_dir(i) = random_direction[i];
-                                }             
+                                element_normal.normalize();                                               
                                 if(rand_dir.dot(element_normal)>=0)
                                 {
                                     inward_ray=true;
@@ -370,12 +361,5 @@ public:
     int M_Nthreads;
 
     nl::json j_;
-
-
-    Eigen::Rand::P8_mt19937_64 M_urng; // Random number generator
-    Eigen::Rand::UniformRealGen<double> M_unif_gen_azi;
-    Eigen::Rand::UniformRealGen<double> M_unif_gen_alti;
-    Eigen::Rand::UniformRealGen<double> M_unif_gen_real;
-    Eigen::Rand::UniformRealGen<double> M_unif_gen_real1;
 };
 } // namespace Feel
