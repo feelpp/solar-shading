@@ -1,0 +1,15 @@
+= Chapter 1 - Shading Masks
+
+== Thermal Aspects
+
+== Structures
+
+== Ray Tracing
+
+== Monte-Carlo
+
+== Perez all-weather sky model
+
+== View Factors
+
+== Shading Mask Structures

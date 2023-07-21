@@ -1,16 +1,26 @@
-= RNG's
+= Chapter 3 - Becnhmarking and Performance Measurement
 
-== Role and Objectives
+== Shell / Bash Scripting and Automation
+
+== Reframe Benchmarking 
+
+=== Definition
+
+=== Utility
+
+== Explicit Benchmarking
+
+== Random Number Generators
 
 When dealing with solar shading masks computation, it's strongly recommended to use the Monte-Carlo technic, namely during the ray-tracing part of the algorithm enabling one to backtrace the paths to find shaded locations due to the environment. But this comes at a cost, since it's mathematically accurate only when tracing multiple rays in random directions, being the foundation of this method.
 
 Since this project is at district or even city scale, the use of a fast Random Number Generators (RNG) is necessary. Despite numerous benchmarks already been done, we decided to compare some of the fastest open-source libraries, all heavily relying on Vectorization, multi-threading or multicore processing, and performance-targeted compiling flags (such as `-03` to `-0fast`). Since Intel processors have specific instructions and extensions (such as Streaming SIMD Extensions, SSE2) and Advanced Vector Extensions (AVX), the MKL advanced Mathematics library naturally benefits of efficient vectorized operations.
 
-== RNG Speed Benchmark
+=== RNG Speed Benchmark
 
 We have to adopt rigorous coding methods, proving and explaining our reasoning behind every choice made during the internship. In order to settle on a specific method, benchmarks have to be performed.
 
-=== Available Methods
+==== Available Methods
 
 As said, numerous methods are open-source and available to use, built upon different fundamentals. The Xoshiro-Cpp is a lightweight, high-performance random number generator known for its speed and low memory consumption. The Mersenne Twister, on the other hand, is widely used for its long period and good statistical properties. std::random provides a standardized interface for random number generation in C++, offering various generators including Mersenne Twister. Eigen::Rand is a random number generator headers library strongly relying on Eigen's vectorization capabilities, useful for generating random matrices in numerical computations. Intel MKL offers high-performance, vectorized random number generation routines optimized for scientific and numerical computing while `pcg-cpp` is a Permuted Congruential Generator implementation balancing speed and randomness for simulations and gaming.
 
@@ -20,7 +30,7 @@ image::colorcompare.png[Barplot comparing execution time][600]
 
 We can observe that all of the presented methods, except for Eigen's one, are outperforming the standard library.
 
-=== Different Flags
+==== Different Flags
 
 Since Intel's oneAPI MKL library is by far the highest speed RNG, we benchmarked it using more specific flags, such as `march=native` in order to enable all the processor's extensions, and switching between `sequential` and `threaded` modes. The results are shown below:
 
@@ -43,6 +53,8 @@ The `-Ofast` and `-O3` flags do the following work for the user:
 Unused variable elimination: Variables that are not used in the code are detected and removed, reducing memory consumption.
 - Arithmetic operation optimization: The compiler can perform mathematical transformations to simplify expressions and reduce the number of necessary operations.
 
-== RNG Quality Benchmark
+=== RNG Quality Benchmark
 
-== Conclusion
+=== Summary
+
+==== Integral's precision
