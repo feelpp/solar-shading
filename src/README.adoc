@@ -19,15 +19,17 @@ One can specify a single csv file, a directory containing several csv files, and
 
 === Execution of the examples
 
-After building the sources, one can launch the exampleShadingMask case
+After building the sources, one can launch the exampleShadingMask case when located at the source of the repo:
 
-`./feelpp_ss_example_ShadingMasks --config-file exampleShadingMask/exampleShadingMask.cfg`
+`./build/default/src/feelpp_ss_example_ShadingMasks --config-file src/cases/exampleShadingMask/exampleShadingMask.cfg` <1>
 
 It will produce a mask per marked surface (floors are not marked). In order to visualize the results, one can launch the Python script
 
 `python3 visualization/shadingMask_visualization.py --dir_path <PATH_TO_SHADING_MASKS_RESULT_DIRECTORY> --destination <DIRECTORY_STORING_VISUALIZATION_RESULTS>`
 
 One can also launch this example via CTest.
+
+When executing command <1>, not only are the Shading Masks computed, but also the respective perez models (one for each hour of the day between sunrise and sunset), sampled on a random day of the year with Strasbourg coordinates (latitude and longitude) used to retrieve the sun's position across the day, but also the meteorological data needed to compute the Perez all-weather sky model. The results are stored in feelpp's local database (named feelppdb, at feelppdb/{case_name}/{building_name}). The Perez models are stored as .csv files, in the form of a matrix with shapes (azimuthSize, altitudeSize) in order to correspond to the Shading Mask matrix to enable element-wise multiplication.
 
 === Execution of the in-app benchmarks
 

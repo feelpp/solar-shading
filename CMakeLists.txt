@@ -50,10 +50,7 @@ endif()
 
 add_subdirectory( src )
 add_subdirectory( docs )
-add_subdirectory( benchmark/distributions ) # add benchmark directory
-# add_subdirectory( benchmark/distributions/src )
-# add_subdirectory( benchmark/extlibs/EigenRand)
-# add_subdirectory( benchmark/extlibs)
+add_subdirectory( benchmark/distributions )
 
 # extra ignored files
 list(APPEND CPACK_SOURCE_IGNORE_FILES

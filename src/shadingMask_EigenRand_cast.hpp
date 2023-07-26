@@ -1,7 +1,6 @@
 #include <feel/feelmesh/bvh.hpp>
 #include <feel/feelcore/environment.hpp>
-#include "../benchmark/extlibs/EigenRand/EigenRand/EigenRand"
-// #include <EigenRand/EigenRand>
+#include "../benchmark/extlibs/eigenrand/EigenRand/EigenRand"
 
 namespace Feel { 
 
@@ -80,7 +79,6 @@ public:
         {
             throw std::logic_error( "Wrong dimension " + std::to_string(random_direction.size()) + " for the random direction" );
         }    
-
     }   
 
     Eigen::VectorXd get_random_point(matrix_node_type const& element_points, Eigen::Rand::UniformRealGen<double>& unif_real1, Eigen::Rand::UniformRealGen<double>& unif_real2, Eigen::Rand::P8_mt19937_64 &urng1, Eigen::Rand::P8_mt19937_64 &urng2)

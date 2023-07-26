@@ -6,6 +6,7 @@
 #include "shadingMask.hpp"
 #include "shadingMask_mix.hpp"
 #include "shadingMask_EigenRand.hpp"
+#include "perez.hpp"
 #include <iostream>
 #include <fstream>
 #include <chrono>
@@ -37,9 +38,13 @@ int main(int argc, char **argv)
 
     // STD RNG
 
+    std::cout << fmt::format("Start of diffuse radiation computation \n");
+
     // Load the mesh
     auto mesh = loadMesh( _mesh = new mesh_t );
 
+    // use tic 
+    //  toc(nodisplay) => chaine de caracteres peremet d'identifier timer
 
     auto startnormal = std::chrono::high_resolution_clock::now();
 
@@ -155,5 +160,6 @@ int main(int argc, char **argv)
     }
     
     std::cout << fmt::format("End Shading mask example\n");
+
     return 0;
 }

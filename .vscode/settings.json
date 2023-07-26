@@ -82,6 +82,8 @@
         "valarray": "cpp",
         "variant": "cpp",
         "eigenrand": "cpp",
-        "core": "cpp"
+        "core": "cpp",
+        "mixinvector": "cpp",
+        "fast_back_stack": "cpp"
     }
 }

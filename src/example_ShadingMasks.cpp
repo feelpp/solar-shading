@@ -1,4 +1,5 @@
 #include "shadingMask.hpp"
+#include "perez.hpp"
 #include <iostream>
 #include <feel/feelcore/ptreetools.hpp>
 #include <feel/feelcore/utility.hpp>
@@ -33,7 +34,15 @@ int main(int argc, char **argv)
     ShadingMask<mesh_t> sm(mesh,json_buildings);
     sm.computeMasks();
 
+    std::cout << fmt::format("End of the Shading Mask Computation\n");
 
-    std::cout << fmt::format("End Shading mask example\n");
+    // Compute the Perez sky model
+    std::cout << fmt::format("Start of the Perez Sky Model Computation\n");
+    double longitude = 7.75;
+    double latitude = 48.57;
+    PerezSkyModel psm;
+    psm.computePerezSkyModel(longitude, latitude, "2020-07-22", json_buildings);
+    std::cout << fmt::format("End of the Perez Sky Model Computation\n");
+
     return 0;
 }

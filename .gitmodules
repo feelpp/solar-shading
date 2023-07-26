@@ -4,3 +4,6 @@
 [submodule "benchmark/Xoshiro-cpp"]
 	path = benchmark/extlibs/Xoshiro-cpp
 	url = https://github.com/Reputeless/Xoshiro-cpp.git
+[submodule "benchmark/extlibs/eigenrand"]
+	path = benchmark/extlibs/eigenrand
+	url = git@github.com:bab2min/EigenRand.git
