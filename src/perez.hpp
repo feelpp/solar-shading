@@ -452,15 +452,13 @@ public:
     /* Compute the relative sky luminance (lv) */
     double lv(double zeta, double gamma)
     {
-        // check if zeta is near 0, if it is, we neede to assure that b is negative
-        if (std::abs(zeta) < 1e-6)
+        // check if zeta is near pi/2
+        if (std::abs(zeta) > M_PI/2 - 1e-2)
         {
-            if (M_PerezParameters(1) > 0.0)
-            {
-                std::cout << "Zeta is near 0 but b still is positive : " << M_PerezParameters(1) << std::endl;
-            }
+            zeta = M_PI/2;
+            // std::cout << "Warning, zeta is near pi/2 , zeta = " << zeta << " and cos(zeta) = " << std::cos(zeta) << " and b = " << M_PerezParameters(1) << std::endl;
         }
-        double lv = (1.0 + M_PerezParameters(0) * std::exp(M_PerezParameters(1) / std::cos(zeta))) * (1.0 + M_PerezParameters(2) * std::exp(M_PerezParameters(3) * gamma) + M_PerezParameters(4) * std::pow(std::cos(gamma), 2.0));
+        double lv = (1.0 + M_PerezParameters(0) * std::exp(M_PerezParameters(1) / (std::cos(zeta) + 1e-6))) * (1.0 + M_PerezParameters(2) * std::exp(M_PerezParameters(3) * gamma) + M_PerezParameters(4) * std::pow(std::cos(gamma), 2.0));
         return lv;
     }
 
@@ -469,33 +467,59 @@ public:
     double compute_integral(double solarAzimuth, double solarZenith, int num_points = 200)
     {
         double integral_lv = 0.0;
-        // Step size for our integration
-        double delta_theta = M_PI / (2.0 * num_points); // zenith angle from 0 to pi/2
-        double delta_phi = 2.0 * M_PI / num_points;    // azimuth angle from 0 to 2pi
-        // Iterate over our hemisphere
+        double delta_theta = M_PI / (2.0 * num_points); 
+        double delta_phi = 2.0 * M_PI / num_points; 
+
         for(int i = 0; i < num_points; ++i)
         {
-            double theta = (i + 0.5) * delta_theta; // zenith angle (add 0.5 to sample at the center of the interval)
-            double zeta = M_PI / 2.0 - theta; // zeta is the zenith angle measured from the zenith down
+            double theta = (i + 0.5) * delta_theta;
+            double zeta = M_PI / 2.0 - theta;
+
             for(int j = 0; j < num_points; ++j)
             {
-                double phi = (j + 0.5) * delta_phi; // azimuth angle
-                // Compute gamma
+                double phi = (j + 0.5) * delta_phi;
                 double cosGamma = std::sin(solarZenith) * std::sin(zeta) * std::cos(std::abs(solarAzimuth - phi)) + std::cos(solarZenith) * std::cos(zeta);
-                double gamma = std::acos(cosGamma); // gamma is the angle between the solar position and the point in the sky
-                integral_lv += lv(zeta, gamma) * std::cos(zeta); // The sin(theta) term for spherical coordinates is dropped
+                double gamma = std::acos(cosGamma);
+                double lv_value = lv(zeta, gamma);
+                
+                // Check for NaN
+                // if (std::isnan(lv_value))
+                // {
+                //     throw std::logic_error("lv() returned NaN for these values: Zeta = " + std::to_string(zeta) + "; gamma = " + std::to_string(gamma) + "; solarAzimuth = " + std::to_string(solarAzimuth) + "; solarZenith = " + std::to_string(solarZenith));
+                // }
+                // // Check for inf
+                // if (std::isinf(lv_value))
+                // {
+                //     throw std::logic_error("lv() returned inf for these values: Zeta = " + std::to_string(zeta) + "; gamma = " + std::to_string(gamma) + "; solarAzimuth = " + std::to_string(solarAzimuth) + "; solarZenith = " + std::to_string(solarZenith));
+                // }
+
+                integral_lv += lv_value * std::cos(zeta);
             }
         }
-        integral_lv *= delta_theta * delta_phi; // Multiply by the differential solid angle
+        integral_lv *= delta_theta * delta_phi;
+
+        // Check for NaN
+        // if (std::isnan(integral_lv))
+        // {
+        //     throw std::logic_error("Integral is NaN for these values: solarAzimuth = " + std::to_string(solarAzimuth) + "; solarZenith = " + std::to_string(solarZenith));
+        // }
+        // // Check for inf
+        // if (std::isinf(integral_lv))
+        // {
+        //     throw std::logic_error("Integral is inf for these values: solarAzimuth = " + std::to_string(solarAzimuth) + "; solarZenith = " + std::to_string(solarZenith));
+        // }
+
         return integral_lv;
     }
 
-    /* normalizes the luminance with respect to global relative sky illuminance (integral of lv) */
-    /* and to the diffuse illuminance (Evd) */
-    double getNormalizedLuminance(double zeta, double gamma, double Evd, double solarAzimuth, double solarZenith)
+    double getNormalizedLuminance(double zeta, double gamma, double Evd, double solarAzimuth, double solarZenith, double integral_value)
     {
-        return lv(zeta, gamma) * Evd / compute_integral(solarAzimuth, solarZenith);
+        double lv_value = lv(zeta, gamma);
+        double result = lv_value * Evd / integral_value;
+
+        return result;
     }
+
 
     /* method to compute the diffuse illuminance (Evd), which can be estimated from the diffuse */
     /* solar radiation (Eed) and depends on sky conditions, but this can't be handled using the open-meteo */
@@ -600,7 +624,7 @@ public:
         M_DiffuseIlluminance = getDiffuseIlluminance(M_DiffuseRadiation);
         M_AirMass = computeAirMass(M_ZenithAngles);
         M_Clearness = computeClearness(M_DiffuseRadiation, M_DirectNormalIrradiance, M_ZenithAngles);
-        M_Brightness = computeBrightness(M_DiffuseIlluminance, M_AirMass);
+        M_Brightness = computeBrightness(M_DiffuseRadiation, M_AirMass);
 
         // Check the data's values by doing a std::cout
         std::cout << "The time is : ";
@@ -644,7 +668,8 @@ public:
             std::cout << M_ZenithAngles[i] << " ";
         }
         std::cout << "\n";
-
+        
+        std::cout << "==============================================================================================================\n";
         // Loop over the hours of the day in order to compute all models 
         for (int i = 0; i < M_Time.size(); i++)
         {
@@ -654,7 +679,8 @@ public:
             double A = M_SolarAzimuth[i];  
             double Z = M_ZenithAngles[i];
             setPerezParameters(epsilon, delta, Z);
-            std::cout << "The Perez Parameters at hour " << hour << " are : " << M_PerezParameters(0) << " " << M_PerezParameters(1) << " " << M_PerezParameters(2) << " " << M_PerezParameters(3) << " " << M_PerezParameters(4) << "\n";
+            double integral_value = compute_integral(A, Z);
+            std::cout << "The Perez Parameters at hour " << hour << " are : " << M_PerezParameters(0) << "   " << M_PerezParameters(1) << "   " << M_PerezParameters(2) << "   " << M_PerezParameters(3) << "   " << M_PerezParameters(4) << "\n";
 
             for (int j = 0; j < AltitudeSize; j++) 
             {
@@ -678,7 +704,7 @@ public:
                     {
                         gamma = std::acos(cos_gamma);
                     }
-                    M_SkyModel(k, j) += getNormalizedLuminance(z, gamma, M_DiffuseIlluminance[i], A, Z);
+                    M_SkyModel(k, j) += getNormalizedLuminance(z, gamma, M_DiffuseIlluminance[i], A, Z, integral_value);
                 }
             }
             saveSkyModel(hour);
