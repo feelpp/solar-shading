@@ -51,6 +51,7 @@ results/ShadingMasks/*.png
 results/Differences/*.png
 results/csv/*.png
 results/images/*.png
+results/meteo/*.json
 
 # all files resulting from the reframe benchmarking
 benchmark/distributions/__pycache__/*
