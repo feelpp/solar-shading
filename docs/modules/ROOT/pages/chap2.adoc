@@ -34,6 +34,11 @@ There are 3 main manners of defining such boxes. The overlap tests are straightf
 []
 image::AABBs.png[500]
 
+But these can very rapidly lead to false results when dealing with more complex shapes, specially when they are close or not aligned with the AABB's axes, as displayed below:
+
+[]
+image::OverlappingElements.png
+
 ----
 ADD CODE SAMPLES FOR THE INTERSECTION TESTS
 ----
@@ -49,7 +54,7 @@ ADD COMPLETE DEFINITION AND INTERSECTION TESTS
 A visual definition of a BVH structure using Axis-Aligned Bounding-Boxes.
 
 []
-image::AABBs.png[]
+image::BVH.png[]
 
 In this context, `N1` would be the bounding volume for the entire object or scene, `N2` and `N3` would be those respectively containing `N4` and `N5`, and so on, until we reach the leaves of the tree, which are directly the bounding boxes of the primitives.
 
@@ -158,13 +163,13 @@ The hierarchical nature of the BVH prevents a straightforward parallelization of
 
 === Morton Curves
 
-.Morton Curves
-[def#def:MortonCurve]
+. Morton Curves
+[.def#def:Morton]
 ****
-[stem]
 **Morton curves** map multidimensional data to one dimension while preserving the locality of the data points. They can be considered as a special 1-dimensional path traversing multidimensional data. Displayed below is an example of a Z-order curve (also known as a Morton curve) in a two-dimensional plane. The curve is constructed by interleaving the binary representations of the x and y coordinates of the data points. The resulting curve is continuous and preserves the locality of the data points, meaning that nearby points in the multidimensional space are also nearby in the one-dimensional space. This property is very useful for spatial indexing and spatial data structures, such as during the construction process of BVHs.
 ****
 
+[]
 image::morton.png[width=250px]
 
 These can be defined thanks to various algorithms presented on
@@ -355,7 +360,6 @@ This already gives us an overlook of the simple deterministic automaton algorith
 - from one of its children (case `fromChild`): the current node was already tested during the top to bottom phase, it **should not** be re-tested. The next on the list is either the current node's `farChild` or its parent
 
 []
-====
 Algorithm Developed by the Authors
 
 [source,c++]
@@ -411,7 +415,6 @@ void traverse(ray, node) {
 	}
 }
 ----
-====
 
 image::BVlayers.png[]
 
