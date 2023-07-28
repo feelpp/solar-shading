@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Bounding Volume Hierarchy :: Solar Shading</title>
-    <link rel="canonical" href="https://feelpp.github.io/solar-shading/solar-shading/bvh.html">
+    <title>Chapter 2 - Bounding Volume Hierarchy (BVH) :: Solar Shading</title>
+    <link rel="canonical" href="https://feelpp.github.io/solar-shading/solar-shading/chap2.html">
     <meta name="generator" content="Antora 3.1.4">
     <link rel="stylesheet" href="../_/css/site.css">
 <link rel="icon" href="../_/img/favicon.ico" type="image/x-icon">
@@ -166,22 +166,16 @@ MathJax.Hub.Config({
     <a class="nav-link" href="introduction.html">Introduction</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="rng.html">Random Number Generator</a>
-  </li>
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="bv.html">Bounding Volumes</a>
+    <a class="nav-link" href="chap1.html">Chapter 1</a>
   </li>
   <li class="nav-item is-current-page" data-depth="2">
-    <a class="nav-link" href="bvh.html">Bounding Volume Hierarchy</a>
+    <a class="nav-link" href="chap2.html">Chapter 2</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="traversal.html">Traversal Algortihms</a>
+    <a class="nav-link" href="chap3.html">Chapter 3</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="raytracing.html">Raytracing</a>
-  </li>
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="tools.html">Tools</a>
+    <a class="nav-link" href="conclusion.html">Conclusion</a>
   </li>
 </ul>
   </li>
@@ -213,12 +207,12 @@ MathJax.Hub.Config({
     <li><a href="index.html">Feel++ Template Project</a></li>
     <li><a href="index.html">Introduction</a></li>
     <li><a href="rapport.html">Rapport</a></li>
-    <li><a href="bvh.html">Bounding Volume Hierarchy</a></li>
+    <li><a href="chap2.html">Chapter 2</a></li>
   </ul>
 </nav>
 
   
-    <div class="edit-this-page"><a href="https://github.com/feelpp/solar-shading/edit/7-add-project-report-to-antora-pages/docs/modules/ROOT/pages/bvh.adoc">Edit this Page</a></div>
+    <div class="edit-this-page"><a href="https://github.com/feelpp/solar-shading/edit/7-add-project-report-to-antora-pages/docs/modules/ROOT/pages/chap2.adoc">Edit this Page</a></div>
   
   <div class="page-downloads">
   <span class="label">Download as</span>
@@ -238,9 +232,8 @@ MathJax.Hub.Config({
   <div class="toc-menu"></div>
 </aside>
 <article class="doc">
-<h1 class="page">Bounding Volume Hierarchy</h1>
-<div class="sect1">
-<h2 id="_introduction"><a class="anchor" href="#_introduction"></a>1. Introduction</h2>
+<h1 class="page">Chapter 2 - Bounding Volume Hierarchy (BVH)</h1>
+<div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
 <p>Ray-Tracing is a well-known method used in many fields. In order to render physically realistic scenes, or in our case mathematical results, numerous rays must be traced to get plausible outcomes. The goal would be to accelerate the light transport simulation thanks to efficient sampling techniques, leveraging hardware architecture, or by rearranging scene primitives into an efficient spatial data structure. Naïvely, we could compute the ray/scene interactions by testing all scene primitives, which is prohibitively expensive since we rely on fine-grained meshes.</p>
@@ -270,29 +263,85 @@ MathJax.Hub.Config({
 <div class="paragraph">
 <p><strong>BVH Node:</strong> Contains information such as child node pointers, the number of leaves, and bounding boxes. Hence, the memory consumption of a BVH drastically increases with the scene&#8217;s size growth.</p>
 </div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_definition"><a class="anchor" href="#_definition"></a>1. Definition</h2>
+<div class="sectionbody">
 <div class="sect2">
-<h3 id="_definition"><a class="anchor" href="#_definition"></a>1.1. Definition</h3>
+<h3 id="_bounding_volumes"><a class="anchor" href="#_bounding_volumes"></a>1.1. Bounding Volumes</h3>
+<div id="def:BV" class="sidebarblock def">
+<div class="content">
+<div class="title">Bounding Volumes</div>
+<div class="paragraph">
+<p>A <strong>Bounding Volume</strong> is a single simple volume encapsulating one or several objects of more complex nature. The idea is that they have way cheaper overlap tests than the complex ones, very useful when calculating the Ray-Object intersections during traversal. This will result in very fast overlapping rejections.</p>
+</div>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/BoundingVolumes.png" alt="BoundingVolumes">
+</div>
+</div>
+<div class="sect3">
+<h4 id="_axis_aligned_bounding_boxes_aabbs"><a class="anchor" href="#_axis_aligned_bounding_boxes_aabbs"></a>1.1.1. Axis-Aligned Bounding Boxes (AABBs)</h4>
+<div class="paragraph">
+<p>There are 3 main manners of defining such boxes. The overlap tests are straightforward: 2 AABBs only overlap if they overlap on all 3 (or 2 in 2D) axes.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/AABBs.png" alt="500">
+</div>
+</div>
+<div class="paragraph">
+<p>But these can very rapidly lead to false results when dealing with more complex shapes, specially when they are close or not aligned with the AABB&#8217;s axes, as displayed below:</p>
+</div>
+<div class="paragraph">
+<p>image::OverlappingElements.png</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>ADD CODE SAMPLES FOR THE INTERSECTION TESTS</pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_oriented_bounding_boxes_obbs"><a class="anchor" href="#_oriented_bounding_boxes_obbs"></a>1.1.2. Oriented Bounding Boxes (OBBs)</h4>
+<div class="listingblock">
+<div class="content">
+<pre>ADD COMPLETE DEFINITION AND INTERSECTION TESTS</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_bounding_volume_hierarchy"><a class="anchor" href="#_bounding_volume_hierarchy"></a>1.2. Bounding Volume Hierarchy</h3>
 <div class="paragraph">
 <p>A visual definition of a BVH structure using Axis-Aligned Bounding-Boxes.</p>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="_images/AABBs.png" alt="AABBs">
+<img src="_images/BVH.png" alt="BVH">
 </div>
 </div>
 <div class="paragraph">
 <p>In this context, <code>N1</code> would be the bounding volume for the entire object or scene, <code>N2</code> and <code>N3</code> would be those respectively containing <code>N4</code> and <code>N5</code>, and so on, until we reach the leaves of the tree, which are directly the bounding boxes of the primitives.</p>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_objectives"><a class="anchor" href="#_objectives"></a>1.2. Objectives</h3>
-
-</div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_construction_methods"><a class="anchor" href="#_construction_methods"></a>2. Construction Methods</h2>
+<h2 id="_utility"><a class="anchor" href="#_utility"></a>2. Utility</h2>
 <div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_construction"><a class="anchor" href="#_construction"></a>3. Construction</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Visual representation of the construction process of a BVH :</p>
+</div>
 <div class="imageblock">
 <div class="content">
 <img src="_images/constructmet.png" alt="constructmet" width="500">
@@ -304,7 +353,7 @@ MathJax.Hub.Config({
 </div>
 </div>
 <div class="sect2">
-<h3 id="_recursive_top_down_construction"><a class="anchor" href="#_recursive_top_down_construction"></a>2.1. Recursive Top-Down Construction</h3>
+<h3 id="_recursive_top_down_construction"><a class="anchor" href="#_recursive_top_down_construction"></a>3.1. Recursive Top-Down Construction</h3>
 <div class="paragraph">
 <p>In the code snippet below, written by Luca Berti, a recursive top-down construction algorithm was proposed for further improvements. We can see that he adopts a recursive build function, which is called to create each node of the tree: if there is only one primitive, then a leaf is build, else, an internal node is created and the build function is called recursively on the left and right child nodes. Here is the proposed implementation:</p>
 </div>
@@ -364,11 +413,11 @@ MathJax.Hub.Config({
 <p>Finally, the data is divided into two equally sized parts when calculating the midpoint of the primitives' indexes.</p>
 </div>
 <div class="paragraph">
-<p>Other splitting algorithms can be used, such as the Surface Area Heuristic (SAH) or the Middle Split Heuristic (MSH), which are listed and explained in the <a href="#_spatial_splits">Spatial Splits</a> section.</p>
+<p>Other splitting algorithms can be used, such as the Surface Area Heuristic (SAH) or the Middle Split Heuristic (MSH), which are listed and explained in the <a href="#_spatial_splits_and_clustering">Spatial Splits and Clustering</a> section.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_bottom_up_construction"><a class="anchor" href="#_bottom_up_construction"></a>2.2. Bottom-Up Construction</h3>
+<h3 id="_bottom_up_construction"><a class="anchor" href="#_bottom_up_construction"></a>3.2. Bottom-Up Construction</h3>
 <div class="paragraph">
 <p>Instead of starting with all scene primitives in one cluster and recursively splitting them, bottom-up construction algorithms start with each primitive in its own cluster and recursively merge the closest pairs. This is done either until the desired number of clusters is reached, or each cluster contains a maximum number of primitives. The clusters are then used as the primitives for the next level of the tree. This process is repeated until the root node is reached.</p>
 </div>
@@ -380,6 +429,11 @@ MathJax.Hub.Config({
 <div class="paragraph">
 <p>Below is an example of a bottom-up construction algorithm:</p>
 </div>
+<div class="listingblock">
+<div class="content">
+<pre>ADD BOTTOM-UP CONSTRUCTION ALGORITHM</pre>
+</div>
+</div>
 <div class="paragraph">
 <p>Introduced by Walter et al., bottom-up construction by agglomerative clustering proposes to start with all scene primitives considered as individual clusters and recursively merges the closest pairs (the distance function being for example the surface area of a bounding box enclosing both clusters). In general, these trees tend to have lower global costs, but the construction is more time-consuming.</p>
 </div>
@@ -387,10 +441,13 @@ MathJax.Hub.Config({
 </div>
 </div>
 <div class="sect1">
-<h2 id="_clustering"><a class="anchor" href="#_clustering"></a>3. Clustering</h2>
+<h2 id="_spatial_splits_and_clustering"><a class="anchor" href="#_spatial_splits_and_clustering"></a>4. Spatial Splits and Clustering</h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>Performing the spatial splits in an optimized way is crucial to the performance of the BVH. In fact, this is deeply related to the BVH&#8217;s layout, which is the way the BVH is stored in memory, hence having a strong impact on it&#8217;s construction time, the resulting quality of the BVH, and the traversal performance. The first step is to choose the splitting algorithm, and more importantly the separating axes.</p>
+</div>
 <div class="sect2">
-<h3 id="_agglomerative_clustering"><a class="anchor" href="#_agglomerative_clustering"></a>3.1. Agglomerative Clustering</h3>
+<h3 id="_agglomerative_clustering"><a class="anchor" href="#_agglomerative_clustering"></a>4.1. Agglomerative Clustering</h3>
 <div class="paragraph">
 <p>The major inconvenience when using bottom-up algorithms is that the upper nodes are poorly locally optimized and thus the research for the closest neighbor can be very costly. To prevent this, Gu et al proposed to recursively perform spatial median splits based on Morton codes until each subtree contains less than a chosen number of clusters. The clusters are merged using agglomerative clustering. Using this at all levels in the BVH, even the top level nodes' split will be locally optimized.</p>
 </div>
@@ -399,95 +456,83 @@ MathJax.Hub.Config({
 </div>
 </div>
 <div class="sect2">
-<h3 id="_parallel_locally_ordered_clustering_on_gpu"><a class="anchor" href="#_parallel_locally_ordered_clustering_on_gpu"></a>3.2. Parallel locally-ordered clustering on GPU</h3>
+<h3 id="_parallel_locally_ordered_clustering_on_gpu"><a class="anchor" href="#_parallel_locally_ordered_clustering_on_gpu"></a>4.2. Parallel locally-ordered clustering on GPU</h3>
 <div class="paragraph">
 <p>Introduced by Meister and Bittner, the key observation is that the distance functions have a non-decreasing property, meaning that once we found two mutually corresponding nearest neighbors, we can immediately merge their clusters since no other closer one will be found. The clusters are kept sorted along the Morton Curve, finding the nearest cluster by searching both sides of the sorted cluster array, testing a predefined number of clusters. Since it does not rely on distance matrices, it is GPU-friendly, and only a small number of iterations are needed to build the whole tree.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_linear_bvh_lbvh"><a class="anchor" href="#_linear_bvh_lbvh"></a>3.3. Linear BVH (LBVH)</h3>
+<h3 id="_linear_bvh_lbvh"><a class="anchor" href="#_linear_bvh_lbvh"></a>4.3. Linear BVH (LBVH)</h3>
 <div class="paragraph">
 <p>The hierarchical nature of the BVH prevents a straightforward parallelization of the construction algorithm. But now, the BVH construction can be reduced to sorting scene primitives along the Morton curve (the order is given by Morton codes of fixed length, 32 or 64 bits), and using optimized sorting algorithms such as the radix sort, it can be done in 2n-1 time. The Morton code implicitly encodes a BVH constructor by spatial median splits.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_morton_curves"><a class="anchor" href="#_morton_curves"></a>3.4. Morton Curves</h3>
-<div class="listingblock">
-<div class="content">
-<pre>ADD EXPLANATION ON MORTON CODE AND CURVES</pre>
-</div>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-<div class="paragraph">
+<h3 id="_morton_curves"><a class="anchor" href="#_morton_curves"></a>4.4. Morton Curves</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
 <p>Morton Curves</p>
+</li>
+</ol>
 </div>
+<div class="sidebarblock">
+<div class="content">
 <div class="paragraph">
-<p>Morton curves map multidimensional data to one dimension while preserving the locality of the data points. They can be considered as a special 1-dimensional path traversing multidimensional data. Displayed below is an example of a Z-order curve (also known as a Morton curve) in a two-dimensional plane.</p>
+<p><strong>Morton curves</strong> map multidimensional data to one dimension while preserving the locality of the data points. They can be considered as a special 1-dimensional path traversing multidimensional data. Displayed below is an example of a Z-order curve (also known as a Morton curve) in a two-dimensional plane. The curve is constructed by interleaving the binary representations of the x and y coordinates of the data points. The resulting curve is continuous and preserves the locality of the data points, meaning that nearby points in the multidimensional space are also nearby in the one-dimensional space. This property is very useful for spatial indexing and spatial data structures, such as during the construction process of BVHs.</p>
+</div>
+</div>
 </div>
 <div class="imageblock">
 <div class="content">
 <img src="_images/morton.png" alt="morton" width="250px">
 </div>
 </div>
-</td>
-</tr>
-</table>
-</div>
 <div class="paragraph">
 <p>These can be defined thanks to various algorithms presented on
 <a href="https://developer.nvidia.com/blog/thinking-parallel-part-iii-tree-construction-gpu/">NVIDIA&#8217;s website</a>.</p>
 </div>
 </div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_construction_optimization"><a class="anchor" href="#_construction_optimization"></a>4. Construction Optimization</h2>
-<div class="sectionbody">
 <div class="sect2">
-<h3 id="_spatial_splits"><a class="anchor" href="#_spatial_splits"></a>4.1. Spatial Splits</h3>
-<div class="paragraph">
-<p>Performing the spatial splits in an optimized way is crucial to the performance of the BVH. In fact, this is deeply related to the BVH&#8217;s layout, which is the way the BVH is stored in memory, hence having a strong impact on it&#8217;s construction time, the resulting quality of the BVH, and the traversal performance. The first step is to choose the splitting algorithm, and more importantly the separating axes.</p>
-</div>
-<div class="sect3">
-<h4 id="_longest_axis"><a class="anchor" href="#_longest_axis"></a>4.1.1. Longest Axis</h4>
+<h3 id="_longest_axis"><a class="anchor" href="#_longest_axis"></a>4.5. Longest Axis</h3>
 <div class="paragraph">
 <p>One straightforward approach is to choose the axis with the longest extent of the bounding volume as the separating axis. This can help effectively divide the scene along its largest dimension, potentially leading to more balanced partitions.</p>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_axis_cycling"><a class="anchor" href="#_axis_cycling"></a>4.1.2. Axis Cycling</h4>
+<div class="sect2">
+<h3 id="_axis_cycling"><a class="anchor" href="#_axis_cycling"></a>4.6. Axis Cycling</h3>
 <div class="paragraph">
 <p>Another method involves cycling through the three axes (X, Y, Z) and selecting the next axis in a cyclic manner for each spatial split. This approach ensures that the splitting axes are evenly distributed and can help maintain overall balance in the BVH construction.  This is the approach proposed by Luca Berti, presented in the original code of this project, like seen during the call to the recursive build function:</p>
 </div>
-<div class="imageblock">
+<div class="listingblock">
 <div class="content">
-<img src="_images/codesnippet.png" alt="codesnippet">
+<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">node-&gt;buildInternalNode(current_parent,(cut_dimension+1)%nDim,
+                                        recursiveBuild( node, (cut_dimension+1)%nDim, start_index_primitive, mid, orderedPrims),
+                                        recursiveBuild( node, (cut_dimension+1)%nDim, mid, end_index_primitive, orderedPrims));</code></pre>
 </div>
 </div>
 <div class="paragraph">
 <p>The 2nd value representing the cutting dimension is cycled between 0, 1 and 2, representing the x, y and z axes of our 3 dimensional euclidean space, by using <code>(cut_dimension+1)%nDim</code> in the recursive calls. At each call, it is incremented by 1, enabling a different splitting axis to be used at <strong>each level</strong> of the tree. After choosing the splitting axis, the median value along that axis is computed and used as the splitting position, also know as a median cut, discussed right below.</p>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_median_cut"><a class="anchor" href="#_median_cut"></a>4.1.3. Median Cut</h4>
+<div class="sect2">
+<h3 id="_median_cut"><a class="anchor" href="#_median_cut"></a>4.7. Median Cut</h3>
 <div class="paragraph">
 <p>The median cut strategy involves computing the median value along a specific axis and using it as the splitting position. This method aims to divide the scene into two halves containing an equal number of objects, which can help achieve good load balancing. This is implemented in the following line of the recursive build method, when calling the <code>std::nth_element</code> function:</p>
 </div>
-<div class="imageblock">
+<div class="listingblock">
 <div class="content">
-<img src="_images/mediancut.png" alt="mediancut" width="800px">
-</div>
+<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">auto mid = (start_index_primitive + end_index_primitive) / 2;
+std::nth_element(&amp;M_primitiveInfo[start_index_primitive], &amp;M_primitiveInfo[mid],
+        &amp;M_primitiveInfo[end_index_primitive-1]+1,
+            [cut_dimension](const BVHPrimitiveInfo &amp;a, const BVHPrimitiveInfo &amp;b) {
+                return a.M_centroid[cut_dimension] &lt; b.M_centroid[cut_dimension];
+            });</code></pre>
 </div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_cost_functions"><a class="anchor" href="#_cost_functions"></a>4.2. Cost Functions</h3>
+<h3 id="_cost_functions"><a class="anchor" href="#_cost_functions"></a>4.8. Cost Functions</h3>
 <div class="paragraph">
 <p>The quality of a particular BVH can be estimated in terms of the expected number of operations needed for finding the nearest intersection with a given ray. It can be estimated thanks to the recurrence equation:</p>
 </div>
@@ -500,7 +545,7 @@ c_{T}+\sum_{N_c}{P(N_{c}|N)c(N_{c})} &amp; c_{I}|N|
 </div>
 </div>
 <div class="sect3">
-<h4 id="_surface_area_heuristic_sah"><a class="anchor" href="#_surface_area_heuristic_sah"></a>4.2.1. Surface Area Heuristic (SAH)</h4>
+<h4 id="_surface_area_heuristic_sah"><a class="anchor" href="#_surface_area_heuristic_sah"></a>4.8.1. Surface Area Heuristic (SAH)</h4>
 <div class="paragraph">
 <p>As mentioned earlier, the SAH criterion can also be used to determine the separating axis. It evaluates the cost of each axis based on the surface area of the resulting bounding volumes and chooses the axis with the lowest cost.</p>
 </div>
@@ -524,87 +569,18 @@ c_{T}+\sum_{N_c}{P(N_{c}|N)c(N_{c})} &amp; c_{I}|N|
 <p>Where \(N_i\) and \(N_l\)  respectively denote interior and leaf nodes of a subtree with root \(N\).
 The problem of finding an optimal BVH is believed to be NP-hard. But these assumptions are unrealistic and thus several corrections have been proposed.</p>
 </div>
-<div class="listingblock">
-<div class="content">
-<pre>ADD BENCHMARKS WHEN IMPLEMENTED</pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_parallelization"><a class="anchor" href="#_parallelization"></a>4.3. Parallelization</h3>
-<div class="sect3">
-<h4 id="_parallel_on_demand_construction_algorithm"><a class="anchor" href="#_parallel_on_demand_construction_algorithm"></a>4.3.1. Parallel on-demand construction algorithm</h4>
-<div class="paragraph">
-<p>Introduced by Vinkler et al., it&#8217;s a parallel on-demand construction on the GPU, building only those parts that are visited during the traversal. Since we are using static geometries to compute our shading masks, the BVH should only be built once and used for several traversals. Despite its logical simplicity, it would be great being able to leverage the different memories available on the GPU to store the BVH in a more efficient way, for example on the constant memory, which is a high performance read-only memory. The storage methods will be discussed in the <a href="#_bvh_layout">BVH Layout</a> section.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_parallelization_of_the_construction_algorithm"><a class="anchor" href="#_parallelization_of_the_construction_algorithm"></a>4.3.2. Parallelization of the construction algorithm</h4>
-<div class="listingblock">
-<div class="content">
-<pre>ADD EXPLANATION ON HOW TO PARALLELIZE THE CONSTRUCTION ALGORITHM AND SHOW IMPLEMENTATION</pre>
-</div>
-</div>
 </div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_bvh_layout"><a class="anchor" href="#_bvh_layout"></a>5. BVH Layout</h2>
+<h2 id="_layout"><a class="anchor" href="#_layout"></a>5. Layout</h2>
 <div class="sectionbody">
-<div class="sect2">
-<h3 id="_wide_bvhs"><a class="anchor" href="#_wide_bvhs"></a>5.1. Wide BVHs</h3>
-<div class="listingblock">
-<div class="content">
-<pre>ADD PROPER DEFINITION OF WIDE BVHs</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>BVHs poorly adapt to scenes with overlapping primitives of non-uniform sizes, typically difficult to separate.</p>
-</div>
-<div class="paragraph">
-<p>The use of wide BVHs implies efficient memory usage as they contain significantly fewer interior nodes than binary ones, but this also induces leveraging parallel computing resources using SIMD/SIMT (single instruction multiple data / threads) units by testing one ray against multiple bounding volumes simultaneously during the traversal.</p>
-</div>
-<div class="paragraph">
-<p>There are two classes of algorithms for building wide BVHs. The first class relies on an already existing binary BVH, which is converted to a wide BVH by discarding interior nodes. The second class directly builds a wide BVH during construction. These will not be discussed here.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_compact_representation_for_memory_savings"><a class="anchor" href="#_compact_representation_for_memory_savings"></a>5.2. Compact Representation for Memory Savings</h3>
-<div class="paragraph">
-<p>The memory footprint of a BVH (Bounding Volume Hierarchy) grows substantially with the expansion of the scene&#8217;s scale. This can give rise to significant complications when executing traversal algorithms on memory-constrained GPUs, which possess limited memory resources at their disposal. In order to address this issue, we can try minimizing the information&#8217;s size contained in each node, such as compressing complex geometric data using bounding boxes and vertex coordinates with reduced precision or even representing mesh triangle connectivity using triangle strips.</p>
-</div>
-<div class="exampleblock tip">
-<div class="content">
-<div class="paragraph">
-<p>Triangle Strips</p>
-</div>
-<div class="paragraph">
-<p>Triangle strips refer to a method used for simplifying the representation of polygonal meshes. In order to reduce the computational costs, better management of the mesh data can lead to significant efficiency improvements. A triangle strip is a series of connected triangles that share vertices, allowing for more efficient memory usage. By storing the shared vertices of these connected triangles, the overall number of vertices needed to define the triangles can be significantly reduced, hence rendering more efficiently and using less memory.</p>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_reduced_precision"><a class="anchor" href="#_reduced_precision"></a>5.2.1. Reduced Precision</h4>
-<div class="paragraph">
-<p>One way of reducing precision would be the use of <strong><strong>Hierarchical Mesh Quantization</strong></strong>, using a single unified data structure for the BVH&#8217;s <strong>and</strong> triangle&#8217;s storage, achieving a high compression rate by quantizing each vertex of the triangle in a leaf node as a local offset of the leaf bounding box.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_triangle_connectivity"><a class="anchor" href="#_triangle_connectivity"></a>5.2.2. Triangle Connectivity</h4>
-<div class="paragraph">
-<p>Ray-Strips use a two-level data structure (meaning, for example, that one type of data structure is used as the Top-Level Acceleration Structure, each leaf containing, for example, strips or another BVH). Several algorithms can be used to generate the strips (SAH-aware generator such as Strip-RT, generating longer strips with higher spatial coherence, HMQ compresses vertex connectivity by storing short indexed strips containing up to a certain threshold of triangles in each leaf node).</p>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_the_trees_storage_format"><a class="anchor" href="#_the_trees_storage_format"></a>5.3. The Tree&#8217;s Storage Format</h3>
 <div class="paragraph">
 <p>After successfully constructing the tree in an optimized way, it is important to note that both optimizing the traversal code and the tree&#8217;s representation itself are very important to see an increase in performance. Two obvious ways of dealing with that are to minimize the size of the data structures involved and to rearrange the data in a more cache-friendly way to reduce time for the search of relevant information (for example, it would be better to structure the array holding the pointers in such a way to minimize the time spent during traversal).</p>
 </div>
-<div class="sect3">
-<h4 id="_array_representation"><a class="anchor" href="#_array_representation"></a>5.3.1. Array Representation</h4>
+<div class="sect2">
+<h3 id="_array_representation"><a class="anchor" href="#_array_representation"></a>5.1. Array Representation</h3>
 <div class="paragraph">
 <p>Let&#8217;s look at a natural way of structuring the tree by mapping its nodes in a breadth-first level-by-level manner:</p>
 </div>
@@ -628,8 +604,8 @@ array[3] = *(root-&gt;left-&gt;left);</code></pre>
 </div>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_preorder_traversal_order"><a class="anchor" href="#_preorder_traversal_order"></a>5.3.2. Preorder Traversal Order</h4>
+<div class="sect2">
+<h3 id="_preorder_traversal_order"><a class="anchor" href="#_preorder_traversal_order"></a>5.2. Preorder Traversal Order</h3>
 <div class="paragraph">
 <p>When preordering them in traversal order, the left child will always follow its parent, and only one link is needed to point to the right child.</p>
 </div>
@@ -677,8 +653,8 @@ int PreorderOutput(Tree *t, Tree n[], int i)
 <p>Flattening the tree in this way allows us to store the tree in a single array, with each node containing a pointer to its right child and a flag indicating whether it has a left child or not. This way, we can easily traverse the tree by following the right child pointers and using the left child flags to determine whether we should follow the left child or not and avoid the need for a stack and storage of 2 pointers per node (only one is necessary). This method is also cache-friendly since the nodes are stored in a linear array.</p>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_cache_friendly_structures"><a class="anchor" href="#_cache_friendly_structures"></a>5.3.3. Cache-friendly Structures</h4>
+<div class="sect2">
+<h3 id="_cache_friendly_structures"><a class="anchor" href="#_cache_friendly_structures"></a>5.3. Cache-friendly Structures</h3>
 <div class="paragraph">
 <p>When using modern architecture, execution time is mostly limited by cache issues when fetching data from memory. One possible way of adopting a cache-friendlier solution would be by merging the sets of binary tree nodes into a 'tri-node' containing the parent and its children, preventing it from needing internal links. Below we can see an example representing a complete 4-level binary tree with 14 internal links with a 2-level tri-node tree storing only 4 internal links. Even better, this representation can also be combined with other optimizing structures seen before.</p>
 </div>
@@ -693,12 +669,297 @@ int PreorderOutput(Tree *t, Tree n[], int i)
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_traversal"><a class="anchor" href="#_traversal"></a>6. Traversal</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_stack_based_algorithms"><a class="anchor" href="#_stack_based_algorithms"></a>6.1. Stack-Based Algorithms</h3>
+<div class="sect3">
+<h4 id="_definition_2"><a class="anchor" href="#_definition_2"></a>6.1.1. Definition</h4>
+
+</div>
+<div class="sect3">
+<h4 id="_algorithm"><a class="anchor" href="#_algorithm"></a>6.1.2. Algorithm</h4>
+
+</div>
+<div class="sect3">
+<h4 id="_summary"><a class="anchor" href="#_summary"></a>6.1.3. Summary</h4>
+
+</div>
+</div>
+<div class="sect2">
+<h3 id="_stack_less_algorithms"><a class="anchor" href="#_stack_less_algorithms"></a>6.2. Stack-Less Algorithms</h3>
+<div class="sect3">
+<h4 id="_definition_3"><a class="anchor" href="#_definition_3"></a>6.2.1. Definition</h4>
+<div class="paragraph">
+<p>Traversing a ray through a bounding volume hierarchy is usually carried out in a recursive manner, therefore making it maintain a full stack per ray, which rapidly becomes very costly. Several stack-less algorithms exist, however they have to perform infrequent restarts of the traversal from the root or traverse more nodes than their stack-based counterparts.</p>
+</div>
+<div class="paragraph">
+<p>Many reasons have pushed researches in this field, such as:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>efficient memory usage:</strong> since stack-less algorithms don&#8217;t require keeping track of the traversal state. This is critical when implementing it on GPUs, where memory is very limited</p>
+</li>
+<li>
+<p><strong>coherency:</strong> these algorithms can be more coherent in terms of memory access patterns, since they have more predictable behaviors</p>
+</li>
+<li>
+<p><strong>predictability:</strong> predictable performance due lack of deep recursion possibilities, mostly occurring when applying a stack-based algorithm on a unbalanced BVH.</p>
+</li>
+<li>
+<p><strong>parallelism:</strong> since they do not require to push and pop from a stack, these methods offer rich parallelization capabilities</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The presented algorithm presents a stack-less iterative method traversing the BVH structure in the exact same order as stack-based ones, mainly thanks to added parent-pointers stored within each node and thus performing only one ray-box intersection test per internal node.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_assumptions_to_be_made"><a class="anchor" href="#_assumptions_to_be_made"></a>6.2.2. Assumptions to be made</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>use of a binary BVH, in which all primitives are stored in leaf nodes, and in which each inner node has exactly two children (so-called siblings)</p>
+</li>
+<li>
+<p>there is an efficient way of determining each node&#8217;s parent and sibling</p>
+</li>
+<li>
+<p>for each inner node there is a unique traversal order in which it&#8217;s children are traversed, possibly varying from ray to ray.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_algorithm_2"><a class="anchor" href="#_algorithm_2"></a>6.2.3. Algorithm</h4>
+<div class="paragraph">
+<p>A commonly-used way of storing the parent&#8217;s information is to store an explicit parent pointer for each node, done either by squeezing the parent pointer into unused parts of the node or by storing them directly in a separate array of parent pointers.</p>
+</div>
+<div class="paragraph">
+<p>For traversal order, a first method would be to store for each node the coordinate axis along which the builder split the parent node and use the ray&#8217;s direction sign in this dimension to determine the traversal order. On the other hand, we can directly use the dimension in which the nodes' centroids are widest apart. Finally, we could also directly compute the distance to the sibling&#8217;s bounding boxes, inferring many computations.</p>
+</div>
+<div class="paragraph">
+<p>First, in order to fully understand the methods benefits, let us understand all the underlyings of recursive algorithms. How does the traversal algorithm work?
+After having successfully intersected the parent, the traversal goes to the <code>nearChild</code> (found with any type of method), and does a ray-box test for this node. If the node is missed, <code>farChild</code> is processed, But if the test was successful, it continues by intersecting its primitives (if the node is a leaf), or by recursively entering the node&#8217;s subtree (in case it&#8217;s an inner node). Once <code>nearChild</code> is fully processed, traversal resumes with <code>farChild</code> exactly and the same sequence of events takes place.</p>
+</div>
+<div class="paragraph">
+<p>This already gives us an overlook of the simple deterministic automaton algorithm. In fact, we can start and make a parallel between the three ways of how any given node can be traversed and the tree states of the algorithm. During recursive traversal, a node can either be traversed:
+- from its parents (case <code>fromParent</code>): we know that we are entering <code>nearChild</code>. We traverse the current node: if it&#8217;s missed, we proceed with a <code>fromSibling</code> case and if not, either it&#8217;s a leaf node and we intersect its primitives, or it&#8217;s an inner node and we continue with its subtree.
+- from its siblings (case <code>fromSibling</code>): we are entering <code>farChild</code> and we are traversing this node for the first time. If it&#8217;s missed, we back-track to its parent. Otherwise we intersect it&#8217;s primitives against the ray if it&#8217;s a leaf node and proceed to parent, and if not we enter the current node&#8217;s subtree performing a <code>fromParent</code> step.
+- from one of its children (case <code>fromChild</code>): the current node was already tested during the top to bottom phase, it <strong>should not</strong> be re-tested. The next on the list is either the current node&#8217;s <code>farChild</code> or its parent</p>
+</div>
+<div class="paragraph">
+<p>Algorithm Developed by the Authors</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">void traverse(ray, node) {
+	char state = fromParent;
+	while (true) {
+		switch (state) {
+			case fromChild:
+				if (current == root) return; // finished
+				if (current == nearChild(parent(current))){
+					current = sibling(current);
+					state = fromSibling; // (1a)
+				}
+				else {
+					current = parent(current);
+					state = fromChild; // (1b)
+				}
+				break;
+			case fromSibling:
+				if (boxtest(ray, current) == MISSED) {
+					current = parent(current);
+					state = fromChild; // (2a)
+					}
+				else if (isLeaf(current)) {
+					// ray-primite intersection tests
+					processLeaf(ray, current);
+					current = parent(current);
+					state = fromChild; // (2b)
+				}
+				else {
+					current = nearChild(current);
+					state = fromParent; //2a
+				}
+				break;
+			case fromParent:
+				if (boxtest(ray, current) == MISSED) {
+					current = sibling(current);
+					state. = fromSibling; // (3a)
+				}
+				else if (isLeaf(current)) {
+					// ray-primitive intersection tests
+					processLeaf(current);
+					current = sibling(current);
+					state = fromSibling; // (3b)
+				}
+				else {
+					current = nearChild(current);
+					state = fromParent; // (3a)
+				}
+				break;
+		}
+	}
+}</code></pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/BVlayers.png" alt="BVlayers">
+</div>
+</div>
+<div class="paragraph">
+<p>And such spacial divisions can lead to a similar tree as the following:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/BVlayerstree.png" alt="BVlayerstree">
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_stack_less_gpu_friendly_algorithm"><a class="anchor" href="#_stack_less_gpu_friendly_algorithm"></a>6.3. Stack-less GPU friendly Algorithm</h3>
+<div class="paragraph">
+<p>When looking ate the storage needed for the computation of ShadingMasks, we can pass the whole BVH structure and make a copy of it directly on the GPU&#8217;s shared memory. This way, we can avoid the need to transfer the BVH structure from the CPU to the GPU constantly, which can be a very expensive operation. Using such a method may cause problems depending on the size of the BVH structure, since the GPU&#8217;s shared memory is limited. However, we can use the BVH structure&#8217;s size as a parameter to determine whether or not we should use this method. If the BVH structure is too big, we can implement smaller structures to hold the BVH, preordering the nodes in flattened 1D array&#8217;s only containing useful information (and not all methods and attributes of the BVH structure). This way, we can reduce the size of the BVH structure and make it fit in the GPU&#8217;s shared memory. And since the traversal is performed <code>nRays * nElements</code> times (more than 5000 rays per element), we can compute the array&#8217;s once by indexing the nodes, its children and its parent.</p>
+</div>
+<div class="sect3">
+<h4 id="_copy_by_value"><a class="anchor" href="#_copy_by_value"></a>6.3.1. Copy-by-value</h4>
+<div class="paragraph">
+<p>As presented on <a href="https://developer.nvidia.com/blog/thinking-parallel-part-ii-tree-traversal-gpu/">NVIDIA&#8217;s website</a>, we can directly create a copy of the wanted BVH structure, enabling it to be able to access all needed functions preceded with <code><em>device</em></code>. If the memory allows it we can use the state-based traversal algorithm presented above. NVIDIA&#8217;s website presents the following code:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">__device__ void traverseIterative( CollisionList&amp; list,
+                                   BVH&amp; bvh,
+                                   AABB&amp; queryAABB,
+                                   int queryObjectIdx)
+{
+    // Allocate traversal stack from thread-local memory,
+    // and push NULL to indicate that there are no postponed nodes.
+    NodePtr stack[64];
+    NodePtr* stackPtr = stack;
+    *stackPtr++ = NULL; // push
+
+    // Traverse nodes starting from the root.
+    NodePtr node = bvh.getRoot();
+    do
+    {
+        // Check each child node for overlap.
+        NodePtr childL = bvh.getLeftChild(node);
+        NodePtr childR = bvh.getRightChild(node);
+        bool overlapL = ( checkOverlap(queryAABB,
+                                       bvh.getAABB(childL)) );
+        bool overlapR = ( checkOverlap(queryAABB,
+                                       bvh.getAABB(childR)) );
+
+        // Query overlaps a leaf node =&gt; report collision.
+        if (overlapL &amp;&amp; bvh.isLeaf(childL))
+            list.add(queryObjectIdx, bvh.getObjectIdx(childL));
+
+        if (overlapR &amp;&amp; bvh.isLeaf(childR))
+            list.add(queryObjectIdx, bvh.getObjectIdx(childR));
+
+        // Query overlaps an internal node =&gt; traverse.
+        bool traverseL = (overlapL &amp;&amp; !bvh.isLeaf(childL));
+        bool traverseR = (overlapR &amp;&amp; !bvh.isLeaf(childR));
+
+        if (!traverseL &amp;&amp; !traverseR)
+            node = *--stackPtr; // pop
+        else
+        {
+            node = (traverseL) ? childL : childR;
+            if (traverseL &amp;&amp; traverseR)
+                *stackPtr++ = childR; // push
+        }
+    }
+    while (node != NULL);
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>But we will optimize it by using the state-based traversal algorithm presented above. Implementing it in CUDA will be similar, leveraging the complex BVH structure containing all the needed functions and attributes. We will also use the <code><em>device</em></code> keyword to make the functions accessible from the GPU.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_preordering_algorithm"><a class="anchor" href="#_preordering_algorithm"></a>6.3.2. Preordering Algorithm</h4>
+<div class="paragraph">
+<p>If the memory is not big enough to store the whole BVH structure, we can use a preordering algorithm to store the BVH structure in a flattened 1D array. This way, we can store only the needed information for the traversal, and not the whole BVH structure. This method is presented in 'Real-Time Collision Detection' by Christer Ericson. The algorithm is as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">int PreorderOutput(Tree *t, Tree n[], int i)
+{
+	// Implement a simple stack of parent nodes.
+	// Note that the stack pointer ‘sp’ is automatically reset between calls
+	const int STACK_SIZE = 100;
+	static int parentStack[STACK_SIZE];
+	static int sp = 0;
+	// Copy over contents from tree node to PTO tree
+	n[i].nodeData = t-&gt;nodeData;
+	// Set the flag indicating whether there is a left child
+	n[i].hasLeft = t-&gt;left != NULL;
+	// If node has right child, push its index for backpatching
+	if (t-&gt;right) {
+		assert(sp &lt; STACK_SIZE);
+		parentStack[sp++] = i;
+	}
+	// Now recurse over left part of tree
+	if (t-&gt;left)
+		i = PreorderOutput(t-&gt;left, n, i + 1);
+	if (t-&gt;right) {
+		// Backpatch right-link of parent to point to this node
+		int p = parentStack[--sp];
+		n[p].rightPtr = &amp;n[i + 1];
+		// Recurse over right part of tree
+		i = PreorderOutput(t-&gt;right, n, i + 1);
+	}
+	// Return the updated array index on exit
+	return i;
+}
+
+struct Tree {
+	NodeData nodeData;
+	bool hasLeft;
+	Tree *rightPtr;
+};</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A stack is only used once, in order to identify the order of traversal, but will never be used on GPUs.</p>
+</div>
+<div class="paragraph">
+<p>This representation also leverages the use of pointers, only using one to point to the right child, which would be accessed only later during traversal since we use a <code>depth-first</code> search if the intersection test was successful for a given node.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_conclusion"><a class="anchor" href="#_conclusion"></a>6.4. Conclusion</h3>
+<div class="paragraph">
+<p>When dealing with the computation of shading masks, view factors or radiative transport, we use static geometry to realistically represent the scene. Only few topological changes have to be taken into account, hence the decision of also optimizing the build for the BVH tree&#8217;s quality in order to reduce traversal operations. Even if the construction speed is important, we are not developing a real-time application, but rather trying to compute physically realistic results. We can build the BVH once and reuse it for multiple ray tracing operations without the need to update or rebuild the BVH. This approach can significantly improve performance, as constructing the BVH is a computationally expensive operation.</p>
+</div>
+<div class="paragraph">
+<p>Even when taking into account the changes occurring due to the seasonality of the chosen districts and cities (french cities are subdued to changing weather conditions, leaves are falling and trees do not cast as big of a shadow in winter than in summer).</p>
+</div>
+</div>
+</div>
 </div>
 <div class="sect1">
-<h2 id="_leveraging_ray_locality"><a class="anchor" href="#_leveraging_ray_locality"></a>6. Leveraging Ray Locality</h2>
+<h2 id="_optimization"><a class="anchor" href="#_optimization"></a>7. Optimization</h2>
 <div class="sectionbody">
+<div class="sect2">
+<h3 id="_software"><a class="anchor" href="#_software"></a>7.1. Software</h3>
+
+</div>
+<div class="sect2">
+<h3 id="_hardware"><a class="anchor" href="#_hardware"></a>7.2. Hardware</h3>
 <div class="paragraph">
-<p>Spatial data structures exploit the spatial locality of scene primitives. But this isn&#8217;t the only way of leveraging spatial locality. To further accelerate the whole process, we could map rays to interior nodes deeper in the tree, skipping top-level nodes. A major caveat of such methods is that there is no guarantee that the found intersection corresponds to the closest one. But when computing shading masks, the lack of distance consideration is not a drawback. Instead, we solely focus on determining whether an object is present along the path of the ray.</p>
+<p>Spatial data structures exploit the spatial locality of scene primitives. But this isn&#8217;t the only way of leveraging spatial locality. To further accelerate the whole process, we could map rays to interior nodes deeper in the tree during the traversal, skipping top-level nodes. A major caveat of such methods is that there is no guarantee that the found intersection corresponds to the closest one. But when computing shading masks, the lack of distance consideration is not a drawback. Instead, we solely focus on determining whether an object is present along the path of the ray.</p>
 </div>
 <div class="paragraph">
 <p>Another way to optimize the ray generation would be to exploit the graphics card&#8217;s instancing of objects, enabling it to create multiple copies of one object in record time. Benthin and Wald decided that, instead of tracing the rays sequentially, they would generate bounding frusta of coherent rays simultaneously harnessing the potential of a SIMD unit (as many rays in one frustum as the SIMD unit is wide).</p>
@@ -711,19 +972,13 @@ int PreorderOutput(Tree *t, Tree n[], int i)
 <img src="_images/Nvidia-GPU-memory-structure.png" alt="600">
 </div>
 </div>
-<div class="listingblock">
-<div class="content">
-<pre>ADD DETAILED EXPLANATION OF THE PROCESS AND STRUCTURES THAT WILL ARE IMPLEMENTED ON GPU</pre>
-</div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_conclusion"><a class="anchor" href="#_conclusion"></a>7. Conclusion</h2>
+<h2 id="_bvh_variants_and_extensions"><a class="anchor" href="#_bvh_variants_and_extensions"></a>8. BVH Variants and Extensions</h2>
 <div class="sectionbody">
-<div class="paragraph">
-<p>They surveyed many interesting papers varying from basic algorithms to more complex ones. When dealing with static geometries and to have an optimized algorithm, the use of top-down construction algorithms using parallelized binning with the SAH-based cost function is recommended for its ease of implementation and the multithreading capabilities alongside SIMD. Significant performance gains can be obtained when combining this method with optimized spatial splits during the construction process, more adapted to handling diagonal, overlapping, or non-uniform-sized primitives. In order to improve the BVH&#8217;s quality, optimization algorithms such as tree rotations, subtree collapsing, or insertion-based optimizations could be used.</p>
-</div>
+
 </div>
 </div>
 </article>

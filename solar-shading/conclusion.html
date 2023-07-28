@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Untitled :: Solar Shading</title>
-    <link rel="canonical" href="https://feelpp.github.io/solar-shading/solar-shading/bv.html">
+    <link rel="canonical" href="https://feelpp.github.io/solar-shading/solar-shading/conclusion.html">
     <meta name="generator" content="Antora 3.1.4">
     <link rel="stylesheet" href="../_/css/site.css">
 <link rel="icon" href="../_/img/favicon.ico" type="image/x-icon">
@@ -166,22 +166,16 @@ MathJax.Hub.Config({
     <a class="nav-link" href="introduction.html">Introduction</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="rng.html">Random Number Generator</a>
+    <a class="nav-link" href="chap1.html">Chapter 1</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="chap2.html">Chapter 2</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="chap3.html">Chapter 3</a>
   </li>
   <li class="nav-item is-current-page" data-depth="2">
-    <a class="nav-link" href="bv.html">Bounding Volumes</a>
-  </li>
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="bvh.html">Bounding Volume Hierarchy</a>
-  </li>
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="traversal.html">Traversal Algortihms</a>
-  </li>
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="raytracing.html">Raytracing</a>
-  </li>
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="tools.html">Tools</a>
+    <a class="nav-link" href="conclusion.html">Conclusion</a>
   </li>
 </ul>
   </li>
@@ -213,12 +207,12 @@ MathJax.Hub.Config({
     <li><a href="index.html">Feel++ Template Project</a></li>
     <li><a href="index.html">Introduction</a></li>
     <li><a href="rapport.html">Rapport</a></li>
-    <li><a href="bv.html">Bounding Volumes</a></li>
+    <li><a href="conclusion.html">Conclusion</a></li>
   </ul>
 </nav>
 
   
-    <div class="edit-this-page"><a href="https://github.com/feelpp/solar-shading/edit/7-add-project-report-to-antora-pages/docs/modules/ROOT/pages/bv.adoc">Edit this Page</a></div>
+    <div class="edit-this-page"><a href="https://github.com/feelpp/solar-shading/edit/7-add-project-report-to-antora-pages/docs/modules/ROOT/pages/conclusion.adoc">Edit this Page</a></div>
   
   <div class="page-downloads">
   <span class="label">Download as</span>
@@ -238,55 +232,7 @@ MathJax.Hub.Config({
   <div class="toc-menu"></div>
 </aside>
 <article class="doc">
-<div class="sect1">
-<h2 id="_preliminaries"><a class="anchor" href="#_preliminaries"></a>1. Preliminaries</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p><strong>Bounding Volumes:</strong> it&#8217;s a single simple volume encapsulating one or several objects of more complex nature. The idea is that they have way cheaper overlap tests than the complex ones, very useful when calculating the Ray-Object intersections during traversal. This will result in very fast overlapping rejections.</p>
-</div>
-<div class="imageblock">
-<div class="content">
-<img src="_images/BoundingVolumes.png" alt="BoundingVolumes">
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_axis_aligned_bounding_boxes"><a class="anchor" href="#_axis_aligned_bounding_boxes"></a>2. Axis-Aligned Bounding Boxes</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>There are 3 main manners of defining such boxes. The overlap tests are straightforward: 2 AABBs only overlap if they overlap on all 3 (or 2 in 2D) axes.</p>
-</div>
-<div class="imageblock">
-<div class="content">
-<img src="_images/AABBs.png" alt="500">
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>ADD CODE SAMPLES FOR THE INTERSECTION TESTS</pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_oriented_bounding_boxes"><a class="anchor" href="#_oriented_bounding_boxes"></a>3. Oriented Bounding Boxes</h2>
-<div class="sectionbody">
-<div class="listingblock">
-<div class="content">
-<pre>ADD COMPLETE DEFINITION AND INTERSECTION TESTS</pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_summary"><a class="anchor" href="#_summary"></a>4. Summary</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Since we want to be able to represent in a realistic manner our buildings, trees, etc., and the existing architecture is already a triangular mesh, using these will save time. These are simpler forms than the buildings and several methods exist to check for ray-triangle collision. Having the center of the triangle, its boundaries and orientation, using parametric equations for the rays path can indicate if a collision appears. Such methods are also available when coding in NVidia&#8217;s Optix API using their ray-tracing capabilities in C++ and CUDA. Using triangles is also recommended for the OptiX integration since the Model represents either an acceleration structure or a set of triangles, in this instance our buildings. Refer to the <a href="https://raytracing-docs.nvidia.com/optix6/guide_6_5/index.html#prime#optix-prime-low-level-ray-tracing-api">Optix Programming Guide</a> or to <a href="#raytracing.adoc">Ray-Tracing</a> for more information.</p>
-</div>
-</div>
-</div>
+
 </article>
   </div>
 </main>

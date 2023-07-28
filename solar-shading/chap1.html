@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>RNG&#8217;s :: Solar Shading</title>
-    <link rel="canonical" href="https://feelpp.github.io/solar-shading/solar-shading/rng.html">
+    <title>Chapter 1 - Shading Masks :: Solar Shading</title>
+    <link rel="canonical" href="https://feelpp.github.io/solar-shading/solar-shading/chap1.html">
     <meta name="generator" content="Antora 3.1.4">
     <link rel="stylesheet" href="../_/css/site.css">
 <link rel="icon" href="../_/img/favicon.ico" type="image/x-icon">
@@ -166,22 +166,16 @@ MathJax.Hub.Config({
     <a class="nav-link" href="introduction.html">Introduction</a>
   </li>
   <li class="nav-item is-current-page" data-depth="2">
-    <a class="nav-link" href="rng.html">Random Number Generator</a>
+    <a class="nav-link" href="chap1.html">Chapter 1</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="bv.html">Bounding Volumes</a>
+    <a class="nav-link" href="chap2.html">Chapter 2</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="bvh.html">Bounding Volume Hierarchy</a>
+    <a class="nav-link" href="chap3.html">Chapter 3</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="traversal.html">Traversal Algortihms</a>
-  </li>
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="raytracing.html">Raytracing</a>
-  </li>
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="tools.html">Tools</a>
+    <a class="nav-link" href="conclusion.html">Conclusion</a>
   </li>
 </ul>
   </li>
@@ -213,12 +207,12 @@ MathJax.Hub.Config({
     <li><a href="index.html">Feel++ Template Project</a></li>
     <li><a href="index.html">Introduction</a></li>
     <li><a href="rapport.html">Rapport</a></li>
-    <li><a href="rng.html">Random Number Generator</a></li>
+    <li><a href="chap1.html">Chapter 1</a></li>
   </ul>
 </nav>
 
   
-    <div class="edit-this-page"><a href="https://github.com/feelpp/solar-shading/edit/7-add-project-report-to-antora-pages/docs/modules/ROOT/pages/rng.adoc">Edit this Page</a></div>
+    <div class="edit-this-page"><a href="https://github.com/feelpp/solar-shading/edit/7-add-project-report-to-antora-pages/docs/modules/ROOT/pages/chap1.adoc">Edit this Page</a></div>
   
   <div class="page-downloads">
   <span class="label">Download as</span>
@@ -238,99 +232,80 @@ MathJax.Hub.Config({
   <div class="toc-menu"></div>
 </aside>
 <article class="doc">
-<h1 class="page">RNG&#8217;s</h1>
+<h1 class="page">Chapter 1 - Shading Masks</h1>
 <div class="sect1">
-<h2 id="_role_and_objectives"><a class="anchor" href="#_role_and_objectives"></a>1. Role and Objectives</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>When dealing with solar shading masks computation, it&#8217;s strongly recommended to use the Monte-Carlo technic, namely during the ray-tracing part of the algorithm enabling one to backtrace the paths to find shaded locations due to the environment. But this comes at a cost, since it&#8217;s mathematically accurate only when tracing multiple rays in random directions, being the foundation of this method.</p>
-</div>
-<div class="paragraph">
-<p>Since this project is at district or even city scale, the use of a fast Random Number Generators (RNG) is necessary. Despite numerous benchmarks already been done, we decided to compare some of the fastest open-source libraries, all heavily relying on Vectorization, multi-threading or multicore processing, and performance-targeted compiling flags (such as <code>-03</code> to <code>-0fast</code>). Since Intel processors have specific instructions and extensions (such as Streaming SIMD Extensions, SSE2) and Advanced Vector Extensions (AVX), the MKL advanced Mathematics library naturally benefits of efficient vectorized operations.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_rng_speed_benchmark"><a class="anchor" href="#_rng_speed_benchmark"></a>2. RNG Speed Benchmark</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>We have to adopt rigorous coding methods, proving and explaining our reasoning behind every choice made during the internship. In order to settle on a specific method, benchmarks have to be performed.</p>
-</div>
-<div class="sect2">
-<h3 id="_available_methods"><a class="anchor" href="#_available_methods"></a>2.1. Available Methods</h3>
-<div class="paragraph">
-<p>As said, numerous methods are open-source and available to use, built upon different fundamentals. The Xoshiro-Cpp is a lightweight, high-performance random number generator known for its speed and low memory consumption. The Mersenne Twister, on the other hand, is widely used for its long period and good statistical properties. std::random provides a standardized interface for random number generation in C++, offering various generators including Mersenne Twister. Eigen::Rand is a random number generator headers library strongly relying on Eigen&#8217;s vectorization capabilities, useful for generating random matrices in numerical computations. Intel MKL offers high-performance, vectorized random number generation routines optimized for scientific and numerical computing while <code>pcg-cpp</code> is a Permuted Congruential Generator implementation balancing speed and randomness for simulations and gaming.</p>
-</div>
-<div class="paragraph">
-<p>Below you can see a first execution time comparison, using the <code>std::chrono</code> library to measure the time taken by each method to generate 1000000 random numbers. The code was compiled using different usual flags, such as <code>-O3</code>, <code>-Ofast</code>, <code>-O2</code> and <code>-O1</code>.</p>
-</div>
-<div class="imageblock">
-<div class="content">
-<img src="_images/colorcompare.png" alt="Barplot comparing execution time][600">
-</div>
-</div>
-<div class="paragraph">
-<p>We can observe that all of the presented methods, except for Eigen&#8217;s one, are outperforming the standard library.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_different_flags"><a class="anchor" href="#_different_flags"></a>2.2. Different Flags</h3>
-<div class="paragraph">
-<p>Since Intel&#8217;s oneAPI MKL library is by far the highest speed RNG, we benchmarked it using more specific flags, such as <code>march=native</code> in order to enable all the processor&#8217;s extensions, and switching between <code>sequential</code> and <code>threaded</code> modes. The results are shown below:</p>
-</div>
-<div class="imageblock">
-<div class="content">
-<img src="_images/intel.png" alt="intel" width="600">
-</div>
-</div>
-<div class="paragraph">
-<p>And below the second speed test done on Gaia, a system composeed of 192 AMD EPYC 7552 48-Core Processors. During this second benchmark, we cycled through most of the different compilation flags combinations, and the results are shown below:</p>
-</div>
-<div class="imageblock">
-<div class="content">
-<img src="_images/AMDspeed.png" alt="600">
-</div>
-</div>
-<div class="paragraph">
-<p><a href="https://caiorss.github.io/C-Cpp-Notes/compiler-flags-options.html">Here</a> is a website describing the use-cases of each compilation flag and what they do.</p>
-</div>
-<div class="paragraph">
-<p>The <code>-Ofast</code> and <code>-O3</code> flags do the following work for the user:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Loop unrolling: This optimization involves repeating the body of a loop multiple times, which reduces loop overhead and enables better parallelism.</p>
-</li>
-<li>
-<p>Code redundancy elimination: The compiler detects portions of code that are needlessly repeated and replaces them with reused references, reducing the amount of executed code.</p>
-</li>
-<li>
-<p>Vectorization: Loops are transformed to use SIMD (Single Instruction, Multiple Data) instructions to perform simultaneous operations on multiple data elements. This effectively exploits the parallel computing capabilities of modern processors.</p>
-</li>
-<li>
-<p>Loop fusion: Independent loops are merged into a single loop, reducing overhead and improving performance by reducing the number of iterations.</p>
-</li>
-<li>
-<p>Function inlining: Function calls are replaced with the body of the function itself, avoiding the overhead of function calls.
-Unused variable elimination: Variables that are not used in the code are detected and removed, reducing memory consumption.</p>
-</li>
-<li>
-<p>Arithmetic operation optimization: The compiler can perform mathematical transformations to simplify expressions and reduce the number of necessary operations.</p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_rng_quality_benchmark"><a class="anchor" href="#_rng_quality_benchmark"></a>3. RNG Quality Benchmark</h2>
+<h2 id="_thermal_aspects"><a class="anchor" href="#_thermal_aspects"></a>1. Thermal Aspects</h2>
 <div class="sectionbody">
 
 </div>
 </div>
 <div class="sect1">
-<h2 id="_conclusion"><a class="anchor" href="#_conclusion"></a>4. Conclusion</h2>
+<h2 id="_structures"><a class="anchor" href="#_structures"></a>2. Structures</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_ray_tracing"><a class="anchor" href="#_ray_tracing"></a>3. Ray Tracing</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_monte_carlo"><a class="anchor" href="#_monte_carlo"></a>4. Monte-Carlo</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_perez_all_weather_sky_model"><a class="anchor" href="#_perez_all_weather_sky_model"></a>5. Perez all-weather sky model</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The Perez All-Weather model is a commonly used mathematical model for predicting the luminance distribution of the sky under various weather conditions. This model is named after its creator, Fernando Perez, who developed it in the late 20th century.</p>
+</div>
+<div class="paragraph">
+<p>The model provides a method of representing the complex, variable nature of the sky&#8217;s appearance by taking into account several key parameters including the sun&#8217;s zenith and azimuth angles, the overall level of luminance (brightness) in the sky, the level of clearness, which describes how much the sky is dominated by the direct sunlight as opposed to the diffuse skylight and the level of turbidity, which describes the amount of aerosols or atmospheric particulates, affecting the scattering of light.</p>
+</div>
+<div class="paragraph">
+<p>The Perez model uses these parameters to generate a function that represents the luminance of the sky as a function of direction, or more precisely of the zenith angle of the considered sky element (ζ) and the angle between the sky element and the position of the sun (γ). This function is defined as follows and named 'lv' in the Perez model:</p>
+</div>
+<div class="stemblock">
+<div class="content">
+\[lv = f(\zeta, \gamma) = (1 + a \exp(\frac{b}{\cos(\zeta)})) (1 + c \exp(d \gamma) + e \cos^2(\gamma))\]
+</div>
+</div>
+<div class="paragraph">
+<p>The parameters a, b, c, d and e are determined by the level of clearness (ε) and brightness (Δ) as follows :</p>
+</div>
+<div class="stemblock">
+<div class="content">
+\[x = x_1(\epsilon) + x_2(\epsilon)Z + \Delta(x_3(\epsilon) + x_4(\epsilon)Z)\]
+</div>
+</div>
+<div class="paragraph">
+<p>Where x is any of the parameters a, b, c, d or e, Z is the zenith angle and x1, x2, x3 and x4 are constants and discrete functions of the clearness level ε. The values of these functions are given in the following table:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/PerezCoeffTable.png" alt="PerezCoeffTable">
+</div>
+</div>
+<div class="paragraph">
+<p>It&#8217;s worth mentioning that, while the Perez model is very flexible and capable of representing a wide range of sky conditions, it is a model and thus an approximation. It doesn&#8217;t perfectly represent all possible sky conditions. Furthermore, it assumes a certain level of homogeneity in the sky conditions, which may not always be the case in reality. For example, situations with localized cloud formations or rapidly changing weather conditions can be difficult to represent accurately with the model.</p>
+</div>
+<div class="paragraph">
+<p>In order to compute the model, we will need to be able to track the sun&#8217;s position in the sky. This is done using the Solar Position Algorithm (SPA) provided by the National Renewable Energy Laboratory (NREL), avialable <a href="https://midcdmz.nrel.gov/spa/">here</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_view_factors"><a class="anchor" href="#_view_factors"></a>6. View Factors</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_shading_mask_structures"><a class="anchor" href="#_shading_mask_structures"></a>7. Shading Mask Structures</h2>
 <div class="sectionbody">
 
 </div>
