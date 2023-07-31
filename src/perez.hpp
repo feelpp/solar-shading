@@ -673,6 +673,7 @@ public:
         // Loop over the hours of the day in order to compute all models 
         for (int i = 0; i < M_Time.size(); i++)
         {
+            M_SkyModel.setZero();
             int hour = M_Time[i];
             double delta = M_Brightness[i];  
             double epsilon = M_Clearness[i];  

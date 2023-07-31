@@ -40,6 +40,7 @@ feelpp_add_application(example_ShadingMasks_comparison1 SRCS example_ShadingMask
 target_include_directories(example_ShadingMasks_comparison1 PRIVATE
     ${CMAKE_SOURCE_DIR}/benchmark/extlibs/pcg-cpp/include
     ${CMAKE_SOURCE_DIR}/benchmark/extlibs/Xoshiro-cpp
+    ${CMAKE_SOURCE_DIR}/benchmark/extlibs/eigenrand
 )
 
 target_link_libraries(example_ShadingMasks_comparison1 PRIVATE
@@ -62,6 +63,7 @@ feelpp_add_application(example_ShadingMasks_comparison2 SRCS example_ShadingMask
 target_include_directories(example_ShadingMasks_comparison2 PRIVATE
     ${CMAKE_SOURCE_DIR}/benchmark/extlibs/pcg-cpp/include
     ${CMAKE_SOURCE_DIR}/benchmark/extlibs/Xoshiro-cpp
+    ${CMAKE_SOURCE_DIR}/benchmark/extlibs/eigenrand
 )
 
 target_link_libraries(example_ShadingMasks_comparison2 PRIVATE
@@ -84,6 +86,7 @@ feelpp_add_application(example_ShadingMasks_comparison3 SRCS example_ShadingMask
 target_include_directories(example_ShadingMasks_comparison3 PRIVATE
     ${CMAKE_SOURCE_DIR}/benchmark/extlibs/pcg-cpp/include
     ${CMAKE_SOURCE_DIR}/benchmark/extlibs/Xoshiro-cpp
+    ${CMAKE_SOURCE_DIR}/benchmark/extlibs/eigenrand
 )
 
 target_link_libraries(example_ShadingMasks_comparison3 PRIVATE
@@ -106,6 +109,7 @@ feelpp_add_application(example_ShadingMasks_comparison4 SRCS example_ShadingMask
 target_include_directories(example_ShadingMasks_comparison4 PRIVATE
     ${CMAKE_SOURCE_DIR}/benchmark/extlibs/pcg-cpp/include
     ${CMAKE_SOURCE_DIR}/benchmark/extlibs/Xoshiro-cpp
+    ${CMAKE_SOURCE_DIR}/benchmark/extlibs/eigenrand
 )
 
 target_link_libraries(example_ShadingMasks_comparison4 PRIVATE
@@ -129,6 +133,7 @@ feelpp_add_application(example_ShadingMasks_comparison5 SRCS example_ShadingMask
 target_include_directories(example_ShadingMasks_comparison5 PRIVATE
     ${CMAKE_SOURCE_DIR}/benchmark/extlibs/pcg-cpp/include
     ${CMAKE_SOURCE_DIR}/benchmark/extlibs/Xoshiro-cpp
+    ${CMAKE_SOURCE_DIR}/benchmark/extlibs/eigenrand
 )
 
 target_link_libraries(example_ShadingMasks_comparison5 PRIVATE
@@ -152,6 +157,7 @@ feelpp_add_application(example_ShadingMasks_comparison6 SRCS example_ShadingMask
 target_include_directories(example_ShadingMasks_comparison6 PRIVATE
     ${CMAKE_SOURCE_DIR}/benchmark/extlibs/pcg-cpp/include
     ${CMAKE_SOURCE_DIR}/benchmark/extlibs/Xoshiro-cpp
+    ${CMAKE_SOURCE_DIR}/benchmark/extlibs/eigenrand
 )
 
 target_link_libraries(example_ShadingMasks_comparison6 PRIVATE
@@ -175,6 +181,7 @@ feelpp_add_application(example_ShadingMasks_comparison7 SRCS example_ShadingMask
 target_include_directories(example_ShadingMasks_comparison7 PRIVATE
     ${CMAKE_SOURCE_DIR}/benchmark/extlibs/pcg-cpp/include
     ${CMAKE_SOURCE_DIR}/benchmark/extlibs/Xoshiro-cpp
+    ${CMAKE_SOURCE_DIR}/benchmark/extlibs/eigenrand
 )
 
 target_link_libraries(example_ShadingMasks_comparison7 PRIVATE

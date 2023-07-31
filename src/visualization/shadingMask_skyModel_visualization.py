@@ -5,48 +5,45 @@ from pathlib import Path
 import argparse
 import os
 import re
-from scipy import interpolate
+from scipy.ndimage import zoom
 
-def interpolate_to_fit(small, large):
-    x = np.arange(0, small.shape[1], 1)
-    y = np.arange(0, small.shape[0], 1)
-    f = interpolate.interp2d(x, y, small, kind='linear')
+def resample_array_to_match_shape(array, target_shape):
+    zoom_ratio = [t/s for t, s in zip(target_shape, array.shape)]
+    return zoom(array, zoom_ratio)
 
-    xnew = np.linspace(0, small.shape[1], large.shape[1])
-    ynew = np.linspace(0, small.shape[0], large.shape[0])
-    return f(xnew, ynew)
-
-def plotShadingMask(csv_filename, destination):
-
+def calculate_and_store_max(csv_filename):
     shading_test_values = np.genfromtxt(csv_filename, delimiter=',')
-    
-    # Extract the key part from the shading mask name
     shading_name = Path(csv_filename).stem
     key_part = re.search('SM_Matrix_(.*)_.*', shading_name).group(1)
 
     sky_models_directory = Path(csv_filename).parent / ".." / "skyModels"
-
+    max_value = 1e-10
     for hour in range(5, 20):
         sky_model_filename = sky_models_directory / f"SkyModel_Matrix_{key_part}_{hour}H.csv"
         if sky_model_filename.exists():
             sky_model_values = np.genfromtxt(sky_model_filename, delimiter=',')
             if shading_test_values.shape != sky_model_values.shape:
-                if np.prod(shading_test_values.shape) < np.prod(sky_model_values.shape):
-                    shading_test_values = interpolate_to_fit(shading_test_values, sky_model_values)
-                else:
-                    sky_model_values = interpolate_to_fit(sky_model_values, shading_test_values)
-
-            # Transposing the sky_model_values if it is not in the same shape as shading_test_values
-            if shading_test_values.shape != sky_model_values.shape:
-                sky_model_values = sky_model_values.T
-
+                shading_test_values = resample_array_to_match_shape(shading_test_values, sky_model_values.shape)
             result = (1 - shading_test_values ) * sky_model_values
-            
-            # calculate the maximum, but avoid zero
             max_val = np.max(result)
-            if max_val < 1e-10:
-                max_val = 1e-10
-            result /= max_val
+            if max_val > max_value:
+                max_value = max_val
+    return max_value
+
+def plotShadingMask(csv_filename, destination, max_value):
+    shading_test_values = np.genfromtxt(csv_filename, delimiter=',')
+    shading_name = Path(csv_filename).stem
+    key_part = re.search('SM_Matrix_(.*)_.*', shading_name).group(1)
+
+    sky_models_directory = Path(csv_filename).parent / ".." / "skyModels"
+    for hour in range(5, 20):
+        sky_model_filename = sky_models_directory / f"SkyModel_Matrix_{key_part}_{hour}H.csv"
+        if sky_model_filename.exists():
+            sky_model_values = np.genfromtxt(sky_model_filename, delimiter=',')
+            if shading_test_values.shape != sky_model_values.shape:
+                shading_test_values = resample_array_to_match_shape(shading_test_values, sky_model_values.shape)
+            result = (1 - shading_test_values ) * sky_model_values
+            result /= max_value
 
             result = np.nan_to_num(result)  # replace any NaN or Inf values
 
@@ -57,7 +54,7 @@ def plotShadingMask(csv_filename, destination):
 
             ax1 = plt.subplot(projection="polar")
             plt.grid(False)
-            im = plt.pcolormesh(th, r, result, cmap=cm.viridis , vmin=0, vmax=1) #cmap=cm.gray_r
+            im = plt.pcolormesh(th, r, result, cmap=cm.viridis , vmin=0, vmax=1) 
 
             v1 = np.linspace(0, 1, 11)
             cbar = plt.colorbar(im,ticks=v1)
@@ -78,7 +75,9 @@ def plotShadingMaskDir(directory_path, destination):
     for root, dirs, files in os.walk(directory_path):
         for file in files:
             if file.endswith(".csv"):
-                plotShadingMask(os.path.join(root,file), destination)
+                csv_file_path = os.path.join(root,file)
+                max_value = calculate_and_store_max(csv_file_path)
+                plotShadingMask(csv_file_path, destination, max_value)
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--dir_path", type=Path, help='Directory containing the shading mask matrices')

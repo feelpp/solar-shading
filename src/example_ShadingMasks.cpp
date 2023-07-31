@@ -41,7 +41,8 @@ int main(int argc, char **argv)
     double longitude = 7.75;
     double latitude = 48.57;
     PerezSkyModel psm;
-    psm.computePerezSkyModel(longitude, latitude, "2020-07-22", json_buildings, 142, 20);
+    // Compute the Perez all-weather sky model for Strasbourg
+    psm.computePerezSkyModel(longitude, latitude, "2020-07-22", json_buildings, 284, 40);
     std::cout << fmt::format("End of the Perez Sky Model Computation\n");
 
     return 0;
