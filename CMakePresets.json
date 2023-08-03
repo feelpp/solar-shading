@@ -15,6 +15,7 @@
             "cacheVariables": {
                 "CMAKE_CXX_COMPILER": "clang++",
                 "CMAKE_C_COMPILER": "clang",
+                "CMAKE_CUDA_COMPILER": "nvcc",
                 "CMAKE_INSTALL_PREFIX" : "${sourceDir}/build/default/install/",
                 "CMAKE_BUILD_TYPE": "Release"
             },
@@ -45,7 +46,7 @@
         {
             "name": "default",
             "configurePreset": "default",
-            "jobs": 10
+            "jobs": 2
         },
         {
             "name": "install-local",
