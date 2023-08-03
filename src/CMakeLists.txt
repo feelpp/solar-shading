@@ -21,11 +21,10 @@
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #
 #
-
 cmake_minimum_required(VERSION 3.21.0)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ USING THE GPU ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-project(ShadingMasksGPU LANGUAGES CXX CUDA)
+project(ShadingMasksGPU LANGUAGES CXX)
 
 set(CMAKE DISABLE_IN_SOURCE_BUILD ON)
 
@@ -34,19 +33,28 @@ set(CMAKE_CXX_COMPILER clang++)
 
 find_package(Feel++ REQUIRED)
 
-# Add executable target with source files
-add_executable(ShadingMasksGPU example_ShadingMasks_GPU.cpp Bvh_GPU.cu Bvh_GPU.cuh)
+# Check if nvcc is present
+find_program(NVCC "nvcc")
 
-# Specify the C++ standard
-set_target_properties(ShadingMasksGPU PROPERTIES CXX_STANDARD 17 CUDA_STANDARD 17 CUDA_EXTENSIONS OFF CUDA_SEPARABLE_COMPILATION ON CUDA_ARCHITECTURES "86")
+if (NVCC)
+    enable_language(CUDA)
+    set(CMAKE_CUDA_COMPILER ${NVCC})
 
-# Add the Feel++ libraries to the link libraries
-target_link_libraries(ShadingMasksGPU PUBLIC Feelpp::feelpp)
+    # Add executable target with source files
+    add_executable(ShadingMasksGPU example_ShadingMasks_GPU.cpp Bvh_GPU.cu Bvh_GPU.cuh)
 
-target_compile_options(ShadingMasksGPU PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-gencode arch=compute_86,code=sm_86>)
+    # Specify the C++ standard
+    set_target_properties(ShadingMasksGPU PROPERTIES CXX_STANDARD 17 CUDA_STANDARD 17 CUDA_EXTENSIONS OFF CUDA_SEPARABLE_COMPILATION ON CUDA_ARCHITECTURES "86")
 
-target_include_directories(ShadingMasksGPU PRIVATE ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES} ${CMAKE_CURRENT_SOURCE_DIR}/src)
+    # Add the Feel++ libraries to the link libraries
+    target_link_libraries(ShadingMasksGPU PUBLIC Feelpp::feelpp)
 
+    target_compile_options(ShadingMasksGPU PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-gencode arch=compute_86,code=sm_86>)
+
+    target_include_directories(ShadingMasksGPU PRIVATE ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES} ${CMAKE_CURRENT_SOURCE_DIR}/src)
+else()
+    message(STATUS "nvcc not found. Not building ShadingMasksGPU.")
+endif()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ NORMAL IMPLEMENTATION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

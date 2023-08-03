@@ -34,8 +34,16 @@ if (POLICY CMP0077)
   set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 endif()
 
-set(Feel++_DIR /home/earltshirt/feelpp/build/default/install/share/feelpp/feel/cmake/modules)
-find_package(Feel++ REQUIRED)
+# Get the hostname
+execute_process(COMMAND hostname OUTPUT_VARIABLE HOSTNAME OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+if("${HOSTNAME}" STREQUAL "PCPiCon")
+    set(Feel++_DIR /home/earltshirt/feelpp/build/default/install/share/feelpp/feel/cmake/modules)
+    find_package(Feel++ REQUIRED)
+else()
+    find_package(Feel++ COMPONENTS Toolboxes PATHS ${FEELPP_DIR}/share/feelpp/feel/cmake/modules $ENV{FEELPP_DIR}/share/feelpp/feel/cmake/modules /usr/share/feelpp/feel/cmake/modules /usr/local/share/feelpp/feel/cmake/modules )
+endif()
+
 if(NOT FEELPP_FOUND)
   message(FATAL_ERROR "Feel++ was not found on your system. Make sure to install it and specify the Feel++_DIR to reference the installation directory.")
 endif()
