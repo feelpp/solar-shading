@@ -1,0 +1,337 @@
+Flag,Method,Duration
+-O1,EigenRand_CAST,33.244
+-O2,EigenRand_CAST,30.3
+-O3,EigenRand_CAST,24.211
+-Ofast,EigenRand_CAST,23.241
+-O1 -march=native,EigenRand_CAST,24.227
+-O2 -march=native,EigenRand_CAST,21.792
+-O3 -march=native,EigenRand_CAST,14.124
+-Ofast -march=native,EigenRand_CAST,13.209
+-O1 -march=native -funroll-loops,EigenRand_CAST,21.266
+-O2 -march=native -funroll-loops,EigenRand_CAST,17.371
+-O3 -march=native -funroll-loops,EigenRand_CAST,13.224
+-Ofast -march=native -funroll-loops,EigenRand_CAST,13.076
+-O1 -march=native -fdisable-tree-cunrolli,EigenRand_CAST,24.136
+-O2 -march=native -fdisable-tree-cunrolli,EigenRand_CAST,19.756
+-O3 -march=native -fdisable-tree-cunrolli,EigenRand_CAST,14.085
+-Ofast -march=native -fdisable-tree-cunrolli,EigenRand_CAST,13.289
+-O1,EigenRand,59.103
+-O2,EigenRand,49.542
+-O3,EigenRand,49.311
+-Ofast,EigenRand,49.079
+-O1 -march=native,EigenRand,54.929
+-O2 -march=native,EigenRand,43.04
+-O3 -march=native,EigenRand,45.211
+-Ofast -march=native,EigenRand,44.22
+-O1 -march=native -funroll-loops,EigenRand,53.576
+-O2 -march=native -funroll-loops,EigenRand,44.027
+-O3 -march=native -funroll-loops,EigenRand,44.109
+-Ofast -march=native -funroll-loops,EigenRand,43.811
+-O1 -march=native -fdisable-tree-cunrolli,EigenRand,54.421
+-O2 -march=native -fdisable-tree-cunrolli,EigenRand,43.587
+-O3 -march=native -fdisable-tree-cunrolli,EigenRand,45.799
+-Ofast -march=native -fdisable-tree-cunrolli,EigenRand,44.497
+-O1,EigenRand_VMT,55.735
+-O2,EigenRand_VMT,46.262
+-O3,EigenRand_VMT,47.14
+-Ofast,EigenRand_VMT,47.196
+-O1 -march=native,EigenRand_VMT,50.397
+-O2 -march=native,EigenRand_VMT,42.261
+-O3 -march=native,EigenRand_VMT,41.274
+-Ofast -march=native,EigenRand_VMT,41.549
+-O1 -march=native -funroll-loops,EigenRand_VMT,50.034
+-O2 -march=native -funroll-loops,EigenRand_VMT,42.597
+-O3 -march=native -funroll-loops,EigenRand_VMT,43.562
+-Ofast -march=native -funroll-loops,EigenRand_VMT,42.99
+-O1 -march=native -fdisable-tree-cunrolli,EigenRand_VMT,50.445
+-O2 -march=native -fdisable-tree-cunrolli,EigenRand_VMT,41.734
+-O3 -march=native -fdisable-tree-cunrolli,EigenRand_VMT,41.863
+-Ofast -march=native -fdisable-tree-cunrolli,EigenRand_VMT,42.308
+-O1,MersenneTwister,45.415
+-O2,MersenneTwister,79.7
+-O3,MersenneTwister,71.387
+-Ofast,MersenneTwister,71.476
+-O1 -march=native,MersenneTwister,45.26
+-O2 -march=native,MersenneTwister,79.911
+-O3 -march=native,MersenneTwister,22.15
+-Ofast -march=native,MersenneTwister,22.183
+-O1 -march=native -funroll-loops,MersenneTwister,43.386
+-O2 -march=native -funroll-loops,MersenneTwister,78.217
+-O3 -march=native -funroll-loops,MersenneTwister,22.119
+-Ofast -march=native -funroll-loops,MersenneTwister,22.177
+-O1 -march=native -fdisable-tree-cunrolli,MersenneTwister,45.475
+-O2 -march=native -fdisable-tree-cunrolli,MersenneTwister,79.735
+-O3 -march=native -fdisable-tree-cunrolli,MersenneTwister,22.273
+-Ofast -march=native -fdisable-tree-cunrolli,MersenneTwister,22.17
+-O1,pcg-cpp,16.172
+-O2,pcg-cpp,13.095
+-O3,pcg-cpp,15.157
+-Ofast,pcg-cpp,15.105
+-O1 -march=native,pcg-cpp,14.172
+-O2 -march=native,pcg-cpp,12.13
+-O3 -march=native,pcg-cpp,12.084
+-Ofast -march=native,pcg-cpp,12.16
+-O1 -march=native -funroll-loops,pcg-cpp,14.097
+-O2 -march=native -funroll-loops,pcg-cpp,12.063
+-O3 -march=native -funroll-loops,pcg-cpp,12.158
+-Ofast -march=native -funroll-loops,pcg-cpp,12.056
+-O1 -march=native -fdisable-tree-cunrolli,pcg-cpp,14.091
+-O2 -march=native -fdisable-tree-cunrolli,pcg-cpp,12.138
+-O3 -march=native -fdisable-tree-cunrolli,pcg-cpp,12.24
+-Ofast -march=native -fdisable-tree-cunrolli,pcg-cpp,12.14
+-O1,std::uniform_distribution,45.407
+-O2,std::uniform_distribution,79.648
+-O3,std::uniform_distribution,71.492
+-Ofast,std::uniform_distribution,71.285
+-O1 -march=native,std::uniform_distribution,45.204
+-O2 -march=native,std::uniform_distribution,79.912
+-O3 -march=native,std::uniform_distribution,22.219
+-Ofast -march=native,std::uniform_distribution,22.124
+-O1 -march=native -funroll-loops,std::uniform_distribution,43.395
+-O2 -march=native -funroll-loops,std::uniform_distribution,78.381
+-O3 -march=native -funroll-loops,std::uniform_distribution,22.175
+-Ofast -march=native -funroll-loops,std::uniform_distribution,22.125
+-O1 -march=native -fdisable-tree-cunrolli,std::uniform_distribution,45.657
+-O2 -march=native -fdisable-tree-cunrolli,std::uniform_distribution,79.909
+-O3 -march=native -fdisable-tree-cunrolli,std::uniform_distribution,22.247
+-Ofast -march=native -fdisable-tree-cunrolli,std::uniform_distribution,22.566
+-O1,xoshiro-cpp,43.437
+-O2,xoshiro-cpp,15.043
+-O3,xoshiro-cpp,15.084
+-Ofast,xoshiro-cpp,15.071
+-O1 -march=native,xoshiro-cpp,41.22
+-O2 -march=native,xoshiro-cpp,15.059
+-O3 -march=native,xoshiro-cpp,14.676
+-Ofast -march=native,xoshiro-cpp,15.131
+-O1 -march=native -funroll-loops,xoshiro-cpp,39.336
+-O2 -march=native -funroll-loops,xoshiro-cpp,15.067
+-O3 -march=native -funroll-loops,xoshiro-cpp,15.066
+-Ofast -march=native -funroll-loops,xoshiro-cpp,15.136
+-O1 -march=native -fdisable-tree-cunrolli,xoshiro-cpp,41.573
+-O2 -march=native -fdisable-tree-cunrolli,xoshiro-cpp,15.051
+-O3 -march=native -fdisable-tree-cunrolli,xoshiro-cpp,15.066
+-Ofast -march=native -fdisable-tree-cunrolli,xoshiro-cpp,15.136
+-O1,EigenRand_CAST,33.216
+-O2,EigenRand_CAST,30.421
+-O3,EigenRand_CAST,24.396
+-Ofast,EigenRand_CAST,23.224
+-O1 -march=native,EigenRand_CAST,24.244
+-O2 -march=native,EigenRand_CAST,19.593
+-O3 -march=native,EigenRand_CAST,20.256
+-Ofast -march=native,EigenRand_CAST,13.167
+-O1 -march=native -funroll-loops,EigenRand_CAST,21.25
+-O2 -march=native -funroll-loops,EigenRand_CAST,17.246
+-O3 -march=native -funroll-loops,EigenRand_CAST,13.172
+-Ofast -march=native -funroll-loops,EigenRand_CAST,13.131
+-O1 -march=native -fdisable-tree-cunrolli,EigenRand_CAST,24.322
+-O2 -march=native -fdisable-tree-cunrolli,EigenRand_CAST,19.766
+-O3 -march=native -fdisable-tree-cunrolli,EigenRand_CAST,14.062
+-Ofast -march=native -fdisable-tree-cunrolli,EigenRand_CAST,14.496
+-O1,EigenRand,59.249
+-O2,EigenRand,49.399
+-O3,EigenRand,50.666
+-Ofast,EigenRand,49.529
+-O1 -march=native,EigenRand,54.628
+-O2 -march=native,EigenRand,43.463
+-O3 -march=native,EigenRand,44.405
+-Ofast -march=native,EigenRand,45.109
+-O1 -march=native -funroll-loops,EigenRand,52.465
+-O2 -march=native -funroll-loops,EigenRand,43.908
+-O3 -march=native -funroll-loops,EigenRand,43.785
+-Ofast -march=native -funroll-loops,EigenRand,43.422
+-O1 -march=native -fdisable-tree-cunrolli,EigenRand,54.537
+-O2 -march=native -fdisable-tree-cunrolli,EigenRand,43.809
+-O3 -march=native -fdisable-tree-cunrolli,EigenRand,44.526
+-Ofast -march=native -fdisable-tree-cunrolli,EigenRand,44.445
+-O1,EigenRand_VMT,55.502
+-O2,EigenRand_VMT,46.305
+-O3,EigenRand_VMT,46.98
+-Ofast,EigenRand_VMT,47.591
+-O1 -march=native,EigenRand_VMT,50.863
+-O2 -march=native,EigenRand_VMT,41.635
+-O3 -march=native,EigenRand_VMT,41.662
+-Ofast -march=native,EigenRand_VMT,41.236
+-O1 -march=native -funroll-loops,EigenRand_VMT,50.891
+-O2 -march=native -funroll-loops,EigenRand_VMT,42.08
+-O3 -march=native -funroll-loops,EigenRand_VMT,43.226
+-Ofast -march=native -funroll-loops,EigenRand_VMT,43.372
+-O1 -march=native -fdisable-tree-cunrolli,EigenRand_VMT,49.857
+-O2 -march=native -fdisable-tree-cunrolli,EigenRand_VMT,41.905
+-O3 -march=native -fdisable-tree-cunrolli,EigenRand_VMT,41.837
+-Ofast -march=native -fdisable-tree-cunrolli,EigenRand_VMT,42.044
+-O1,MersenneTwister,45.435
+-O2,MersenneTwister,79.759
+-O3,MersenneTwister,73.023
+-Ofast,MersenneTwister,72.204
+-O1 -march=native,MersenneTwister,45.296
+-O2 -march=native,MersenneTwister,79.754
+-O3 -march=native,MersenneTwister,22.223
+-Ofast -march=native,MersenneTwister,22.346
+-O1 -march=native -funroll-loops,MersenneTwister,43.317
+-O2 -march=native -funroll-loops,MersenneTwister,78.64
+-O3 -march=native -funroll-loops,MersenneTwister,22.296
+-Ofast -march=native -funroll-loops,MersenneTwister,22.108
+-O1 -march=native -fdisable-tree-cunrolli,MersenneTwister,45.492
+-O2 -march=native -fdisable-tree-cunrolli,MersenneTwister,79.788
+-O3 -march=native -fdisable-tree-cunrolli,MersenneTwister,22.145
+-Ofast -march=native -fdisable-tree-cunrolli,MersenneTwister,22.119
+-O1,pcg-cpp,16.074
+-O2,pcg-cpp,13.191
+-O3,pcg-cpp,15.316
+-Ofast,pcg-cpp,15.096
+-O1 -march=native,pcg-cpp,14.37
+-O2 -march=native,pcg-cpp,12.121
+-O3 -march=native,pcg-cpp,12.084
+-Ofast -march=native,pcg-cpp,12.067
+-O1 -march=native -funroll-loops,pcg-cpp,14.116
+-O2 -march=native -funroll-loops,pcg-cpp,12.082
+-O3 -march=native -funroll-loops,pcg-cpp,12.104
+-Ofast -march=native -funroll-loops,pcg-cpp,12.16
+-O1 -march=native -fdisable-tree-cunrolli,pcg-cpp,14.093
+-O2 -march=native -fdisable-tree-cunrolli,pcg-cpp,12.078
+-O3 -march=native -fdisable-tree-cunrolli,pcg-cpp,12.089
+-Ofast -march=native -fdisable-tree-cunrolli,pcg-cpp,12.164
+-O1,std::uniform_distribution,45.242
+-O2,std::uniform_distribution,79.697
+-O3,std::uniform_distribution,71.464
+-Ofast,std::uniform_distribution,70.843
+-O1 -march=native,std::uniform_distribution,45.404
+-O2 -march=native,std::uniform_distribution,79.888
+-O3 -march=native,std::uniform_distribution,22.373
+-Ofast -march=native,std::uniform_distribution,22.298
+-O1 -march=native -funroll-loops,std::uniform_distribution,44.291
+-O2 -march=native -funroll-loops,std::uniform_distribution,78.505
+-O3 -march=native -funroll-loops,std::uniform_distribution,22.099
+-Ofast -march=native -funroll-loops,std::uniform_distribution,22.267
+-O1 -march=native -fdisable-tree-cunrolli,std::uniform_distribution,45.18
+-O2 -march=native -fdisable-tree-cunrolli,std::uniform_distribution,79.98
+-O3 -march=native -fdisable-tree-cunrolli,std::uniform_distribution,22.385
+-Ofast -march=native -fdisable-tree-cunrolli,std::uniform_distribution,22.324
+-O1,xoshiro-cpp,43.274
+-O2,xoshiro-cpp,15.065
+-O3,xoshiro-cpp,15.148
+-Ofast,xoshiro-cpp,15.164
+-O1 -march=native,xoshiro-cpp,41.537
+-O2 -march=native,xoshiro-cpp,14.847
+-O3 -march=native,xoshiro-cpp,15.055
+-Ofast -march=native,xoshiro-cpp,15.084
+-O1 -march=native -funroll-loops,xoshiro-cpp,39.138
+-O2 -march=native -funroll-loops,xoshiro-cpp,15.043
+-O3 -march=native -funroll-loops,xoshiro-cpp,14.638
+-Ofast -march=native -funroll-loops,xoshiro-cpp,15.069
+-O1 -march=native -fdisable-tree-cunrolli,xoshiro-cpp,41.378
+-O2 -march=native -fdisable-tree-cunrolli,xoshiro-cpp,15.064
+-O3 -march=native -fdisable-tree-cunrolli,xoshiro-cpp,15.05
+-Ofast -march=native -fdisable-tree-cunrolli,xoshiro-cpp,15.056
+-O1,EigenRand_CAST,33.262
+-O2,EigenRand_CAST,30.846
+-O3,EigenRand_CAST,24.19
+-Ofast,EigenRand_CAST,23.137
+-O1 -march=native,EigenRand_CAST,24.274
+-O2 -march=native,EigenRand_CAST,19.508
+-O3 -march=native,EigenRand_CAST,14.073
+-Ofast -march=native,EigenRand_CAST,13.091
+-O1 -march=native -funroll-loops,EigenRand_CAST,21.362
+-O2 -march=native -funroll-loops,EigenRand_CAST,17.209
+-O3 -march=native -funroll-loops,EigenRand_CAST,13.195
+-Ofast -march=native -funroll-loops,EigenRand_CAST,13.22
+-O1 -march=native -fdisable-tree-cunrolli,EigenRand_CAST,24.325
+-O2 -march=native -fdisable-tree-cunrolli,EigenRand_CAST,19.708
+-O3 -march=native -fdisable-tree-cunrolli,EigenRand_CAST,14.097
+-Ofast -march=native -fdisable-tree-cunrolli,EigenRand_CAST,13.433
+-O1,EigenRand,60.079
+-O2,EigenRand,48.876
+-O3,EigenRand,49.136
+-Ofast,EigenRand,49.187
+-O1 -march=native,EigenRand,54.947
+-O2 -march=native,EigenRand,43.888
+-O3 -march=native,EigenRand,44.566
+-Ofast -march=native,EigenRand,44.84
+-O1 -march=native -funroll-loops,EigenRand,53.14
+-O2 -march=native -funroll-loops,EigenRand,44.333
+-O3 -march=native -funroll-loops,EigenRand,43.673
+-Ofast -march=native -funroll-loops,EigenRand,44.226
+-O1 -march=native -fdisable-tree-cunrolli,EigenRand,54.705
+-O2 -march=native -fdisable-tree-cunrolli,EigenRand,43.533
+-O3 -march=native -fdisable-tree-cunrolli,EigenRand,45.035
+-Ofast -march=native -fdisable-tree-cunrolli,EigenRand,44.75
+-O1,EigenRand_VMT,55.853
+-O2,EigenRand_VMT,46.633
+-O3,EigenRand_VMT,47.188
+-Ofast,EigenRand_VMT,47.1
+-O1 -march=native,EigenRand_VMT,50.366
+-O2 -march=native,EigenRand_VMT,41.689
+-O3 -march=native,EigenRand_VMT,41.329
+-Ofast -march=native,EigenRand_VMT,41.285
+-O1 -march=native -funroll-loops,EigenRand_VMT,50.557
+-O2 -march=native -funroll-loops,EigenRand_VMT,42.204
+-O3 -march=native -funroll-loops,EigenRand_VMT,42.777
+-Ofast -march=native -funroll-loops,EigenRand_VMT,42.077
+-O1 -march=native -fdisable-tree-cunrolli,EigenRand_VMT,49.71
+-O2 -march=native -fdisable-tree-cunrolli,EigenRand_VMT,41.494
+-O3 -march=native -fdisable-tree-cunrolli,EigenRand_VMT,42.665
+-Ofast -march=native -fdisable-tree-cunrolli,EigenRand_VMT,41.194
+-O1,MersenneTwister,45.202
+-O2,MersenneTwister,79.715
+-O3,MersenneTwister,71.581
+-Ofast,MersenneTwister,70.774
+-O1 -march=native,MersenneTwister,45.472
+-O2 -march=native,MersenneTwister,79.985
+-O3 -march=native,MersenneTwister,22.13
+-Ofast -march=native,MersenneTwister,22.227
+-O1 -march=native -funroll-loops,MersenneTwister,43.471
+-O2 -march=native -funroll-loops,MersenneTwister,78.266
+-O3 -march=native -funroll-loops,MersenneTwister,22.277
+-Ofast -march=native -funroll-loops,MersenneTwister,22.379
+-O1 -march=native -fdisable-tree-cunrolli,MersenneTwister,45.537
+-O2 -march=native -fdisable-tree-cunrolli,MersenneTwister,79.762
+-O3 -march=native -fdisable-tree-cunrolli,MersenneTwister,22.215
+-Ofast -march=native -fdisable-tree-cunrolli,MersenneTwister,23.559
+-O1,pcg-cpp,16.068
+-O2,pcg-cpp,13.087
+-O3,pcg-cpp,15.154
+-Ofast,pcg-cpp,15.104
+-O1 -march=native,pcg-cpp,14.093
+-O2 -march=native,pcg-cpp,12.156
+-O3 -march=native,pcg-cpp,12.085
+-Ofast -march=native,pcg-cpp,12.253
+-O1 -march=native -funroll-loops,pcg-cpp,14.129
+-O2 -march=native -funroll-loops,pcg-cpp,14.707
+-O3 -march=native -funroll-loops,pcg-cpp,12.085
+-Ofast -march=native -funroll-loops,pcg-cpp,12.097
+-O1 -march=native -fdisable-tree-cunrolli,pcg-cpp,19.322
+-O2 -march=native -fdisable-tree-cunrolli,pcg-cpp,12.204
+-O3 -march=native -fdisable-tree-cunrolli,pcg-cpp,12.167
+-Ofast -march=native -fdisable-tree-cunrolli,pcg-cpp,12.11
+-O1,std::uniform_distribution,45.516
+-O2,std::uniform_distribution,79.896
+-O3,std::uniform_distribution,71.473
+-Ofast,std::uniform_distribution,70.954
+-O1 -march=native,std::uniform_distribution,45.506
+-O2 -march=native,std::uniform_distribution,80.099
+-O3 -march=native,std::uniform_distribution,22.252
+-Ofast -march=native,std::uniform_distribution,22.161
+-O1 -march=native -funroll-loops,std::uniform_distribution,43.566
+-O2 -march=native -funroll-loops,std::uniform_distribution,78.535
+-O3 -march=native -funroll-loops,std::uniform_distribution,22.256
+-Ofast -march=native -funroll-loops,std::uniform_distribution,22.128
+-O1 -march=native -fdisable-tree-cunrolli,std::uniform_distribution,45.504
+-O2 -march=native -fdisable-tree-cunrolli,std::uniform_distribution,79.539
+-O3 -march=native -fdisable-tree-cunrolli,std::uniform_distribution,22.106
+-Ofast -march=native -fdisable-tree-cunrolli,std::uniform_distribution,22.118
+-O1,xoshiro-cpp,43.155
+-O2,xoshiro-cpp,14.978
+-O3,xoshiro-cpp,15.083
+-Ofast,xoshiro-cpp,15.081
+-O1 -march=native,xoshiro-cpp,41.547
+-O2 -march=native,xoshiro-cpp,14.159
+-O3 -march=native,xoshiro-cpp,14.812
+-Ofast -march=native,xoshiro-cpp,15.204
+-O1 -march=native -funroll-loops,xoshiro-cpp,39.236
+-O2 -march=native -funroll-loops,xoshiro-cpp,15.037
+-O3 -march=native -funroll-loops,xoshiro-cpp,14.947
+-Ofast -march=native -funroll-loops,xoshiro-cpp,15.079
+-O1 -march=native -fdisable-tree-cunrolli,xoshiro-cpp,41.513
+-O2 -march=native -fdisable-tree-cunrolli,xoshiro-cpp,15.327
+-O3 -march=native -fdisable-tree-cunrolli,xoshiro-cpp,15.183
+-Ofast -march=native -fdisable-tree-cunrolli,xoshiro-cpp,15.027

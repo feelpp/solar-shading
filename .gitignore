@@ -49,3 +49,10 @@ tramp
 benchmark/distributions/comparison.png
 results/ShadingMasks/*.png
 results/Differences/*.png
+results/csv/*.png
+
+# all files resulting from the reframe benchmarking
+benchmark/distributions/__pycache__/*
+benchmark/distributions/output/*
+benchmark/distributions/perflogs/*
+benchmark/distributions/stage/*

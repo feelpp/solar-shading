@@ -1,8 +1,11 @@
 #include "shadingMask_PCG.hpp"
+#include "shadingMask_EigenRand_vectorized.hpp"
+#include "shadingMask_EigenRand_cast.hpp"
 #undef jump
 #include "shadingMask_XOSHIRO.hpp"
 #include "shadingMask.hpp"
 #include "shadingMask_mix.hpp"
+#include "shadingMask_EigenRand.hpp"
 #include <iostream>
 #include <fstream>
 #include <chrono>
@@ -80,10 +83,46 @@ int main(int argc, char **argv)
     auto endrngmix = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> elapsedrngmix = endrngmix - startrngmix;
 
-    std::cout << fmt::format("Elapsed time for shading mask computation: {} s\n", elapsednormal.count());
-    std::cout << fmt::format("Elapsed time for shading mask computation with RNG XOSHIRO: {} s\n", elapsedrngxoshiro.count());
-    std::cout << fmt::format("Elapsed time for shading mask computation with RNG PCG: {} s\n", elapsedrngpcg.count());
-    std::cout << fmt::format("Elapsed time for shading mask computation with RNG MIX: {} s\n", elapsedrngmix.count());
+    // RNG EIGEN
+
+    auto startrngeigen = std::chrono::high_resolution_clock::now();
+
+    // Compute the shading masks
+    ShadingMaskER<mesh_t> sm5(mesh,json_buildings);
+    sm5.computeMasks();
+
+    auto endrngeigen = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsedrngeigen = endrngeigen - startrngeigen;
+
+    // RNG EIEN CAST
+
+    auto startrngeigencast = std::chrono::high_resolution_clock::now();
+
+    // Compute the shading masks
+    ShadingMaskERC<mesh_t> sm6(mesh,json_buildings);
+    sm6.computeMasks();
+
+    auto endrngeigencast = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsedrngeigencast = endrngeigencast - startrngeigencast;
+
+    // RNG EIGEN VECTORIZED
+
+    auto startrngeigenvect = std::chrono::high_resolution_clock::now();
+
+    // Compute the shading masks
+    ShadingMaskERV<mesh_t> sm7(mesh,json_buildings);
+    sm7.computeMasks();
+
+    auto endrngeigenvect = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsedrngeigenvect = endrngeigenvect - startrngeigenvect;
+
+    std::cout << fmt::format("Elapsed time for shading mask computation with RNG STD:{} s\n", elapsednormal.count());
+    std::cout << fmt::format("Elapsed time for shading mask computation with RNG XOSHIRO:{} s\n", elapsedrngxoshiro.count());
+    std::cout << fmt::format("Elapsed time for shading mask computation with RNG PCG:{} s\n", elapsedrngpcg.count());
+    std::cout << fmt::format("Elapsed time for shading mask computation with RNG MIX:{} s\n", elapsedrngmix.count());
+    std::cout << fmt::format("Elapsed time for shading mask computation with RNG EIGEN:{} s\n", elapsedrngeigen.count());
+    std::cout << fmt::format("Elapsed time for shading mask computation with RNG EIGEN CAST:{} s\n", elapsedrngeigencast.count());
+    std::cout << fmt::format("Elapsed time for shading mask computation with RNG EIGEN VEC:{} s\n", elapsedrngeigenvect.count());
 
     // Write the results to a csv file and append results: method + time
 
@@ -105,10 +144,13 @@ int main(int argc, char **argv)
         std::cerr << "Error opening file: " << filePath << std::endl;
     } else {
         // File opened successfully
-        file << "\n" << "Shading mask STD RNG -Ofast -march=native," << elapsednormal.count();
-        file << "\n" << "Shading mask PCG RNG -Ofast -march=native," << elapsedrngpcg.count();
-        file << "\n" << "Shading mask XOSHIRO RNG -Ofast -march=native," << elapsedrngxoshiro.count();
-        file << "\n" << "Shading mask MIX RNG -Ofast -march=native," << elapsedrngmix.count();
+        file << "\n" << "Shading mask STD RNG," << elapsednormal.count();
+        file << "\n" << "Shading mask PCG RNG," << elapsedrngpcg.count();
+        file << "\n" << "Shading mask XOSHIRO RNG," << elapsedrngxoshiro.count();
+        file << "\n" << "Shading mask MIX RNG," << elapsedrngmix.count();
+        file << "\n" << "Shading mask EIGEN RNG," << elapsedrngeigen.count();
+        file << "\n" << "Shading mask EIGEN CAST RNG," << elapsedrngeigencast.count();
+        file << "\n" << "Shading mask EIGEN VECTORIZED RNG," << elapsedrngeigenvect.count();
         file.close();
     }
     

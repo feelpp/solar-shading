@@ -48,10 +48,18 @@ All resulting `.png` files are stored at 'results/ShadingMasks/'.
 
 Additionnal quality benchmarks will be added.
 
+The EigenRand_vectorized benchmark is not included in the run_examples.sh script, as it is not executing because of a problematic memory allocation, or deallocation.
+
+One can also launch all test consecutively using the following command when located at the source of the repo:
+
+`./src/run_all.sh`
+
+The prompt will ask you to chose the case you want to launch the tests on. The results are displayed in the terminal, only the fastest execution time is kept for each method, the flags used to get this result are also displayed.
+
 === Visualization of the differences
 
 In order to visualize the differences between the shading masks, one can launch the bash script when located at the root of the project:
 
-`./src/check_diff.sh`
+`./src/SM_differences.sh`
 
 The results are stored as .png files in the '/results/Differences' directory.

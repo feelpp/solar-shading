@@ -90,6 +90,8 @@
         "specialfunctions": "cpp",
         "splines": "cpp",
         "*.evaluator": "cpp",
-        "*.traits": "cpp"
+        "*.traits": "cpp",
+        "eigenrand": "cpp",
+        "core": "cpp"
     }
 }
