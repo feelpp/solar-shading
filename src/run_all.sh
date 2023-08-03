@@ -3,13 +3,15 @@
 set -e
 
 flags=( 
-    "-Ofast -march=native"
-    "-O3 -march=native"
-    "-O2 -march=native"
-    "-Ofast -march=native -funroll-loops"
-    "-O3 -march=native -funroll-loops"
-    "-O2 -march=native -funroll-loops"
-    "-Ofast -march=native -funroll-loops -funsafe-math-optimizations"
+    "-Ofast"
+    "-O3"
+    "-O2"
+    "-Ofast -funroll-loops"
+    "-O3 -funroll-loops"
+    "-O2 -funroll-loops"
+    "-Ofast -funroll-loops -funsafe-math-optimizations"
+    "-Ofast -march=znver2"
+    "-Ofast -ftlo"
 )
 
 # Obtain the path to the script
@@ -46,7 +48,7 @@ done
 
 for ((NUMBER=1; NUMBER<${#flags[@]}+1; NUMBER++))
 do
-    EXECUTABLE="./feelpp_ss_example_ShadingMasks_comparison${NUMBER}"
+    EXECUTABLE="./example_ShadingMasks_comparison${NUMBER}"
 
     echo "Running the command : $EXECUTABLE --config-file $CONFIG_FILE"
     output=$( $EXECUTABLE --config-file $CONFIG_FILE )

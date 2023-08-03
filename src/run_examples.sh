@@ -27,16 +27,18 @@ case "$NUMBER1" in
 esac
 
 echo "Select the compilation flags to be used:"
-echo "- 1 : -Ofast -march=native"
-echo "- 2 : -O3 -march=native"
-echo "- 3 : -O2 -march=native"
-echo "- 4 : -Ofast -march=native -funroll-loops"
-echo "- 5 : -O3 -march=native -funroll-loops"
-echo "- 6 : -O2 -march=native -funroll-loops"
-echo "- 7 : -Ofast -march=native -funroll-loops -funsafe-math-optimizations"
-read -p "Enter the number (1 to 7): " NUMBER
+echo "- 1 : -Ofast "
+echo "- 2 : -O3 "
+echo "- 3 : -O2"
+echo "- 4 : -Ofast -funroll-loops"
+echo "- 5 : -O3 -funroll-loops"
+echo "- 6 : -O2 -funroll-loops"
+echo "- 7 : -Ofast -funroll-loops -funsafe-math-optimizations"
+echo "- 8 : -Ofast -march=znver2"
+echo "- 9 : -Ofast -ftlo"
+read -p "Enter the number (1 to 9): " NUMBER
 
-EXECUTABLE="./feelpp_ss_example_ShadingMasks_comparison${NUMBER}"
+EXECUTABLE="./example_ShadingMasks_comparison${NUMBER}"
 
 echo "Running the command : $EXECUTABLE --config-file $CONFIG_FILE"
 
