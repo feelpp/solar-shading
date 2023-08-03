@@ -22,9 +22,9 @@
 #
 #
 cmake_minimum_required(VERSION 3.21.0)
-project(solar-shading VERSION 2.0.2)
+project(feelpp-project VERSION 2.0.2)
 set(EXTRA_VERSION "")
-set(PROJECT_SHORTNAME "ss")
+set(PROJECT_SHORTNAME "fp")
 
 
 include(GNUInstallDirs)
@@ -34,12 +34,10 @@ if (POLICY CMP0077)
   set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 endif()
 
-find_package(Feel++ COMPONENTS Toolboxes PATHS ${FEELPP_DIR}/share/feelpp/feel/cmake/modules $ENV{FEELPP_DIR}/share/feelpp/feel/cmake/modules /usr/share/feelpp/feel/cmake/modules /usr/local/share/feelpp/feel/cmake/modules )
+set(Feel++_DIR /home/earltshirt/feelpp/build/default/install/share/feelpp/feel/cmake/modules)
+find_package(Feel++ REQUIRED)
 if(NOT FEELPP_FOUND)
-  message(FATAL_ERROR "Feel++ was not found on your system. Make sure to install it and specify the FEELPP_DIR to reference the installation directory.")
-endif()
-if ( NOT FEELPP_TOOLBOXES_FOUND )
-  message(WARNING "Feel++ Toolboxes SDK is not found on your system. The toolbox application is now disabled.")
+  message(FATAL_ERROR "Feel++ was not found on your system. Make sure to install it and specify the Feel++_DIR to reference the installation directory.")
 endif()
 
 enable_testing()
@@ -48,8 +46,7 @@ if ( NOT TARGET check )
   add_custom_target(check)
 endif()
 
-
-add_subdirectory( src )
+add_subdirectory(src)
 add_subdirectory( docs )
 add_subdirectory( benchmark/distributions ) # add benchmark directory
 # add_subdirectory( benchmark/distributions/src )
@@ -69,7 +66,7 @@ set(CPACK_PACKAGE_NAME "${PROJECT_NAME}-${PROJECT_VERSION_MAJOR}.${PROJECT_VERSI
 set(CPACK_SOURCE_PACKAGE_FILE_NAME "${PROJECT_NAME}-${PROJECT_VERSION}${EXTRA_VERSION}")
 SET(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}${EXTRA_VERSION}-${CMAKE_SYSTEM_NAME}")
 set(CPACK_PACKAGE_DIRECTORY "${PROJECT_BINARY_DIR}/assets")
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Cemosis solar-shading template application")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Cemosis feelpp-project template application")
 set(CPACK_PACKAGE_DESCRIPTION "Cemosis provides a Feel++ template application.")
 set(CPACK_PACKAGE_VENDOR "Cemosis")
 set(CPACK_PACKAGE_CONTACT "Christophe Prud'homme <christophe.prudhomme@cemosis.fr>")
@@ -96,5 +93,6 @@ set(CPACK_DEBIAN_PACKAGE_SECTION "science")
 set(CPACK_DEBIAN_PACKAGE_VERSION "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}${EXTRA_VERSION}")
 set(CPACK_DEBIAN_ARCHITECTURE "${CMAKE_SYSTEM_PROCESSOR}")
 # set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA "${CMAKE_SOURCE_DIR}/cmake/debian/postinst")
-
+  
 include(CPack)
+

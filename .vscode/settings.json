@@ -81,6 +81,16 @@
         "typeinfo": "cpp",
         "valarray": "cpp",
         "variant": "cpp",
+        "__nullptr": "cpp",
+        "__split_buffer": "cpp",
+        "core": "cpp",
+        "superlusupport": "cpp",
+        "fft": "cpp",
+        "numericaldiff": "cpp",
+        "specialfunctions": "cpp",
+        "splines": "cpp",
+        "*.evaluator": "cpp",
+        "*.traits": "cpp",
         "eigenrand": "cpp",
         "core": "cpp"
     }

@@ -22,12 +22,37 @@
 #
 #
 
+cmake_minimum_required(VERSION 3.21.0)
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ USING THE GPU ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+project(ShadingMasksGPU LANGUAGES CXX CUDA)
+
+set(CMAKE DISABLE_IN_SOURCE_BUILD ON)
+
+# If you want to use clang as your C++ compiler
+set(CMAKE_CXX_COMPILER clang++)
+
+find_package(Feel++ REQUIRED)
+
+# Add executable target with source files
+add_executable(ShadingMasksGPU example_ShadingMasks_GPU.cpp Bvh_GPU.cu Bvh_GPU.cuh)
+
+# Specify the C++ standard
+set_target_properties(ShadingMasksGPU PROPERTIES CXX_STANDARD 17 CUDA_STANDARD 17 CUDA_EXTENSIONS OFF CUDA_SEPARABLE_COMPILATION ON CUDA_ARCHITECTURES "86")
+
+# Add the Feel++ libraries to the link libraries
+target_link_libraries(ShadingMasksGPU PUBLIC Feelpp::feelpp)
+
+target_compile_options(ShadingMasksGPU PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-gencode arch=compute_86,code=sm_86>)
+
+target_include_directories(ShadingMasksGPU PRIVATE ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES} ${CMAKE_CURRENT_SOURCE_DIR}/src)
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ NORMAL IMPLEMENTATION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 feelpp_add_application(example_ShadingMasks SRCS example_ShadingMasks.cpp LINK_LIBRARIES Feelpp::feelpp TESTS NO_MPI_TEST INSTALL)
 
-
 feelpp_add_testcase(cases)
-
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ BELOW THE IN-APP BENCHMARKING ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
