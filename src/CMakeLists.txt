@@ -149,22 +149,24 @@ target_compile_options(example_ShadingMasks_comparison5 PRIVATE
 
 # Benchmark with compilation flags -O2 -march=native -funroll-loops
 
-add_executable(example_ShadingMasks_comparison6 example_ShadingMasks_comparison.cpp)
+add_executable(ShadingMasks_comparison6 example_ShadingMasks_comparison.cpp)
 
 feelpp_add_application(example_ShadingMasks_comparison6 SRCS example_ShadingMasks_comparison.cpp LINK_LIBRARIES Feelpp::feelpp NO_MPI_TEST INSTALL)
 
 
-target_include_directories(example_ShadingMasks_comparison6 PRIVATE
-    ${CMAKE_SOURCE_DIR}/benchmark/extlibs/pcg-cpp/include
-    ${CMAKE_SOURCE_DIR}/benchmark/extlibs/Xoshiro-cpp
-    ${CMAKE_SOURCE_DIR}/benchmark/extlibs/eigenrand
-)
+# target_include_directories(example_ShadingMasks_comparison6 PRIVATE
+#     ${CMAKE_SOURCE_DIR}/benchmark/extlibs/pcg-cpp/include
+#     ${CMAKE_SOURCE_DIR}/benchmark/extlibs/Xoshiro-cpp
+#     ${CMAKE_SOURCE_DIR}/benchmark/extlibs/eigenrand
+# )
 
-target_link_libraries(example_ShadingMasks_comparison6 PRIVATE
+target_link_libraries(ShadingMasks_comparison6 PUBLIC
     Feelpp::feelpp
 )
 
-target_compile_options(example_ShadingMasks_comparison6 PRIVATE
+install(TARGETS ShadingMasks_comparison6 RUNTIME DESTINATION bin COMPONENT Bin)
+
+target_compile_options(ShadingMasks_comparison6 PRIVATE
     -O2
     -march=native
     -funroll-loops

@@ -7,9 +7,10 @@ import os
 import re
 from scipy.ndimage import zoom
 
+# spline interpolation => utiliser fonciton scipy vue avec vigon
 def resample_array_to_match_shape(array, target_shape):
     zoom_ratio = [t/s for t, s in zip(target_shape, array.shape)]
-    return zoom(array, zoom_ratio)
+    return zoom(array, zoom_ratio, order=5)
 
 def calculate_and_store_max(csv_filename):
     shading_test_values = np.genfromtxt(csv_filename, delimiter=',')
@@ -80,8 +81,9 @@ def plotShadingMaskDir(directory_path, destination):
                 plotShadingMask(csv_file_path, destination, max_value)
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--dir_path", type=Path, help='Directory containing the shading mask matrices')
-parser.add_argument("--destination",type=Path, required=True, help='Destination of the shading mask images')
+parser.add_argument("--dir_path", type=Path, required=True, help='Directory containing the shading mask matrices')
+parser.add_argument("--destination",type=Path, default= Path("results/images") , help='Destination of the shading mask images')
+# parser.add_argument("--RNG", type=str, default="_STD", help='RNG name to be added to the output')
 
 p = parser.parse_args()
 

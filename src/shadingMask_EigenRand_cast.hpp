@@ -176,6 +176,7 @@ public:
     // Compute shading masks for the buildings in the json file
     void computeMasks()
     {
+        // Use tic tac here
         for(std::string building_name : j_["Buildings"])
         {
             computeMasksOneBuilding(building_name);//,M_bvh_tree_vector[building_name]);
@@ -336,7 +337,7 @@ public:
         if (!boost::filesystem::exists(shadingMaskFolder))
             boost::filesystem::create_directory(shadingMaskFolder);
         
-        std::string matrix_filename = shadingMaskFolder+"/SM_Matrix_"+building_name+"_"+marker_name+"EIGENRAND_CAST.csv";
+        std::string matrix_filename = shadingMaskFolder+"/SM_Matrix_"+building_name+"_"+marker_name+"_EIGENRAND_CAST.csv";
         matrix_file.open(matrix_filename,std::ios_base::out);
         for(int i=0; i<M_azimuthSize; i++)
         {

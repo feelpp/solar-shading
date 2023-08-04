@@ -31,9 +31,12 @@ One can also launch this example via CTest.
 
 When executing command <1>, not only are the Shading Masks computed, but also the respective perez models (one for each hour of the day between sunrise and sunset), sampled on a random day of the year with Strasbourg coordinates (latitude and longitude) used to retrieve the sun's position across the day, but also the meteorological data needed to compute the Perez all-weather sky model. The results are stored in feelpp's local database (named feelppdb, at feelppdb/{case_name}/{building_name}). The Perez models are stored as .csv files, in the form of a matrix with shapes (azimuthSize, altitudeSize) in order to correspond to the Shading Mask matrix to enable element-wise multiplication.
 
-These can then be displayed after multiplication with the Shading Mask matrix, using a slightly different python script:
+These can then be displayed after multiplication with the Shading Mask matrix (done automatically), using a slightly different python script:
 
-`python src/visualization/shadingMask_skyModel_visualization.py --dir_path <PATH_TO_SHADING_MASKS_RESULT_DIRECTORY> --destination <DIRECTORY_STORING_VISUALIZATION_RESULTS>`
+`python src/visualization/shadingMask_skyModel_visualization.py --dir_path <PATH_TO_SHADING_MASKS_RESULT_DIRECTORY> `
+
+One can also choose to save the results at a different location using the `--destination` argument as follows:
+`--destination <PATH_TO_DESTINATION_DIRECTORY>`
 
 The Sky Models are retrieved automatically from the local database, and the results are stored in the same directory as the Shading Masks' .png files.
 

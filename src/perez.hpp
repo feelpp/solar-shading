@@ -452,13 +452,17 @@ public:
     /* Compute the relative sky luminance (lv) */
     double lv(double zeta, double gamma)
     {
+        double lv;
         // check if zeta is near pi/2
         if (std::abs(zeta) > M_PI/2 - 1e-2)
         {
-            zeta = M_PI/2;
-            // std::cout << "Warning, zeta is near pi/2 , zeta = " << zeta << " and cos(zeta) = " << std::cos(zeta) << " and b = " << M_PerezParameters(1) << std::endl;
+            lv = (1.0 + M_PerezParameters(0) * std::exp(M_PerezParameters(1) / (std::cos(zeta) + 1e-6))) * (1.0 + M_PerezParameters(2) * std::exp(M_PerezParameters(3) * gamma) + M_PerezParameters(4) * std::pow(std::cos(gamma), 2.0));
+
         }
-        double lv = (1.0 + M_PerezParameters(0) * std::exp(M_PerezParameters(1) / (std::cos(zeta) + 1e-6))) * (1.0 + M_PerezParameters(2) * std::exp(M_PerezParameters(3) * gamma) + M_PerezParameters(4) * std::pow(std::cos(gamma), 2.0));
+        else 
+        {
+            lv = (1.0 + M_PerezParameters(0) * std::exp(M_PerezParameters(1) / std::cos(zeta))) * (1.0 + M_PerezParameters(2) * std::exp(M_PerezParameters(3) * gamma) + M_PerezParameters(4) * std::pow(std::cos(gamma), 2.0));
+        }
         return lv;
     }
 
@@ -469,11 +473,13 @@ public:
         double integral_lv = 0.0;
         double delta_theta = M_PI / (2.0 * num_points); 
         double delta_phi = 2.0 * M_PI / num_points; 
+        double theta = 0.0;
+        double zeta = 0.0;
 
         for(int i = 0; i < num_points; ++i)
         {
-            double theta = (i + 0.5) * delta_theta;
-            double zeta = M_PI / 2.0 - theta;
+            theta = (i + 0.5) * delta_theta;
+            zeta = M_PI / 2.0 - theta;
 
             for(int j = 0; j < num_points; ++j)
             {
