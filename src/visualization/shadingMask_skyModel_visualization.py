@@ -44,8 +44,6 @@ def plotShadingMask(csv_filename, destination, max_value):
             if shading_test_values.shape != sky_model_values.shape:
                 shading_test_values = resample_array_to_match_shape(shading_test_values, sky_model_values.shape)
             result = (1 - shading_test_values ) * sky_model_values
-            result /= max_value
-
             result = np.nan_to_num(result)  # replace any NaN or Inf values
 
             fig = plt.figure()
@@ -55,11 +53,12 @@ def plotShadingMask(csv_filename, destination, max_value):
 
             ax1 = plt.subplot(projection="polar")
             plt.grid(False)
-            im = plt.pcolormesh(th, r, result, cmap=cm.viridis , vmin=0, vmax=1) 
+            im = plt.pcolormesh(th, r, result, cmap=cm.viridis , vmin=0, vmax=max_value) 
 
-            v1 = np.linspace(0, 1, 11)
+            v1 = np.linspace(0, max_value, 11)
             cbar = plt.colorbar(im,ticks=v1)
-            cbar.ax.set_yticklabels(["{:4.2f}".format(i) for i in v1])
+            cbar.ax.set_yticklabels(["{:d}".format(int(i)) for i in v1])
+            cbar.set_label('Illuminance [lux]', rotation=270, labelpad=20)
 
             plt.thetagrids([i*15 for i in range(0,24)])
             ax1.set_theta_direction(-1)
@@ -71,6 +70,8 @@ def plotShadingMask(csv_filename, destination, max_value):
             output_file = destination / f'Shading_mask_{shading_name}_{hour}H.png'
             plt.savefig(output_file)
             plt.close(fig)
+
+
 
 def plotShadingMaskDir(directory_path, destination):
     for root, dirs, files in os.walk(directory_path):
