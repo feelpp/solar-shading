@@ -95,22 +95,22 @@ public:
     /* Retrieve data using curl */
     void RetrieveData(double longitude, double latitude, std::string start_date)
     {
-        /* setting the path for the resulting file */
-        std::ofstream file;
-        FS::path resultPath = FS::current_path().parent_path().parent_path().parent_path();
-        FS::path filePath = resultPath / "solar-shading-perez" / "solar-shading" / "results" / "meteo" / "openmeteo.json";
+        std::string meteo_folder = (boost::filesystem::path(Environment::appRepository())/("meteo")).string();
+        if (!boost::filesystem::exists(meteo_folder))
+            boost::filesystem::create_directory(meteo_folder);
+        std::string meteo_filename = meteo_folder + "/openmeteo.json";
+
         ::CURL *curl;
         FILE *fp;
         CURLcode res;
         std::string url = "https://archive-api.open-meteo.com/v1/archive?latitude=" + std::to_string(latitude) + "&longitude=" + std::to_string(longitude) + "&start_date=" + start_date.c_str() + "&end_date=" + start_date.c_str() + "&hourly=is_day,direct_radiation,diffuse_radiation,direct_normal_irradiance";
         curl = curl_easy_init();
         if (curl) {
-            fp = fopen(filePath.string().c_str(),"wb");
+            fp = fopen(meteo_filename.c_str(),"wb");
             curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
             curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, NULL);
             curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
             res = curl_easy_perform(curl);
-            /* always cleanup */
             curl_easy_cleanup(curl);
             fclose(fp);
         }
@@ -172,7 +172,7 @@ public:
         {
             if (M_ZenithAngles[i] > M_PI / 2.0)
             {
-                M_ZenithAngles[i] = M_PI / 2.0 + 1e-6;
+                M_ZenithAngles[i] = M_PI / 2.0 - 1e-6;
             }
         }
     }
@@ -454,7 +454,7 @@ public:
     {
         double lv;
         // check if zeta is near pi/2
-        if (std::abs(zeta) > M_PI/2 - 1e-2)
+        if (std::abs(zeta) > M_PI/2 - 1e-6)
         {
             lv = (1.0 + M_PerezParameters(0) * std::exp(M_PerezParameters(1) / (std::cos(zeta) + 1e-6))) * (1.0 + M_PerezParameters(2) * std::exp(M_PerezParameters(3) * gamma) + M_PerezParameters(4) * std::pow(std::cos(gamma), 2.0));
 
@@ -475,46 +475,24 @@ public:
         double delta_phi = 2.0 * M_PI / num_points; 
         double theta = 0.0;
         double zeta = 0.0;
+        double phi, cosGamma, gamma, lv_value;
 
         for(int i = 0; i < num_points; ++i)
         {
             theta = (i + 0.5) * delta_theta;
             zeta = M_PI / 2.0 - theta;
-
             for(int j = 0; j < num_points; ++j)
             {
-                double phi = (j + 0.5) * delta_phi;
-                double cosGamma = std::sin(solarZenith) * std::sin(zeta) * std::cos(std::abs(solarAzimuth - phi)) + std::cos(solarZenith) * std::cos(zeta);
-                double gamma = std::acos(cosGamma);
-                double lv_value = lv(zeta, gamma);
-                
-                // Check for NaN
-                // if (std::isnan(lv_value))
-                // {
-                //     throw std::logic_error("lv() returned NaN for these values: Zeta = " + std::to_string(zeta) + "; gamma = " + std::to_string(gamma) + "; solarAzimuth = " + std::to_string(solarAzimuth) + "; solarZenith = " + std::to_string(solarZenith));
-                // }
-                // // Check for inf
-                // if (std::isinf(lv_value))
-                // {
-                //     throw std::logic_error("lv() returned inf for these values: Zeta = " + std::to_string(zeta) + "; gamma = " + std::to_string(gamma) + "; solarAzimuth = " + std::to_string(solarAzimuth) + "; solarZenith = " + std::to_string(solarZenith));
-                // }
+                phi = (j + 0.5) * delta_phi;
+                cosGamma = std::sin(solarZenith) * std::sin(zeta) * std::cos(std::abs(solarAzimuth - phi)) + std::cos(solarZenith) * std::cos(zeta);
+                gamma = std::acos(cosGamma);
+                lv_value = lv(zeta, gamma);
 
                 integral_lv += lv_value * std::cos(zeta);
             }
         }
+
         integral_lv *= delta_theta * delta_phi;
-
-        // Check for NaN
-        // if (std::isnan(integral_lv))
-        // {
-        //     throw std::logic_error("Integral is NaN for these values: solarAzimuth = " + std::to_string(solarAzimuth) + "; solarZenith = " + std::to_string(solarZenith));
-        // }
-        // // Check for inf
-        // if (std::isinf(integral_lv))
-        // {
-        //     throw std::logic_error("Integral is inf for these values: solarAzimuth = " + std::to_string(solarAzimuth) + "; solarZenith = " + std::to_string(solarZenith));
-        // }
-
         return integral_lv;
     }
 
@@ -573,148 +551,109 @@ public:
     void computePerezSkyModel(double longitude, double latitude, std::string start_date, nl::json const& specs, int AzimuthSize = 72, int AltitudeSize = 10)
     {
         RetrieveData(longitude, latitude, start_date);
-        M_BuildingName = specs["Buildings"][0];
-        std::cout << fmt::format("Start Computation of the Sky Model for the building {}\n", M_BuildingName);
-
-        FS::path resultPath = FS::current_path().parent_path().parent_path().parent_path();
-        FS::path filePath = resultPath / "solar-shading-perez" / "solar-shading" / "results" / "meteo" / "openmeteo.json";
-        std::ifstream jsonFile(filePath);
-
-        // Check if the file was opened successfully
-        if (!jsonFile) {
-            throw std::logic_error( "Unable to open JSON file" );
-        }
-
-        // Parse the JSON file into a json object
-        nlohmann::json j;
-        jsonFile >> j;
-
-        // Close the file stream
-        jsonFile.close();
-
-        int year = std::stoi(start_date.substr(0, 4)); // Year: 2023
-        int month = std::stoi(start_date.substr(5, 2)); // Month: 07
-        int day = std::stoi(start_date.substr(8, 2)); // Day: 21  
-
-        // get the time zone, supposing the longitude and latitude are in France, taking into account the summer time
-        int timezone = 1;
-        if (month >= 3 && month <= 10) {
-            timezone = 2;
-        }
-
-        // Compute the sun's position
-        std::vector<std::pair<double, double>> sun_positions = computeSunPosition(year, month, day, latitude, longitude, timezone, getTime(j));
-
-        // set the Angles, and convert them to radians
-        for (size_t i = 0; i < sun_positions.size(); i++) {
-            M_SolarAzimuth.push_back(rad(sun_positions[i].first));
-            M_ZenithAngles.push_back(rad(sun_positions[i].second));
-        }
-        checkSolarAngles();
-        
-        // Instanctiate 
-        M_SkyModel = Eigen::MatrixXd::Zero(AzimuthSize, AltitudeSize);
-
-        // Access the time, direct radiation, diffuse radiation, direct normal irradiance
-        M_azimuthSize = AzimuthSize;
-        M_altitudeSize = AltitudeSize;
-        M_Time = getTime(j);
-        M_DirectRadiation = getDirectRadiation(j);
-        M_DiffuseRadiation = getDiffuseRadiation(j);
-        M_DirectNormalIrradiance = getDirectNormalIrradiance(j);
-
-        // Verify the correctness of the downloaded data
-        checkData();
-
-        // Compute the diffuse illuminance, air mass, clearness and brightness
-        M_DiffuseIlluminance = getDiffuseIlluminance(M_DiffuseRadiation);
-        M_AirMass = computeAirMass(M_ZenithAngles);
-        M_Clearness = computeClearness(M_DiffuseRadiation, M_DirectNormalIrradiance, M_ZenithAngles);
-        M_Brightness = computeBrightness(M_DiffuseRadiation, M_AirMass);
-
-        // Check the data's values by doing a std::cout
-        std::cout << "The time is : ";
-        for (size_t i = 0; i < M_Time.size(); i++) {
-            std::cout << M_Time[i] << " ";
-        }
-        std::cout << "\nThe direct radiation is : ";
-        for (size_t i = 0; i < M_DirectRadiation.size(); i++) {
-            std::cout << M_DirectRadiation[i] << " ";
-        }
-        std::cout << "\nThe diffuse radiation is : ";
-        for (size_t i = 0; i < M_DiffuseRadiation.size(); i++) {
-            std::cout << M_DiffuseRadiation[i] << " ";
-        }
-        std::cout << "\nThe direct normal irradiance is : ";
-        for (size_t i = 0; i < M_DirectNormalIrradiance.size(); i++) {
-            std::cout << M_DirectNormalIrradiance[i] << " ";
-        }
-        std::cout << "\nThe diffuse illuminance is : ";
-        for (size_t i = 0; i < M_DiffuseIlluminance.size(); i++) {
-            std::cout << M_DiffuseIlluminance[i] << " ";
-        }
-        std::cout << "\nThe air mass is : ";
-        for (size_t i = 0; i < M_AirMass.size(); i++) {
-            std::cout << M_AirMass[i] << " ";
-        }
-        std::cout << "\nThe clearness is : ";
-        for (size_t i = 0; i < M_Clearness.size(); i++) {
-            std::cout << M_Clearness[i] << " ";
-        }
-        std::cout << "\nThe brightness is : ";
-        for (size_t i = 0; i < M_Brightness.size(); i++) {
-            std::cout << M_Brightness[i] << " ";
-        }
-        std::cout << "\nThe solar azimuth is : ";
-        for (size_t i = 0; i < M_SolarAzimuth.size(); i++) {
-            std::cout << M_SolarAzimuth[i] << " ";
-        }
-        std::cout << "\nThe zenith angle is : ";
-        for (size_t i = 0; i < M_ZenithAngles.size(); i++) {
-            std::cout << M_ZenithAngles[i] << " ";
-        }
-        std::cout << "\n";
-        
-        std::cout << "==============================================================================================================\n";
-        // Loop over the hours of the day in order to compute all models 
-        for (int i = 0; i < M_Time.size(); i++)
+        for(std::string Building_name : specs["Buildings"])
         {
-            M_SkyModel.setZero();
-            int hour = M_Time[i];
-            double delta = M_Brightness[i];  
-            double epsilon = M_Clearness[i];  
-            double A = M_SolarAzimuth[i];  
-            double Z = M_ZenithAngles[i];
-            setPerezParameters(epsilon, delta, Z);
-            double integral_value = compute_integral(A, Z);
-            std::cout << "The Perez Parameters at hour " << hour << " are : " << M_PerezParameters(0) << "   " << M_PerezParameters(1) << "   " << M_PerezParameters(2) << "   " << M_PerezParameters(3) << "   " << M_PerezParameters(4) << "\n";
+            M_BuildingName = Building_name;
+            std::cout << fmt::format("Start Computation of the Sky Model for the building {}\n", M_BuildingName);
 
-            for (int j = 0; j < AltitudeSize; j++) 
-            {
-                for (int k = 0; k < AzimuthSize; k++) 
-                {
-                    double z = M_PI / 2.0 - (double)j / (double)AltitudeSize * M_PI / 2.0;  // zenith of the sky element
-                    double a = (double)k / (double)AzimuthSize * 2.0 * M_PI;  // azimuth of the sky element
-                    if ( j == 0 )
-                        z = M_PI / 2.0 - 1e-6; // avoid division by zero
-                    
-                    // Calculate gamma with error checking
-                    double gamma;
-                    double cos_gamma = std::cos(Z) * std::cos(z) + std::sin(Z) * std::sin(z) * std::cos(std::abs(A - a));
-                    if (cos_gamma > 1 && cos_gamma < 1.1)
-                        gamma = 0;
-                    else if (cos_gamma > 1.1)
-                    {
-                        throw std::logic_error ("Error in calculation of gamma (angle between point and sun)");
-                    }
-                    else
-                    {
-                        gamma = std::acos(cos_gamma);
-                    }
-                    M_SkyModel(k, j) += getNormalizedLuminance(z, gamma, M_DiffuseIlluminance[i], A, Z, integral_value);
-                }
+            std::string meteo_folder = (boost::filesystem::path(Environment::appRepository())/("meteo")).string();
+            if (!boost::filesystem::exists(meteo_folder))
+                boost::filesystem::create_directory(meteo_folder);
+            std::string meteo_filename = meteo_folder + "/openmeteo.json";
+            std::ifstream jsonFile(meteo_filename);
+            
+            // Check if the file was opened successfully
+            if (!jsonFile) {
+                throw std::logic_error( "Unable to open JSON file" );
             }
-            saveSkyModel(hour);
+
+            // Parse the JSON file into a json object
+            nlohmann::json j;
+            jsonFile >> j;
+
+            // Close the file stream
+            jsonFile.close();
+
+            int year = std::stoi(start_date.substr(0, 4)); // Year: 2023
+            int month = std::stoi(start_date.substr(5, 2)); // Month: 07
+            int day = std::stoi(start_date.substr(8, 2)); // Day: 21  
+
+            // get the time zone, supposing the longitude and latitude are in France, taking into account the summer time
+            int timezone = 1;
+            if (month >= 3 && month <= 10) {
+                timezone = 2;
+            }
+
+            // Compute the sun's position
+            std::vector<std::pair<double, double>> sun_positions = computeSunPosition(year, month, day, latitude, longitude, timezone, getTime(j));
+
+            // set the Angles, and convert them to radians
+            for (size_t i = 0; i < sun_positions.size(); i++) {
+                M_SolarAzimuth.push_back(rad(sun_positions[i].first));
+                M_ZenithAngles.push_back(rad(sun_positions[i].second));
+            }
+            checkSolarAngles();
+            
+            // Instanctiate 
+            M_SkyModel = Eigen::MatrixXd::Zero(AzimuthSize, AltitudeSize);
+
+            // Access the time, direct radiation, diffuse radiation, direct normal irradiance
+            M_azimuthSize = AzimuthSize;
+            M_altitudeSize = AltitudeSize;
+            M_Time = getTime(j);
+            M_DirectRadiation = getDirectRadiation(j);
+            M_DiffuseRadiation = getDiffuseRadiation(j);
+            M_DirectNormalIrradiance = getDirectNormalIrradiance(j);
+
+            // Verify the correctness of the downloaded data
+            checkData();
+
+            // Compute the diffuse illuminance, air mass, clearness and brightness
+            M_DiffuseIlluminance = getDiffuseIlluminance(M_DiffuseRadiation);
+            M_AirMass = computeAirMass(M_ZenithAngles);
+            M_Clearness = computeClearness(M_DiffuseRadiation, M_DirectNormalIrradiance, M_ZenithAngles);
+            M_Brightness = computeBrightness(M_DiffuseRadiation, M_AirMass);
+            
+            // Loop over the hours of the day in order to compute all models 
+            for (int i = 0; i < M_Time.size(); i++)
+            {
+                M_SkyModel.setZero();
+                int hour = M_Time[i];
+                double delta = M_Brightness[i];  
+                double epsilon = M_Clearness[i];  
+                double A = M_SolarAzimuth[i];  
+                double Z = M_ZenithAngles[i];
+                setPerezParameters(epsilon, delta, Z);
+                double integral_value = compute_integral(A, Z);
+                std::cout << "The Perez Parameters at hour " << hour << " are : " << M_PerezParameters(0) << "   " << M_PerezParameters(1) << "   " << M_PerezParameters(2) << "   " << M_PerezParameters(3) << "   " << M_PerezParameters(4) << "\n";
+
+                for (int j = 0; j < AltitudeSize; j++) 
+                {
+                    for (int k = 0; k < AzimuthSize; k++) 
+                    {
+                        double z = M_PI / 2.0 - (double)j / (double)AltitudeSize * M_PI / 2.0;  // zenith of the sky element
+                        double a = (double)k / (double)AzimuthSize * 2.0 * M_PI;  // azimuth of the sky element
+                        if ( j == 0 )
+                            z = M_PI / 2.0 - 1e-6; // avoid division by zero
+                        
+                        // Calculate gamma with error checking
+                        double gamma;
+                        double cos_gamma = std::cos(Z) * std::cos(z) + std::sin(Z) * std::sin(z) * std::cos(std::abs(A - a));
+                        if (cos_gamma > 1 && cos_gamma < 1.1)
+                            gamma = 0;
+                        else if (cos_gamma > 1.1)
+                        {
+                            throw std::logic_error ("Error in calculation of gamma (angle between point and sun)");
+                        }
+                        else
+                        {
+                            gamma = std::acos(cos_gamma);
+                        }
+                        M_SkyModel(k, j) += getNormalizedLuminance(z, gamma, M_DiffuseIlluminance[i], A, Z, integral_value);
+                    }
+                }
+                saveSkyModel(hour);
+            }
         }
     }
 };

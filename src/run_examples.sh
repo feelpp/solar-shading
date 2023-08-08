@@ -36,7 +36,7 @@ echo "- 6 : -O2 -march=native -funroll-loops"
 echo "- 7 : -Ofast -march=native -funroll-loops -funsafe-math-optimizations"
 read -p "Enter the number (1 to 7): " NUMBER
 
-EXECUTABLE="./feelpp_ss_example_ShadingMasks_comparison${NUMBER}"
+EXECUTABLE="./example_ShadingMasks_comparison${NUMBER}"
 
 echo "Running the command : $EXECUTABLE --config-file $CONFIG_FILE"
 

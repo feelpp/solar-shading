@@ -35,6 +35,8 @@ def plotShadingMask(csv_filename, destination, max_value):
     shading_test_values = np.genfromtxt(csv_filename, delimiter=',')
     shading_name = Path(csv_filename).stem
     key_part = re.search('SM_Matrix_(.*)_.*', shading_name).group(1)
+    surface  = re.search('SM_Matrix_.*_(.*)', shading_name).group(1)
+    print("Computation of the Sky model for", surface)
 
     sky_models_directory = Path(csv_filename).parent / ".." / "skyModels"
     for hour in range(5, 20):

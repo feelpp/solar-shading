@@ -46,7 +46,7 @@ done
 
 for ((NUMBER=1; NUMBER<${#flags[@]}+1; NUMBER++))
 do
-    EXECUTABLE="./feelpp_ss_example_ShadingMasks_comparison${NUMBER}"
+    EXECUTABLE="./example_ShadingMasks_comparison${NUMBER}"
 
     echo "Running the command : $EXECUTABLE --config-file $CONFIG_FILE"
     output=$( $EXECUTABLE --config-file $CONFIG_FILE )
