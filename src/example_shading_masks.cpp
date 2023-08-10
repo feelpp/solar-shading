@@ -1,4 +1,4 @@
-#include "shadingMask.hpp"
+#include "shading_mask.hpp"
 #include <iostream>
 #include <feel/feelcore/ptreetools.hpp>
 #include <feel/feelcore/utility.hpp>

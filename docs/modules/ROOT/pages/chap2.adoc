@@ -1,0 +1,553 @@
+= Chapter 2 - Bounding Volume Hierarchy (BVH)
+
+Ray-Tracing is a well-known method used in many fields. In order to render physically realistic scenes, or in our case mathematical results, numerous rays must be traced to get plausible outcomes. The goal would be to accelerate the light transport simulation thanks to efficient sampling techniques, leveraging hardware architecture, or by rearranging scene primitives into an efficient spatial data structure. Naïvely, we could compute the ray/scene interactions by testing all scene primitives, which is prohibitively expensive since we rely on fine-grained meshes.
+
+BVH has become popular in many use cases, in particular when using ray-tracing, for numerous reasons such as:
+
+- **predictable memory footprints:** The memory complexity is linearly bounded to the number of scene primitives since each is only referenced once in the tree, so that the BVH contains at most \(2n-1\) nodes for a binary BVH when dealing with \(n\) primitives / leafs. Even in the case of spatial splits where primitives can be referred to multiple times, the number of occurrences can still be controlled to a certain extent.
+- **efficient query:** Using a BVH, we can efficiently prune branches that do not intersect a given ray, and thus reduce the time complexity from linear to logarithmic on average. This will be tested in the benchmark sections.
+- **scalable construction:** There are various BVH construction algorithms, ranging from very fast algorithms to complex algorithms that provide highly optimized BVHs.
+- **dynamic geometry:** since fast BVH construction is available, they are suitable for use with dynamic geometries
+
+**Quality of a BVH:** The quality of such a structure corresponds to the ray tracing speed in millions of rays cast per second
+
+**BVH Node:** Contains information such as child node pointers, the number of leaves, and bounding boxes. Hence, the memory consumption of a BVH drastically increases with the scene's size growth.
+
+== Definition
+
+=== Bounding Volumes
+
+.Bounding Volumes
+[.def#def:BV]
+****
+[stem]
+A **Bounding Volume** is a single simple volume encapsulating one or several objects of more complex nature. The idea is that they have way cheaper overlap tests than the complex ones, very useful when calculating the Ray-Object intersections during traversal. This will result in very fast overlapping rejections.
+****
+
+[]
+image::BoundingVolumes.png[]
+
+==== Axis-Aligned Bounding Boxes (AABBs)
+
+There are 3 main manners of defining such boxes. The overlap tests are straightforward: 2 AABBs only overlap if they overlap on all 3 (or 2 in 2D) axes.
+
+[]
+image::AABBs.png[500]
+
+But these can very rapidly lead to false results when dealing with more complex shapes, specially when they are close or not aligned with the AABB's axes, as displayed below:
+
+[]
+image::OverlappingElements.png
+
+----
+ADD CODE SAMPLES FOR THE INTERSECTION TESTS
+----
+
+==== Oriented Bounding Boxes (OBBs)
+
+----
+ADD COMPLETE DEFINITION AND INTERSECTION TESTS
+----
+
+=== Bounding Volume Hierarchy
+
+A visual definition of a BVH structure using Axis-Aligned Bounding-Boxes.
+
+[]
+image::BVH.png[]
+
+In this context, `N1` would be the bounding volume for the entire object or scene, `N2` and `N3` would be those respectively containing `N4` and `N5`, and so on, until we reach the leaves of the tree, which are directly the bounding boxes of the primitives.
+
+
+
+== Utility
+
+== Construction
+
+Visual representation of the construction process of a BVH :
+[]
+image::constructmet.png[width=500]
+
+[]
+image::constructmetbis.png[width=500]
+
+=== Recursive Top-Down Construction
+
+In the code snippet below, written by Luca Berti, a recursive top-down construction algorithm was proposed for further improvements. We can see that he adopts a recursive build function, which is called to create each node of the tree: if there is only one primitive, then a leaf is build, else, an internal node is created and the build function is called recursively on the left and right child nodes. Here is the proposed implementation:
+
+
+[source,cpp]
+----
+    BVHNode * recursiveBuild(BVHNode * current_parent, int cut_dimension, int start_index_primitive, int end_index_primitive, std::vector<int> &orderedPrims)
+    {
+        LOG(INFO) <<fmt::format("cut dimension {}, start index primitive {}, end index primitive {}",cut_dimension,start_index_primitive,end_index_primitive);
+        Eigen::VectorXd M_bound_min_node(nDim),M_bound_max_node(nDim);
+        BVHNode * node = new BVHTree::BVHNode();
+        M_bound_min_node = M_primitiveInfo[start_index_primitive].M_bound_min;
+        M_bound_max_node = M_primitiveInfo[start_index_primitive].M_bound_max;
+        for (int i = start_index_primitive+1; i < end_index_primitive; ++i)
+		{
+            M_bound_min_node = node->newBoundsMin(M_bound_min_node,M_primitiveInfo[i].M_bound_min);
+            M_bound_max_node = node->newBoundsMax(M_bound_max_node,M_primitiveInfo[i].M_bound_max);
+        }
+        auto mid = (start_index_primitive + end_index_primitive) / 2;
+        std::nth_element(&M_primitiveInfo[start_index_primitive], &M_primitiveInf[mid], &M_primitiveInfo[end_index_primitive-1]+1, 
+        [cut_dimension](const BVHPrimitiveInfo &a, const BVHPrimitiveInfo &b) 
+		{ 
+            return a.M_centroid[cut_dimension] < b.M_centroid[cut_dimension];
+        });
+        int nPrimitives = end_index_primitive - start_index_primitive;
+        if (nPrimitives == 1) 
+        {
+            // Create a leaf, since there is only one primitive in the list
+            int firstPrimOffset = orderedPrims.size();
+            for (int i = start_index_primitive; i < end_index_primitive; ++i) 
+            {
+            int primNum = M_primitiveInfo[i].M_primitiveNumber;
+            orderedPrims.push_back(primNum);
+            }
+            node->buildLeaf(current_parent,firstPrimOffset, nPrimitives, M_bound_min_node,M_bound_max_node);
+            return node;
+        }
+        else{
+            // Create a node, since there are at least two primitives in the list
+            node->buildInternalNode(current_parent,(cut_dimension+1)%nDim,
+                                    recursiveBuild( node, (cut_dimension+1)%nDim, start_index_primitive, mid, orderedPrims),
+                                    recursiveBuild( node, (cut_dimension+1)%nDim, mid, end_index_primitive, orderedPrims));
+        }
+        return node;
+    }
+----
+
+This function is responsible for constructing the BVH tree from the primitives. It's called recursively and each time it either creates a leaf node if there's only one primitive left, or an internal node with two child nodes. The primitives are split by choosing a cutting dimension and sorting them by their centroids along this dimension, and then the data is divided into two equally sized parts, for each of which a new node is created. 
+
+The cutting dimension is cycled between 0, 1, 2 (representing the x, y, and z axes in a 3D space) by using `(cut_dimension+1)%nDim` in the recursive calls. This is the main "Divide and Conquer" idea behind this top-down construction algorithm.
+
+It then sorts the primitives by their centroids along the cutting dimension, using the `std::nth_element` function, which partially sorts the primitives so that the element at the mid index will be in the place it would be in a fully sorted array, and all elements before it are less than or equal to the elements after it. The comparison function `[cut_dimension](const BVHPrimitiveInfo &a, const BVHPrimitiveInfo &b) { return a.M_centroid[cut_dimension] < b.M_centroid[cut_dimension]; }` is used to sort the elements based on their centroids along the cutting dimension.
+
+Finally, the data is divided into two equally sized parts when calculating the midpoint of the primitives' indexes.
+
+Other splitting algorithms can be used, such as the Surface Area Heuristic (SAH) or the Middle Split Heuristic (MSH), which are listed and explained in the <<Spatial Splits and Clustering>> section.
+
+=== Bottom-Up Construction
+
+Instead of starting with all scene primitives in one cluster and recursively splitting them, bottom-up construction algorithms start with each primitive in its own cluster and recursively merge the closest pairs. This is done either until the desired number of clusters is reached, or each cluster contains a maximum number of primitives. The clusters are then used as the primitives for the next level of the tree. This process is repeated until the root node is reached.
+
+----
+ADD COMPLETE DEFINITION AND WHY IT WONT BE USED
+----
+
+Below is an example of a bottom-up construction algorithm:
+
+---- 
+ADD BOTTOM-UP CONSTRUCTION ALGORITHM
+----
+
+Introduced by Walter et al., bottom-up construction by agglomerative clustering proposes to start with all scene primitives considered as individual clusters and recursively merges the closest pairs (the distance function being for example the surface area of a bounding box enclosing both clusters). In general, these trees tend to have lower global costs, but the construction is more time-consuming.
+
+== Spatial Splits and Clustering 
+
+Performing the spatial splits in an optimized way is crucial to the performance of the BVH. In fact, this is deeply related to the BVH's layout, which is the way the BVH is stored in memory, hence having a strong impact on it's construction time, the resulting quality of the BVH, and the traversal performance. The first step is to choose the splitting algorithm, and more importantly the separating axes.
+
+=== Agglomerative Clustering
+The major inconvenience when using bottom-up algorithms is that the upper nodes are poorly locally optimized and thus the research for the closest neighbor can be very costly. To prevent this, Gu et al proposed to recursively perform spatial median splits based on Morton codes until each subtree contains less than a chosen number of clusters. The clusters are merged using agglomerative clustering. Using this at all levels in the BVH, even the top level nodes' split will be locally optimized.
+
+Meister and Bittner proposed a GPU-based algorithm using k-means clustering: scene primitives are subdivided into k clusters using k-means clustering. When done recursively, a k-ary BVH is built, which can also be converted to a binary tree by constructing intermediate levels using agglomerative clustering.
+
+=== Parallel locally-ordered clustering on GPU
+Introduced by Meister and Bittner, the key observation is that the distance functions have a non-decreasing property, meaning that once we found two mutually corresponding nearest neighbors, we can immediately merge their clusters since no other closer one will be found. The clusters are kept sorted along the Morton Curve, finding the nearest cluster by searching both sides of the sorted cluster array, testing a predefined number of clusters. Since it does not rely on distance matrices, it is GPU-friendly, and only a small number of iterations are needed to build the whole tree.
+
+=== Linear BVH (LBVH)
+The hierarchical nature of the BVH prevents a straightforward parallelization of the construction algorithm. But now, the BVH construction can be reduced to sorting scene primitives along the Morton curve (the order is given by Morton codes of fixed length, 32 or 64 bits), and using optimized sorting algorithms such as the radix sort, it can be done in 2n-1 time. The Morton code implicitly encodes a BVH constructor by spatial median splits.
+
+
+=== Morton Curves
+
+. Morton Curves
+[.def#def:Morton]
+****
+**Morton curves** map multidimensional data to one dimension while preserving the locality of the data points. They can be considered as a special 1-dimensional path traversing multidimensional data. Displayed below is an example of a Z-order curve (also known as a Morton curve) in a two-dimensional plane. The curve is constructed by interleaving the binary representations of the x and y coordinates of the data points. The resulting curve is continuous and preserves the locality of the data points, meaning that nearby points in the multidimensional space are also nearby in the one-dimensional space. This property is very useful for spatial indexing and spatial data structures, such as during the construction process of BVHs.
+****
+
+[]
+image::morton.png[width=250px]
+
+These can be defined thanks to various algorithms presented on
+link:https://developer.nvidia.com/blog/thinking-parallel-part-iii-tree-construction-gpu/[NVIDIA's website].
+
+=== Longest Axis
+One straightforward approach is to choose the axis with the longest extent of the bounding volume as the separating axis. This can help effectively divide the scene along its largest dimension, potentially leading to more balanced partitions.
+
+=== Axis Cycling
+Another method involves cycling through the three axes (X, Y, Z) and selecting the next axis in a cyclic manner for each spatial split. This approach ensures that the splitting axes are evenly distributed and can help maintain overall balance in the BVH construction.  This is the approach proposed by Luca Berti, presented in the original code of this project, like seen during the call to the recursive build function:
+
+[source,c++]
+----
+node->buildInternalNode(current_parent,(cut_dimension+1)%nDim,
+                                        recursiveBuild( node, (cut_dimension+1)%nDim, start_index_primitive, mid, orderedPrims),
+                                        recursiveBuild( node, (cut_dimension+1)%nDim, mid, end_index_primitive, orderedPrims));
+----
+
+The 2nd value representing the cutting dimension is cycled between 0, 1 and 2, representing the x, y and z axes of our 3 dimensional euclidean space, by using `(cut_dimension+1)%nDim` in the recursive calls. At each call, it is incremented by 1, enabling a different splitting axis to be used at *each level* of the tree. After choosing the splitting axis, the median value along that axis is computed and used as the splitting position, also know as a median cut, discussed right below.
+
+=== Median Cut
+The median cut strategy involves computing the median value along a specific axis and using it as the splitting position. This method aims to divide the scene into two halves containing an equal number of objects, which can help achieve good load balancing. This is implemented in the following line of the recursive build method, when calling the `std::nth_element` function:
+
+[source,c++]
+----
+auto mid = (start_index_primitive + end_index_primitive) / 2;
+std::nth_element(&M_primitiveInfo[start_index_primitive], &M_primitiveInfo[mid], 
+        &M_primitiveInfo[end_index_primitive-1]+1,
+            [cut_dimension](const BVHPrimitiveInfo &a, const BVHPrimitiveInfo &b) { 
+                return a.M_centroid[cut_dimension] < b.M_centroid[cut_dimension];
+            });
+----
+
+=== Cost Functions
+
+:stem: latexmath
+
+The quality of a particular BVH can be estimated in terms of the expected number of operations needed for finding the nearest intersection with a given ray. It can be estimated thanks to the recurrence equation:
+
+
+[stem]
+++++
+c(N)=
+\begin{cases}
+c_{T}+\sum_{N_c}{P(N_{c}|N)c(N_{c})} & c_{I}|N|
+\end{cases}
+++++
+
+==== Surface Area Heuristic (SAH)
+As mentioned earlier, the SAH criterion can also be used to determine the separating axis. It evaluates the cost of each axis based on the surface area of the resulting bounding volumes and chooses the axis with the lowest cost.
+
+Using the *surface area heuristic (SAH)*, we can express the conditional probabilities as geometric ones, using their respective surface area to compute the ratio of the surface areas of a child node and the parent's one:
+
+[stem]
+++++
+P(N_{c}|N)^{SAH} = \frac{Area(N_c)}{Area(N)}
+++++
+
+And finally, assuming that the ray origins and directions are uniformly distributed, after unrolling we get:
+
+[stem]
+++++
+c(N)^{SAH} = \frac{1}{Area(N)} (c_T \sum_{N_i}Area(N_i) + c_i \sum_{N_l}Area(N_l)|N_l|)
+++++
+
+Where \(N_i\) and \(N_l\)  respectively denote interior and leaf nodes of a subtree with root \(N\). 
+The problem of finding an optimal BVH is believed to be NP-hard. But these assumptions are unrealistic and thus several corrections have been proposed.
+
+== Layout
+
+After successfully constructing the tree in an optimized way, it is important to note that both optimizing the traversal code and the tree's representation itself are very important to see an increase in performance. Two obvious ways of dealing with that are to minimize the size of the data structures involved and to rearrange the data in a more cache-friendly way to reduce time for the search of relevant information (for example, it would be better to structure the array holding the pointers in such a way to minimize the time spent during traversal).
+
+=== Array Representation
+Let's look at a natural way of structuring the tree by mapping its nodes in a breadth-first level-by-level manner:
+
+[source,c++]
+----
+// First Level
+array[0] = *(root);
+// Second level
+array[1] = *(root->left);
+array[2] = *(root->right);
+// Third level
+array[3] = *(root->left->left);
+----
+
+
+
+This way, we always know that a parent's children can be found at positions \(2i+1\) and \(2i+2\) in the array, usually inducing wasted memory unless dealing with a complete tree.
+
+[]
+image::arrayrep.png[400]
+
+=== Preorder Traversal Order
+When preordering them in traversal order, the left child will always follow its parent, and only one link is needed to point to the right child.
+
+[]
+image::preordertraversal.png[400]
+
+[source,c++]
+----
+// Given a tree t, outputs its nodes in preorder traversal order
+// into the node array n. Call with i = 0.
+int PreorderOutput(Tree *t, Tree n[], int i)
+	{
+	// Implement a simple stack of parent nodes.
+	// Note that the stack pointer ‘sp’ is automatically reset between calls
+	const int STACK_SIZE = 100;
+	static int parentStack[STACK_SIZE];
+	static int sp = 0;
+	// Copy over contents from tree node to PTO tree
+	n[i].nodeData = t->nodeData;
+	// Set the flag indicating whether there is a left child
+	n[i].hasLeft = t->left != NULL;
+	// If node has a right child, push its index for backpatching
+	if (t->right) {
+		assert(sp < STACK_SIZE);
+		parentStack[sp++] = i;
+	}
+	// Now recurse over the left part of the tree
+	if (t->left)
+		i = PreorderOutput(t->left, n, i + 1);
+	if (t->right) {
+		// Backpatch the right-link of the parent to point to this node
+		int p = parentStack[--sp];
+		n[p].rightPtr = &n[i + 1];
+		// Recurse over the right part of the tree
+		i = PreorderOutput(t->right, n, i + 1);
+	}
+	// Return the updated array index on exit
+	return i;
+}
+----
+
+Flattening the tree in this way allows us to store the tree in a single array, with each node containing a pointer to its right child and a flag indicating whether it has a left child or not. This way, we can easily traverse the tree by following the right child pointers and using the left child flags to determine whether we should follow the left child or not and avoid the need for a stack and storage of 2 pointers per node (only one is necessary). This method is also cache-friendly since the nodes are stored in a linear array.
+
+=== Cache-friendly Structures
+When using modern architecture, execution time is mostly limited by cache issues when fetching data from memory. One possible way of adopting a cache-friendlier solution would be by merging the sets of binary tree nodes into a 'tri-node' containing the parent and its children, preventing it from needing internal links. Below we can see an example representing a complete 4-level binary tree with 14 internal links with a 2-level tri-node tree storing only 4 internal links. Even better, this representation can also be combined with other optimizing structures seen before.
+
+[]
+image::cachefriendly.png[600]
+
+Flattening a tri-node tree is similar to flattening a binary tree, except that we need to store the parent's index in the array as well as the left and right child flags. The right child pointer is replaced by a flag indicating whether the parent has a right child or not, the left and parent's one are replaced in the same manner. The root node is a special case, since it has no parent, signified by a special flag. Three new structures (`GPUNode`, `GPURay` and `GPUTree`) were introduced, storing only critical information for it to be of small enough size to be copied-by-value to the GPU.
+
+== Traversal
+
+=== Stack-Based Algorithms
+
+==== Definition
+
+==== Algorithm
+
+==== Summary
+
+=== Stack-Less Algorithms
+
+==== Definition
+
+Traversing a ray through a bounding volume hierarchy is usually carried out in a recursive manner, therefore making it maintain a full stack per ray, which rapidly becomes very costly. Several stack-less algorithms exist, however they have to perform infrequent restarts of the traversal from the root or traverse more nodes than their stack-based counterparts.
+
+Many reasons have pushed researches in this field, such as:
+
+- *efficient memory usage:* since stack-less algorithms don't require keeping track of the traversal state. This is critical when implementing it on GPUs, where memory is very limited
+- *coherency:* these algorithms can be more coherent in terms of memory access patterns, since they have more predictable behaviors
+- *predictability:* predictable performance due lack of deep recursion possibilities, mostly occurring when applying a stack-based algorithm on a unbalanced BVH.
+- *parallelism:* since they do not require to push and pop from a stack, these methods offer rich parallelization capabilities
+
+The presented algorithm presents a stack-less iterative method traversing the BVH structure in the exact same order as stack-based ones, mainly thanks to added parent-pointers stored within each node and thus performing only one ray-box intersection test per internal node.
+
+==== Assumptions to be made 
+
+- use of a binary BVH, in which all primitives are stored in leaf nodes, and in which each inner node has exactly two children (so-called siblings)
+- there is an efficient way of determining each node's parent and sibling
+- for each inner node there is a unique traversal order in which it's children are traversed, possibly varying from ray to ray.
+
+==== Algorithm
+
+A commonly-used way of storing the parent's information is to store an explicit parent pointer for each node, done either by squeezing the parent pointer into unused parts of the node or by storing them directly in a separate array of parent pointers.
+
+For traversal order, a first method would be to store for each node the coordinate axis along which the builder split the parent node and use the ray's direction sign in this dimension to determine the traversal order. On the other hand, we can directly use the dimension in which the nodes' centroids are widest apart. Finally, we could also directly compute the distance to the sibling's bounding boxes, inferring many computations.
+
+First, in order to fully understand the methods benefits, let us understand all the underlyings of recursive algorithms. How does the traversal algorithm work? 
+After having successfully intersected the parent, the traversal goes to the `nearChild` (found with any type of method), and does a ray-box test for this node. If the node is missed, `farChild` is processed, But if the test was successful, it continues by intersecting its primitives (if the node is a leaf), or by recursively entering the node's subtree (in case it's an inner node). Once `nearChild` is fully processed, traversal resumes with `farChild` exactly and the same sequence of events takes place.
+
+This already gives us an overlook of the simple deterministic automaton algorithm. In fact, we can start and make a parallel between the three ways of how any given node can be traversed and the tree states of the algorithm. During recursive traversal, a node can either be traversed:
+- from its parents (case `fromParent`): we know that we are entering `nearChild`. We traverse the current node: if it's missed, we proceed with a `fromSibling` case and if not, either it's a leaf node and we intersect its primitives, or it's an inner node and we continue with its subtree.
+- from its siblings (case `fromSibling`): we are entering `farChild` and we are traversing this node for the first time. If it's missed, we back-track to its parent. Otherwise we intersect it's primitives against the ray if it's a leaf node and proceed to parent, and if not we enter the current node's subtree performing a `fromParent` step. 
+- from one of its children (case `fromChild`): the current node was already tested during the top to bottom phase, it **should not** be re-tested. The next on the list is either the current node's `farChild` or its parent
+
+[]
+Algorithm Developed by the Authors
+
+[source,c++]
+----
+void traverse(ray, node) {
+	char state = fromParent;
+	while (true) {
+		switch (state) {
+			case fromChild:
+				if (current == root) return; // finished
+				if (current == nearChild(parent(current))){
+					current = sibling(current); 
+					state = fromSibling; // (1a)
+				}
+				else {
+					current = parent(current);
+					state = fromChild; // (1b)
+				}
+				break;
+			case fromSibling:
+				if (boxtest(ray, current) == MISSED) {
+					current = parent(current);
+					state = fromChild; // (2a)
+					}
+				else if (isLeaf(current)) {
+					// ray-primite intersection tests
+					processLeaf(ray, current);
+					current = parent(current);
+					state = fromChild; // (2b)
+				}
+				else {
+					current = nearChild(current);
+					state = fromParent; //2a
+				}
+				break;
+			case fromParent:
+				if (boxtest(ray, current) == MISSED) {
+					current = sibling(current);
+					state. = fromSibling; // (3a)
+				}
+				else if (isLeaf(current)) {
+					// ray-primitive intersection tests
+					processLeaf(current);
+					current = sibling(current);
+					state = fromSibling; // (3b)
+				}
+				else {
+					current = nearChild(current);
+					state = fromParent; // (3a)
+				}
+				break;
+		}
+	}
+}
+----
+
+image::BVlayers.png[]
+
+And such spacial divisions can lead to a similar tree as the following:
+
+image::BVlayerstree.png[]
+
+=== Stack-less GPU friendly Algorithm
+
+When looking ate the storage needed for the computation of ShadingMasks, we can pass the whole BVH structure and make a copy of it directly on the GPU's shared memory. This way, we can avoid the need to transfer the BVH structure from the CPU to the GPU constantly, which can be a very expensive operation. Using such a method may cause problems depending on the size of the BVH structure, since the GPU's shared memory is limited. However, we can use the BVH structure's size as a parameter to determine whether or not we should use this method. If the BVH structure is too big, we can implement smaller structures to hold the BVH, preordering the nodes in flattened 1D array's only containing useful information (and not all methods and attributes of the BVH structure). This way, we can reduce the size of the BVH structure and make it fit in the GPU's shared memory. And since the traversal is performed `nRays * nElements` times (more than 5000 rays per element), we can compute the array's once by indexing the nodes, its children and its parent.
+
+==== Copy-by-value 
+
+As presented on link:https://developer.nvidia.com/blog/thinking-parallel-part-ii-tree-traversal-gpu/[NVIDIA's website], we can directly create a copy of the wanted BVH structure, enabling it to be able to access all needed functions preceded with `__device__`. If the memory allows it we can use the state-based traversal algorithm presented above. NVIDIA's website presents the following code:
+
+[source,c++]
+----
+__device__ void traverseIterative( CollisionList& list,
+                                   BVH& bvh, 
+                                   AABB& queryAABB, 
+                                   int queryObjectIdx)
+{
+    // Allocate traversal stack from thread-local memory,
+    // and push NULL to indicate that there are no postponed nodes.
+    NodePtr stack[64];
+    NodePtr* stackPtr = stack;
+    *stackPtr++ = NULL; // push
+
+    // Traverse nodes starting from the root.
+    NodePtr node = bvh.getRoot();
+    do
+    {
+        // Check each child node for overlap.
+        NodePtr childL = bvh.getLeftChild(node);
+        NodePtr childR = bvh.getRightChild(node);
+        bool overlapL = ( checkOverlap(queryAABB, 
+                                       bvh.getAABB(childL)) );
+        bool overlapR = ( checkOverlap(queryAABB, 
+                                       bvh.getAABB(childR)) );
+
+        // Query overlaps a leaf node => report collision.
+        if (overlapL && bvh.isLeaf(childL))
+            list.add(queryObjectIdx, bvh.getObjectIdx(childL));
+
+        if (overlapR && bvh.isLeaf(childR))
+            list.add(queryObjectIdx, bvh.getObjectIdx(childR));
+
+        // Query overlaps an internal node => traverse.
+        bool traverseL = (overlapL && !bvh.isLeaf(childL));
+        bool traverseR = (overlapR && !bvh.isLeaf(childR));
+
+        if (!traverseL && !traverseR)
+            node = *--stackPtr; // pop
+        else
+        {
+            node = (traverseL) ? childL : childR;
+            if (traverseL && traverseR)
+                *stackPtr++ = childR; // push
+        }
+    }
+    while (node != NULL);
+}
+----
+
+But we will optimize it by using the state-based traversal algorithm presented above. Implementing it in CUDA will be similar, leveraging the complex BVH structure containing all the needed functions and attributes. We will also use the `__device__` keyword to make the functions accessible from the GPU.
+
+==== Preordering Algorithm
+
+If the memory is not big enough to store the whole BVH structure, we can use a preordering algorithm to store the BVH structure in a flattened 1D array. This way, we can store only the needed information for the traversal, and not the whole BVH structure. This method is presented in 'Real-Time Collision Detection' by Christer Ericson. The algorithm is as follows:
+
+[source,c++]
+----
+int PreorderOutput(Tree *t, Tree n[], int i)
+{
+	// Implement a simple stack of parent nodes.
+	// Note that the stack pointer ‘sp’ is automatically reset between calls
+	const int STACK_SIZE = 100;
+	static int parentStack[STACK_SIZE];
+	static int sp = 0;
+	// Copy over contents from tree node to PTO tree
+	n[i].nodeData = t->nodeData;
+	// Set the flag indicating whether there is a left child
+	n[i].hasLeft = t->left != NULL;
+	// If node has right child, push its index for backpatching
+	if (t->right) {
+		assert(sp < STACK_SIZE);
+		parentStack[sp++] = i;
+	}
+	// Now recurse over left part of tree
+	if (t->left)
+		i = PreorderOutput(t->left, n, i + 1);
+	if (t->right) {
+		// Backpatch right-link of parent to point to this node
+		int p = parentStack[--sp];
+		n[p].rightPtr = &n[i + 1];
+		// Recurse over right part of tree
+		i = PreorderOutput(t->right, n, i + 1);
+	}
+	// Return the updated array index on exit
+	return i;
+}
+
+struct Tree {
+	NodeData nodeData;
+	bool hasLeft;
+	Tree *rightPtr;
+};
+----
+
+A stack is only used once, in order to identify the order of traversal, but will never be used on GPUs.
+
+This representation also leverages the use of pointers, only using one to point to the right child, which would be accessed only later during traversal since we use a `depth-first` search if the intersection test was successful for a given node.
+
+
+=== Conclusion
+
+When dealing with the computation of shading masks, view factors or radiative transport, we use static geometry to realistically represent the scene. Only few topological changes have to be taken into account, hence the decision of also optimizing the build for the BVH tree's quality in order to reduce traversal operations. Even if the construction speed is important, we are not developing a real-time application, but rather trying to compute physically realistic results. We can build the BVH once and reuse it for multiple ray tracing operations without the need to update or rebuild the BVH. This approach can significantly improve performance, as constructing the BVH is a computationally expensive operation.
+
+Even when taking into account the changes occurring due to the seasonality of the chosen districts and cities (french cities are subdued to changing weather conditions, leaves are falling and trees do not cast as big of a shadow in winter than in summer).
+
+
+== Optimization
+
+=== Software
+
+=== Hardware
+
+Spatial data structures exploit the spatial locality of scene primitives. But this isn't the only way of leveraging spatial locality. To further accelerate the whole process, we could map rays to interior nodes deeper in the tree during the traversal, skipping top-level nodes. A major caveat of such methods is that there is no guarantee that the found intersection corresponds to the closest one. But when computing shading masks, the lack of distance consideration is not a drawback. Instead, we solely focus on determining whether an object is present along the path of the ray.
+
+Another way to optimize the ray generation would be to exploit the graphics card's instancing of objects, enabling it to create multiple copies of one object in record time. Benthin and Wald decided that, instead of tracing the rays sequentially, they would generate bounding frusta of coherent rays simultaneously harnessing the potential of a SIMD unit (as many rays in one frustum as the SIMD unit is wide). 
+
+This could be taken further, by assigning parts of a matrix to a specific block in the GPU, leveraging the constant memory and launching the frustum of rays in the respective direction defined by the block-assigned resulting matrix. This way, the rays are processed in a more coherent manner, and the GPU's constant memory is used to its full potential. Moreover, the frustum could be instantiated directly on the GPU, and the identical rays could be transformed and translated through random values, generated by the mersene twister algorithm that can be implemented on a CUDA kernel, and therefore be naturally processed in parallel. This would result in a more efficient memory transfer, since the rays shouldn't be transferred back to the CPU, but only the resulting intersected leaves.
+
+image::Nvidia-GPU-memory-structure.png[600]
+
+== BVH Variants and Extensions
