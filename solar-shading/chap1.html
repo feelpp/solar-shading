@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Using VSCode :: Solar Shading</title>
-    <link rel="canonical" href="https://feelpp.github.io/solar-shading/solar-shading/vscode.html">
+    <title>Chapter 1 - Shading Masks :: Solar Shading</title>
+    <link rel="canonical" href="https://feelpp.github.io/solar-shading/solar-shading/chap1.html">
     <meta name="generator" content="Antora 3.1.4">
     <link rel="stylesheet" href="../_/css/site.css">
 <link rel="icon" href="../_/img/favicon.ico" type="image/x-icon">
@@ -144,7 +144,7 @@ MathJax.Hub.Config({
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="antora.html">antora environment</a>
   </li>
-  <li class="nav-item is-current-page" data-depth="2">
+  <li class="nav-item" data-depth="2">
     <a class="nav-link" href="vscode.html">vscode integration</a>
   </li>
   <li class="nav-item" data-depth="2">
@@ -165,7 +165,7 @@ MathJax.Hub.Config({
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="introduction.html">Introduction</a>
   </li>
-  <li class="nav-item" data-depth="2">
+  <li class="nav-item is-current-page" data-depth="2">
     <a class="nav-link" href="chap1.html">Chapter 1</a>
   </li>
   <li class="nav-item" data-depth="2">
@@ -206,13 +206,13 @@ MathJax.Hub.Config({
   <ul>
     <li><a href="index.html">Feel++ Template Project</a></li>
     <li><a href="index.html">Introduction</a></li>
-    <li>Solar Shading environment</li>
-    <li><a href="vscode.html">vscode integration</a></li>
+    <li><a href="report.html">Report Ariel De Vora</a></li>
+    <li><a href="chap1.html">Chapter 1</a></li>
   </ul>
 </nav>
 
   
-    <div class="edit-this-page"><a href="https://github.com/feelpp/solar-shading/edit/8-prepare-solar-shading-computation-for-large-meshes/docs/modules/ROOT/pages/vscode.adoc">Edit this Page</a></div>
+    <div class="edit-this-page"><a href="https://github.com/feelpp/solar-shading/edit/8-prepare-solar-shading-computation-for-large-meshes/docs/modules/ROOT/pages/chap1.adoc">Edit this Page</a></div>
   
   <div class="page-downloads">
   <span class="label">Download as</span>
@@ -232,34 +232,83 @@ MathJax.Hub.Config({
   <div class="toc-menu"></div>
 </aside>
 <article class="doc">
-<h1 class="page">Using VSCode</h1>
+<h1 class="page">Chapter 1 - Shading Masks</h1>
+<div class="sect1">
+<h2 id="_thermal_aspects"><a class="anchor" href="#_thermal_aspects"></a>1. Thermal Aspects</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_structures"><a class="anchor" href="#_structures"></a>2. Structures</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_ray_tracing"><a class="anchor" href="#_ray_tracing"></a>3. Ray Tracing</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_monte_carlo"><a class="anchor" href="#_monte_carlo"></a>4. Monte-Carlo</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_perez_all_weather_sky_model"><a class="anchor" href="#_perez_all_weather_sky_model"></a>5. Perez all-weather sky model</h2>
+<div class="sectionbody">
 <div class="paragraph">
-<p>The project is configured to integrate VSCode using Docker Container.</p>
+<p>The Perez All-Weather model is a commonly used mathematical model for predicting the luminance distribution of the sky under various weather conditions. This model is named after its creator, Fernando Perez, who developed it in the late 20th century.</p>
 </div>
 <div class="paragraph">
-<p>The Docker image can be set from <code>feelpp/feelpp</code> or <code>feelpp/feelpp-toolboxes</code>, simply edit <code>.devcontainer/Dockerfile</code> and choose the image you want.</p>
+<p>The model provides a method of representing the complex, variable nature of the sky&#8217;s appearance by taking into account several key parameters including the sun&#8217;s zenith and azimuth angles, the overall level of luminance (brightness) in the sky, the level of clearness, which describes how much the sky is dominated by the direct sunlight as opposed to the diffuse skylight and the level of turbidity, which describes the amount of aerosols or atmospheric particulates, affecting the scattering of light.</p>
 </div>
 <div class="paragraph">
-<p><code>ssh-keyscan</code> is used on <code>github.com</code> to register the public key of github in $HOME/.ssh/known_hosts and avoid having git auth issues the first time we log into the container and push/pull to/from github.</p>
+<p>The Perez model uses these parameters to generate a function that represents the luminance of the sky as a function of direction, or more precisely of the zenith angle of the considered sky element (ζ) and the angle between the sky element and the position of the sun (γ). This function is defined as follows and named 'lv' in the Perez model:</p>
+</div>
+<div class="stemblock">
+<div class="content">
+\[lv = f(\zeta, \gamma) = (1 + a \exp(\frac{b}{\cos(\zeta)})) (1 + c \exp(d \gamma) + e \cos^2(\gamma))\]
+</div>
 </div>
 <div class="paragraph">
-<p>The following extensions are installed in Docker:</p>
+<p>The parameters a, b, c, d and e are determined by the level of clearness (ε) and brightness (Δ) as follows :</p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p>cpptools</p>
-</li>
-<li>
-<p>cmaketools</p>
-</li>
-<li>
-<p>cmake</p>
-</li>
-<li>
-<p>asciidoctor-vscode</p>
-</li>
-</ul>
+<div class="stemblock">
+<div class="content">
+\[x = x_1(\epsilon) + x_2(\epsilon)Z + \Delta(x_3(\epsilon) + x_4(\epsilon)Z)\]
+</div>
+</div>
+<div class="paragraph">
+<p>Where x is any of the parameters a, b, c, d or e, Z is the zenith angle and x1, x2, x3 and x4 are constants and discrete functions of the clearness level ε. The values of these functions are given in the following table:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/PerezCoeffTable.png" alt="PerezCoeffTable">
+</div>
+</div>
+<div class="paragraph">
+<p>It&#8217;s worth mentioning that, while the Perez model is very flexible and capable of representing a wide range of sky conditions, it is a model and thus an approximation. It doesn&#8217;t perfectly represent all possible sky conditions. Furthermore, it assumes a certain level of homogeneity in the sky conditions, which may not always be the case in reality. For example, situations with localized cloud formations or rapidly changing weather conditions can be difficult to represent accurately with the model.</p>
+</div>
+<div class="paragraph">
+<p>In order to compute the model, we will need to be able to track the sun&#8217;s position in the sky. This is done using the Solar Position Algorithm (SPA) provided by the National Renewable Energy Laboratory (NREL), avialable <a href="https://midcdmz.nrel.gov/spa/">here</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_view_factors"><a class="anchor" href="#_view_factors"></a>6. View Factors</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_shading_mask_structures"><a class="anchor" href="#_shading_mask_structures"></a>7. Shading Mask Structures</h2>
+<div class="sectionbody">
+
+</div>
 </div>
 </article>
   </div>
