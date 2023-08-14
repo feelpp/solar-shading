@@ -21,7 +21,7 @@ One can specify a single csv file, a directory containing several csv files, and
 
 After building the sources, one can launch the example_shading_mask case
 
-`./feelpp_ktirio_example_shading_masks --config-file example_shading_mask/example_shading_mask.cfg`
+`./feelpp_ss_example_shading_masks_volume_mesh --config-file example_shading_mask/example_shading_mask.cfg`
 
 It will produce a mask per marked surface (floors are not marked). In order to visualize the results, one can launch the Python script
 
