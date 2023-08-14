@@ -1,5 +1,0 @@
-{
-    "Nrays":1000,
-    "Nthreads":10,
-    "Buildings":{"fileSurfaces":"$cfgdir/exampleShadingMaskSurface_surfid.txt"}
-}

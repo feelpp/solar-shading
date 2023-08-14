@@ -1,1 +1,0 @@
-example_ShadingMasks_surfaceMesh-1 --config-file ${CMAKE_CURRENT_SOURCE_DIR}/cases/exampleShadingMask/exampleShadingMaskSurface.cfg
