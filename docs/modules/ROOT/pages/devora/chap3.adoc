@@ -1,4 +1,4 @@
-= Chapter 3 - Becnhmarking and Performance Measurement
+= Benchmarking and Performance Measurement
 
 == Shell / Bash Scripting and Automation
 

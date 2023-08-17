@@ -1,4 +1,4 @@
-= Chapter 1 - Shading Masks
+= Shading Masks
 
 == Thermal Aspects
 
