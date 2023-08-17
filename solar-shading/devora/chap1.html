@@ -4,14 +4,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Chapter 1 - Shading Masks :: Solar Shading</title>
-    <link rel="canonical" href="https://feelpp.github.io/solar-shading/solar-shading/chap1.html">
+    <link rel="canonical" href="https://feelpp.github.io/solar-shading/solar-shading/devora/chap1.html">
     <meta name="generator" content="Antora 3.1.4">
-    <link rel="stylesheet" href="../_/css/site.css">
-<link rel="icon" href="../_/img/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="../../_/css/site.css">
+<link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon">
 <script>!function(l,p){if(l.protocol!==p&&l.host=="docs.antora.org"){l.protocol=p}else if(/\.gitlab\.io$/.test(l.host)){l.replace(p+"//docs.antora.org"+l.pathname.substr(l.pathname.indexOf("/",1))+l.search+l.hash)}}(location,"https:")</script>
 
-<script src="../_/js/vendor/tabs-block-extension.js"></script>
-<script src="../_/js/vendor/tabs-block-behavior.js"></script>
+<script src="../../_/js/vendor/tabs-block-extension.js"></script>
+<script src="../../_/js/vendor/tabs-block-behavior.js"></script>
 
 
 
@@ -90,12 +90,13 @@ MathJax.Hub.Config({
 
 <!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0/katex.min.css" integrity="sha384-TEMocfGvRuD1rIAacqrknm5BQZ7W7uWitoih+jMNFXQIbNl16bO8OZmylH/Vi/Ei" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0/katex.min.js" integrity="sha384-jmxIlussZWB7qCuB+PgKG1uLjjxbVVIayPJwi6cG6Zb4YKq0JIw+OMnkkEC7kYCq" crossorigin="anonymous"></script>-->
-<script>var uiRootPath = '../_'</script>
+<script>var uiRootPath = '../../_'</script>
 
   </head>
   <body class="article">
 <header class="header">
-    <nav class="navbar navbar-expand-sm bg-dark navbar-dark navbar-template-project" style="border-top: 4px solid #9E9E9E">
+    <nav class="navbar navbar-expand-sm bg-dark navbar-dark navbar-template-project"
+        style="border-top: 4px solid #9E9E9E">
         <div class="navbar-brand">
             <div class="navbar-item feelpp-logo">
                 <a href="https://feelpp.github.io/solar-shading">Solar Shading</a>
@@ -112,70 +113,70 @@ MathJax.Hub.Config({
                 <div class="navbar-item">
                     <a href="https://docs.feelpp.org/">Documentation Reference</a>
                 </div>
+                <div class="navbar-item has-dropdown is-hoverable download-item">
+                    <div class="navbar-item"><a href="https://docs.feelpp.org/user/latest/install/index.html"
+                            class="download-btn">Get Feel++</a></div>
+                </div>
                 <div class="navbar-item">
-                    <a class="navbar-brand"  href="https://www.cemosis.fr">
-                        <img class="cemosis-logo"  src="../_/img/cemosis-logo.svg" alt="Cemosis logo"/>
+                    <a class="navbar-brand" href="https://www.cemosis.fr">
+                        <img class="cemosis-logo" src="../../_/img/cemosis-logo.svg" alt="Cemosis logo" />
                     </a>
                 </div>
             </div>
         </div>
     </nav>
-</header>
-<div class="body">
+</header><div class="body">
 <a href="#" class="menu-expand-toggle"></a>
 <div class="nav-container" data-component="solar-shading" data-version="">
   <aside class="nav">
     <div class="panels">
 <div class="nav-panel-menu is-active" data-panel="menu">
   <nav class="nav-menu">
-    <h3 class="title"><a href="index.html">Feel++ Template Project</a></h3>
+    <h3 class="title"><a href="../index.html">Feel++ Solar Shading</a></h3>
 <ul class="nav-list">
   <li class="nav-item" data-depth="0">
     <button class="nav-item-toggle"></button>
-    <a class="nav-link" href="index.html">Introduction</a>
+    <a class="nav-link" href="../index.html">Introduction</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="1">
     <button class="nav-item-toggle"></button>
     <span class="nav-text">Solar Shading environment</span>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="cmake.html">cmake environment</a>
+    <a class="nav-link" href="../cmake.html">cmake environment</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="antora.html">antora environment</a>
+    <a class="nav-link" href="../antora.html">antora environment</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="vscode.html">vscode integration</a>
+    <a class="nav-link" href="../vscode.html">vscode integration</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="githubactions.html">Github Actions</a>
+    <a class="nav-link" href="../githubactions.html">Github Actions</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="rename.html">Renaming the project</a>
+    <a class="nav-link" href="../rename.html">Renaming the project</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="jupyter.html">Jupyter Notebook</a>
+    <a class="nav-link" href="../jupyter.html">Jupyter Notebook</a>
   </li>
 </ul>
   </li>
   <li class="nav-item" data-depth="1">
     <button class="nav-item-toggle"></button>
-    <a class="nav-link" href="report.html">Report Ariel De Vora</a>
+    <a class="nav-link" href="introduction.html">Report Ariel De Vora</a>
 <ul class="nav-list">
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="introduction.html">Introduction</a>
-  </li>
   <li class="nav-item is-current-page" data-depth="2">
-    <a class="nav-link" href="chap1.html">Chapter 1</a>
+    <a class="nav-link" href="chap1.html">Shading Masks</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="chap2.html">Chapter 2</a>
+    <a class="nav-link" href="chap2.html">Bounding Volume Hierarchy</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="chap3.html">Chapter 3</a>
+    <a class="nav-link" href="chap3.html">Benchmarking and Performance Measurement</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="conclusion.html">Conclusion</a>
+    <a class="nav-link" href="#devora/conclusion.adoc">Conclusion</a>
   </li>
 </ul>
   </li>
@@ -186,12 +187,12 @@ MathJax.Hub.Config({
 </div>
 <div class="nav-panel-explore" data-panel="explore">
   <div class="context">
-    <span class="title">Feel++ Template Project</span>
+    <span class="title">Feel++ Solar Shading</span>
     <span class="version"></span>
   </div>
   <ul class="components">
       <li class="component is-current">
-        <a class="title" href="index.html">Feel++ Template Project</a>
+        <a class="title" href="../index.html">Feel++ Solar Shading</a>
       </li>
   </ul>
 </div>
@@ -201,18 +202,18 @@ MathJax.Hub.Config({
 <main class="article">
 <div class="toolbar" role="navigation">
   <button class="nav-toggle"></button>
-    <a href="index.html" class="home-link"></a>
+    <a href="../index.html" class="home-link"></a>
   <nav class="breadcrumbs" aria-label="breadcrumbs">
   <ul>
-    <li><a href="index.html">Feel++ Template Project</a></li>
-    <li><a href="index.html">Introduction</a></li>
-    <li><a href="report.html">Report Ariel De Vora</a></li>
-    <li><a href="chap1.html">Chapter 1</a></li>
+    <li><a href="../index.html">Feel++ Solar Shading</a></li>
+    <li><a href="../index.html">Introduction</a></li>
+    <li><a href="introduction.html">Report Ariel De Vora</a></li>
+    <li><a href="chap1.html">Shading Masks</a></li>
   </ul>
 </nav>
 
   
-    <div class="edit-this-page"><a href="https://github.com/feelpp/solar-shading/edit/7-add-project-report-to-antora-pages/docs/modules/ROOT/pages/chap1.adoc">Edit this Page</a></div>
+    <div class="edit-this-page"><a href="https://github.com/feelpp/solar-shading/edit/21-update-internship-report/docs/modules/ROOT/pages/devora/chap1.adoc">Edit this Page</a></div>
   
   <div class="page-downloads">
   <span class="label">Download as</span>
@@ -220,7 +221,7 @@ MathJax.Hub.Config({
     <li>
       <a onclick="print(this)" href="#" data-toggle="tooltip" data-placement="left" title="Print to PDF"
          class="pdf-download">
-        <img class="pdf-file-icon icon" src="../_/img/pdf.svg"/> .pdf
+        <img class="pdf-file-icon icon" src="../../_/img/pdf.svg"/> .pdf
       </a>
     </li>
   </ul>
@@ -320,7 +321,7 @@ MathJax.Hub.Config({
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="_images/PerezCoeffTable.png" alt="PerezCoeffTable">
+<img src="../_images/PerezCoeffTable.png" alt="PerezCoeffTable">
 </div>
 </div>
 <div class="paragraph">
@@ -368,18 +369,18 @@ MathJax.Hub.Config({
     <div class="container" style="display: flex; flex-direction: column; align-items: center; gap: 0.5em;">
         <div>
             <a href="https://www.cemosis.fr">
-                <img src="../_/img/cemosis-logo.svg" alt="Cemosis logo" height="50">
+                <img src="../../_/img/cemosis-logo.svg" alt="Cemosis logo" height="50">
             </a>
         </div>
         <span style="font-size: 0.8rem; color: #9e9e9e">© 2023 <a href="https://www.cemosis.fr" style="text-decoration: underline;">Cemosis</a>, Université de Strasbourg</span>
     </div>
 </footer>
-<script id="site-script" src="../_/js/site.js" data-ui-root-path="../_"></script>
+<script id="site-script" src="../../_/js/site.js" data-ui-root-path="../../_"></script>
 
 
-<script async src="../_/js/vendor/fontawesome-icon-defs.js"></script>
-<script async src="../_/js/vendor/fontawesome.js"></script>
-<script async src="../_/js/vendor/highlight.js"></script>
+<script async src="../../_/js/vendor/fontawesome-icon-defs.js"></script>
+<script async src="../../_/js/vendor/fontawesome.js"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
 
 
 <script type="text/javascript">

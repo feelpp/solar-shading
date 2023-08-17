@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Renaming the project :: Solar Shading</title>
-    <link rel="canonical" href="https://feelpp.github.io/solar-shading/solar-shading/rename.html">
+    <title>Overview of Feel++ Solar Shading :: Solar Shading</title>
+    <link rel="canonical" href="https://feelpp.github.io/solar-shading/solar-shading/overview.html">
     <meta name="generator" content="Antora 3.1.4">
     <link rel="stylesheet" href="../_/css/site.css">
 <link rel="icon" href="../_/img/favicon.ico" type="image/x-icon">
@@ -154,7 +154,7 @@ MathJax.Hub.Config({
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="githubactions.html">Github Actions</a>
   </li>
-  <li class="nav-item is-current-page" data-depth="2">
+  <li class="nav-item" data-depth="2">
     <a class="nav-link" href="rename.html">Renaming the project</a>
   </li>
   <li class="nav-item" data-depth="2">
@@ -206,14 +206,12 @@ MathJax.Hub.Config({
   <nav class="breadcrumbs" aria-label="breadcrumbs">
   <ul>
     <li><a href="index.html">Feel++ Solar Shading</a></li>
-    <li><a href="index.html">Introduction</a></li>
-    <li>Solar Shading environment</li>
-    <li><a href="rename.html">Renaming the project</a></li>
+    <li><a href="overview.html">Overview of Feel++ Solar Shading</a></li>
   </ul>
 </nav>
 
   
-    <div class="edit-this-page"><a href="https://github.com/feelpp/solar-shading/edit/21-update-internship-report/docs/modules/ROOT/pages/rename.adoc">Edit this Page</a></div>
+    <div class="edit-this-page"><a href="https://github.com/feelpp/solar-shading/edit/21-update-internship-report/docs/modules/ROOT/pages/overview.adoc">Edit this Page</a></div>
   
   <div class="page-downloads">
   <span class="label">Download as</span>
@@ -233,12 +231,103 @@ MathJax.Hub.Config({
   <div class="toc-menu"></div>
 </aside>
 <article class="doc">
-<h1 class="page">Renaming the project</h1>
+<h1 class="page">Overview of Feel++ Solar Shading</h1>
+<div class="sect1">
+<h2 id="_organisation"><a class="anchor" href="#_organisation"></a>1. Organisation</h2>
+<div class="sectionbody">
 <div class="paragraph">
-<p>The script <code>rename.sh</code> renames the project.</p>
+<p>The directory structure of the project is as follows:</p>
 </div>
+<div class="listingblock">
+<div class="content">
+<pre>.
+├── docs
+│   ├── antora
+│   └── modules
+└── src
+    └── cases
+
+5 directories</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The <code>docs</code> directory contains the documentation of the project and uses antora to generate the documentation.</p>
+</li>
+<li>
+<p>The <code>src</code> directory contains initially some C++ and Python Feel++ source code of the project to help you get started.</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
 <div class="paragraph">
-<p>You have to answer a few questions to setup a new project out of this template.</p>
+<p>Feel++ is a C++ library for the numerical simulation of partial differential equations. It is designed to be easy to use and to extend.
+{feelpp }is a free software distributed under the terms of the GNU General Public License version 3.
+The documentation is available <a href="https://docs.feelpp.org">&gt; here</a>.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_how_to_build_the_project"><a class="anchor" href="#_how_to_build_the_project"></a>2. How to build the project</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You need first to follow the <a href="quickstart.html" class="xref page">quickstart</a> to get the Feel++ environment.
+The installation procedure uses <a href="cmake.html" class="xref page">Cmake</a> for the C++ programs and create a bundle of this project.
+The steps are as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ cmake --preset default <i class="conum" data-value="1"></i><b>(1)</b>
+$ cmake --build --preset default <i class="conum" data-value="2"></i><b>(2)</b>
+$ cmake --build --preset default -t install <i class="conum" data-value="3"></i><b>(3)</b>
+$ ctest --preset default <i class="conum" data-value="4"></i><b>(4)</b>
+$ cmake --build --preset default -t package <i class="conum" data-value="5"></i><b>(5)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Configure the project</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Build the project</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Install the project</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Run the tests</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Package the project</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_how_to_start_documenting_your_work"><a class="anchor" href="#_how_to_start_documenting_your_work"></a>3. How to start documenting your work</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The documentation is written in Asciidoc and uses Antora to generate the documentation. Please check the project <a href="antora.html" class="xref page">Antora</a> page to get started.</p>
+</div>
+</div>
 </div>
 </article>
   </div>
