@@ -1,2 +1,0 @@
-= Benchmarking and Acceleration of Solar Mask computation
-
