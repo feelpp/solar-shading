@@ -1,27 +1,22 @@
 = {project_name}
-This is a {feelpp} Template Project.    
-It serves s a template for {feelpp} projects.
+:navtitle: home
+:page-layout: home-project
+:!numbered:
 
-{feelpp} is a {cpp} library for the numerical simulation of partial differential equations. It is designed to be easy to use and to extend.
-{feelpp }is a free software distributed under the terms of the GNU General Public License version 3.
+[.lead]
+This is the {feelpp} solar shading project to compute solar masks and view factors using {feelpp}.
 
-== Installation
+.Coding with {feelpp} in {cpp} or {python}
+[.examp]
+****
+xref:overview.adoc[{feelpp} {cpp} and {python}] codes are available to help you get started with using and coding with {feelpp}.
+****
 
-The installation procedure is as follows:
-
-[source,bash]
-----
-$ cmake --preset default # <1>
-$ cmake --build --preset default # <2>
-$ cmake --build --preset default -t install # <3>
-$ ctest --preset default # <4>
-$ cmake --build --preset default -t package # <5>
-----
-<.> Configure the project
-<.> Build the project
-<.> Install the project
-<.> Run the tests
-<.> Package the project
+.Documenting your work with Asciidoc and Antora
+[.examp]
+****
+The documentation is written using the https://docs.asciidoctor.org[Asciidoc plain text format] and https://docs.antora.org[Antora] to produce the documentation website. Checkout xref:antora.adoc[this page], it is here to help you get started with creating documentation.
+****
 
 
 
