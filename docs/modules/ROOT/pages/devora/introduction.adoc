@@ -57,8 +57,6 @@ My work can be separated into two quasi-independent parts:
 
 === Tools
 
-==== Global
-
 Seeing the scale of this project, numerous tools will have to be used, ranging from benchmarking simple methods to understanding all the underlyings of compilation flags and optimized data structures for BVH representation of complex and large scenes.
 
 For the benchmarks, libraries such as googletest will be used to perform quality benchmarks on our distributions (speed and quality) and on our BVH construction algorithms such as the traversing ones.
@@ -75,7 +73,7 @@ During the two-month period, the project also aims to leverage GitHub for mainta
 
 The parallelization process on GPUs is a crucial part of this project, but many different architectures exist and hence many different approaches to parallelization are possible. These can be implement in various ways, but different APIs also imply different capabilities and constraints. So depending on the available hardware, different approaches will be used. Below are listed the different APIs that will be used in this project, their advantages and drawbacks, and how they will be used.
 
-===== NVIDIA OptiX 
+==== NVIDIA OptiX 
 
 OptiX is a ray tracing framework developed by NVIDIA. It provides a higher-level programming model specifically designed for ray tracing applications, abstracting away many of the complexities of this technique and providing a simplified interface for developing applications. It handles tasks such as BVH construction, ray traversal, and intersection testing, allowing developers to focus more on the application logic rather than low-level implementation details.
 
@@ -99,7 +97,7 @@ Overall, the SIMT execution model in NVIDIA GPUs provides a balance between SIMD
 
 When coding with the OptiX API, access is granted to optimized methods using speculative traversal methods on the warps, meaning that instead of incrementing the states linearly during traversal, the API will estimate the next state to transfer to, using speculative probabilities in order to optimize the number of threads that can be treated in parallel.
 
-===== CUDA
+==== CUDA
 
 CUDA is a parallel computing platform and programming model developed by NVIDIA. It allows developers to write high-performance GPU-accelerated code using the CUDA programming language. CUDA provides low-level access to GPU hardware and is suitable for a wide range of general-purpose GPU computing tasks beyond ray tracing.
 

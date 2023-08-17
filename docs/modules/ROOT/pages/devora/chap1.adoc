@@ -16,10 +16,41 @@ toc::[]
 Ray tracing stands as a pivotal computational technique in the realm of realistic light simulation and graphics, especially when high levels of accuracy and detail are essential. In the specific context of computing shading masks, the Perez all weather sky model, and the calculation of view factors, ray tracing is invaluable. It facilitates the tracing of rays from a viewpoint into the scene, allowing for the accurate representation of how light interacts with various surfaces. This is particularly significant when working with diverse atmospheric conditions and intricate urban or architectural structures. Moreover, when integrated with the Monte Carlo technique, ray tracing becomes an even more potent tool. The Monte Carlo method, which relies on repeated random sampling to obtain numerical results, paired with ray tracing, enables precise integration over complex domains and distributions. This combination not only enhances the reliability of computations but also expands the scope of scenarios and phenomena that can be realistically modeled and studied.
 
 == Monte-Carlo
+:stem: latexmath
 
----
-Reference to the page allready existing in the feelpp documentation at link::https://feelpp.github.io/ktirio/ktirio/1.0.0/models/heat/radiative-heat-transfer/montecarlo.html[Monte-Carlo]
----
+In the domain of numerical integration, one can differentiate between deterministic and stochastic methods to estimate integrals. A classic example of deterministic methods is Simpson's rule, which derives its approach based on pairing function values to estimate areas. Specifically, Simpson's rule is defined as:
+
+[stem]
+++++
+I \approx \frac{h}{6} \left( y_0 + 2\sum_{i=1}^{\frac{n}{2}} y_{2i-1} + 4\sum_{i=1}^{\frac{n}{2}-1} y_{2i} + y_n \right)
+++++
+
+where \( I \) is the estimated integral, \( h \) is the width of each sub-interval, and \( y_i \) denotes the function value at the \( i^{th} \) point.
+
+On the other hand, Monte Carlo integration adopts a stochastic method, with each sample resulting in a unique outcome. The integral approximation in this technique is:
+
+[stem]
+++++
+I \approx Q_N \approx \frac{1}{N} \sum_{i=1}^{N} \frac{f(x_i)}{p(x_i)}
+++++
+
+where \( N \) represents the total number of random samples, \( f(x_i) \) is the function value at the random point \( x_i \) and \( p(x_i) \) is the probability density function at \( x_i \) used to draw the random samples.
+
+But if the chosen probability density function is a uniform distribution, the Monte Carlo integral can be simplified to:
+
+[stem]
+++++
+I \approx Q_N \approx \frac{1}{N} \sum_{i=1}^{N} f(x_i)
+++++
+
+Given Monte Carlo integration's inherent randomness, the outcome is presented as an estimate surrounded by error bars. The efficiency of the Monte Carlo approach enhances with an increase in sample size, anchored by the law of large numbers. This principle posits that as \( N \), the number of samples, approaches infinity, the average result from Monte Carlo will tend to the actual integral value. Consequently, the approximated integral \(Q_N\) is ensured to follow the law of large numbers, with the error bars shrinking as \( N \) increases: 
+
+[stem]
+++++
+\lim_{N \to \infty} Q_N = I
+++++
+
+Further references can be found in the feelpp documentation at link::https://feelpp.github.io/ktirio/ktirio/1.0.0/models/heat/radiative-heat-transfer/montecarlo.html[Monte-Carlo].
 
 == Perez all-weather sky model
 
@@ -27,7 +58,7 @@ Reference to the page allready existing in the feelpp documentation at link::htt
 
 The Perez All-Weather model is a commonly used mathematical model for predicting the luminance distribution of the sky under various weather conditions. This model is named after its creator, Fernando Perez, who developed it in the late 20th century (1993).
 
-The focus of this part was implementing the Perez All-Weather Sky Model, a complex mathematical framework used for representing the luminance distribution of the sky under various weather conditions. Our implementation leveraged open-source libraries and modern programming paradigms, resulting in a robust solution that readily integrated with existing shading mask computations. Throughout the implementation, we faced several challenges, notably, the complex nature of the Perez model, requiring careful attention to mathematical and physical details. We also grappled with issues of computational efficiency, as large amounts of data in real-time needed to be processed. The implementation was designed to be flexible and widely applicable, specifically in terms of location and time. 
+The focus of this part was implementing the Perez All-Weather Sky Model, a complex mathematical framework used for representing the luminance distribution of the sky under various weather conditions. Our implementation leveraged open-source libraries and modern programming paradigms, resulting in a robust solution that readily integrated with existing shading mask computations. Throughout the implementation, we faced several challenges, notably, the complex nature of the Perez model, requiring careful attention to mathematical and physical details. We also grappled with issues of computational efficiency, as large amounts of data in real-time needed to be processed. The implementation was designed to be flexible and widely applicable, specifically in terms of location and time.
 
 The model provides a method of representing the complex, variable nature of the sky's appearance by taking into account several key parameters including the sun's zenith and azimuth angles, the overall level of luminance (brightness) in the sky, the level of clearness, which describes how much the sky is dominated by the direct sunlight as opposed to the diffuse skylight and the level of turbidity, which describes the amount of aerosols or atmospheric particulates, affecting the scattering of light.
 
@@ -62,7 +93,7 @@ double cos_gamma = std::cos(Z) * std::cos(z) + std::sin(Z) * std::sin(z) * std::
 
 [stem]
 ++++
-\cos(\gamma) = \cos(Z) \cos(z) + \sin(Z) \sin(z) \cos(\abs(A - a))
+\cos(\gamma) = \cos(Z) \cos(z) + \sin(Z) \sin(z) \cos(|A - a|)
 ++++
 
 Where z is the zenith angle of the sky element, Z is the zenith angle of the sun, a is the azimuth angle of the sky element and A is the azimuth angle of the sun. The zenith angle of the sky element is already known since the hemisphere's discretization is done when the `computePerezSkymodel()` method is called.
@@ -70,5 +101,3 @@ Where z is the zenith angle of the sky element, Z is the zenith angle of the sun
 Lastly, the Perez model was combined with a shading mask to account for the effect of obstacles blocking the sunlight. The calculation of the shading table involved an element-wise matrix multiplication operation, which required careful handling due to the large size of the matrices involved and the specific organization of data within them. Another key challenge we faced was the interpolation of matrices of different sizes, allowing us to integrate data from different sources, with different spatial resolutions, into our computations. This feature was particularly useful in the case of the shading masks, which are generated using a separate algorithm, and thus may have different spatial resolutions than the ones Perez model. But this algorithm couldn't be used when parts of the shading matrices were totaly in the shadow, because the interpolation algorithm would interpolate the values of the shadowed parts with values of the unshadowed parts, which resulted in slightly wrong shading mask when the dimensions of both matrices were mismatched. This problem was solved by using a different interpolation algorithm that only interpolated the values of the unshadowed parts of the shading mask, for example by defining the boundaries of the shadowed parts, either by directly looking up for zeros in the shading mask table, or by using techniques such as the Sobel operator, able to detect changes in intensity in the matrix, thus defining the edges.
 
 == View Factors
-
-== Shading Mask Structures
