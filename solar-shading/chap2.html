@@ -3,15 +3,15 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Bounding Volume Hierarchy (BVH) :: Solar Shading</title>
-    <link rel="canonical" href="https://feelpp.github.io/solar-shading/solar-shading/devora/chap2.html">
+    <title>Chapter 2 - Bounding Volume Hierarchy (BVH) :: Solar Shading</title>
+    <link rel="canonical" href="https://feelpp.github.io/solar-shading/solar-shading/chap2.html">
     <meta name="generator" content="Antora 3.1.4">
-    <link rel="stylesheet" href="../../_/css/site.css">
-<link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="../_/css/site.css">
+<link rel="icon" href="../_/img/favicon.ico" type="image/x-icon">
 <script>!function(l,p){if(l.protocol!==p&&l.host=="docs.antora.org"){l.protocol=p}else if(/\.gitlab\.io$/.test(l.host)){l.replace(p+"//docs.antora.org"+l.pathname.substr(l.pathname.indexOf("/",1))+l.search+l.hash)}}(location,"https:")</script>
 
-<script src="../../_/js/vendor/tabs-block-extension.js"></script>
-<script src="../../_/js/vendor/tabs-block-behavior.js"></script>
+<script src="../_/js/vendor/tabs-block-extension.js"></script>
+<script src="../_/js/vendor/tabs-block-behavior.js"></script>
 
 
 
@@ -90,13 +90,12 @@ MathJax.Hub.Config({
 
 <!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0/katex.min.css" integrity="sha384-TEMocfGvRuD1rIAacqrknm5BQZ7W7uWitoih+jMNFXQIbNl16bO8OZmylH/Vi/Ei" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0/katex.min.js" integrity="sha384-jmxIlussZWB7qCuB+PgKG1uLjjxbVVIayPJwi6cG6Zb4YKq0JIw+OMnkkEC7kYCq" crossorigin="anonymous"></script>-->
-<script>var uiRootPath = '../../_'</script>
+<script>var uiRootPath = '../_'</script>
 
   </head>
   <body class="article">
 <header class="header">
-    <nav class="navbar navbar-expand-sm bg-dark navbar-dark navbar-template-project"
-        style="border-top: 4px solid #9E9E9E">
+    <nav class="navbar navbar-expand-sm bg-dark navbar-dark navbar-template-project" style="border-top: 4px solid #9E9E9E">
         <div class="navbar-brand">
             <div class="navbar-item feelpp-logo">
                 <a href="https://feelpp.github.io/solar-shading">Solar Shading</a>
@@ -113,70 +112,70 @@ MathJax.Hub.Config({
                 <div class="navbar-item">
                     <a href="https://docs.feelpp.org/">Documentation Reference</a>
                 </div>
-                <div class="navbar-item has-dropdown is-hoverable download-item">
-                    <div class="navbar-item"><a href="https://docs.feelpp.org/user/latest/install/index.html"
-                            class="download-btn">Get Feel++</a></div>
-                </div>
                 <div class="navbar-item">
-                    <a class="navbar-brand" href="https://www.cemosis.fr">
-                        <img class="cemosis-logo" src="../../_/img/cemosis-logo.svg" alt="Cemosis logo" />
+                    <a class="navbar-brand"  href="https://www.cemosis.fr">
+                        <img class="cemosis-logo"  src="../_/img/cemosis-logo.svg" alt="Cemosis logo"/>
                     </a>
                 </div>
             </div>
         </div>
     </nav>
-</header><div class="body">
+</header>
+<div class="body">
 <a href="#" class="menu-expand-toggle"></a>
 <div class="nav-container" data-component="solar-shading" data-version="">
   <aside class="nav">
     <div class="panels">
 <div class="nav-panel-menu is-active" data-panel="menu">
   <nav class="nav-menu">
-    <h3 class="title"><a href="../index.html">Feel++ Solar Shading</a></h3>
+    <h3 class="title"><a href="index.html">Feel++ Template Project</a></h3>
 <ul class="nav-list">
   <li class="nav-item" data-depth="0">
     <button class="nav-item-toggle"></button>
-    <a class="nav-link" href="../index.html">Introduction</a>
+    <a class="nav-link" href="index.html">Introduction</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="1">
     <button class="nav-item-toggle"></button>
     <span class="nav-text">Solar Shading environment</span>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="../cmake.html">cmake environment</a>
+    <a class="nav-link" href="cmake.html">cmake environment</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="../antora.html">antora environment</a>
+    <a class="nav-link" href="antora.html">antora environment</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="../vscode.html">vscode integration</a>
+    <a class="nav-link" href="vscode.html">vscode integration</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="../githubactions.html">Github Actions</a>
+    <a class="nav-link" href="githubactions.html">Github Actions</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="../rename.html">Renaming the project</a>
+    <a class="nav-link" href="rename.html">Renaming the project</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="../jupyter.html">Jupyter Notebook</a>
+    <a class="nav-link" href="jupyter.html">Jupyter Notebook</a>
   </li>
 </ul>
   </li>
   <li class="nav-item" data-depth="1">
     <button class="nav-item-toggle"></button>
-    <a class="nav-link" href="introduction.html">Report Ariel De Vora</a>
+    <a class="nav-link" href="report.html">Report Ariel De Vora</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="chap1.html">Shading Masks</a>
+    <a class="nav-link" href="introduction.html">Introduction</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="chap1.html">Chapter 1</a>
   </li>
   <li class="nav-item is-current-page" data-depth="2">
-    <a class="nav-link" href="chap2.html">Bounding Volume Hierarchy</a>
+    <a class="nav-link" href="chap2.html">Chapter 2</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="chap3.html">Benchmarking and Performance Measurement</a>
+    <a class="nav-link" href="chap3.html">Chapter 3</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="#devora/conclusion.adoc">Conclusion</a>
+    <a class="nav-link" href="conclusion.html">Conclusion</a>
   </li>
 </ul>
   </li>
@@ -187,12 +186,12 @@ MathJax.Hub.Config({
 </div>
 <div class="nav-panel-explore" data-panel="explore">
   <div class="context">
-    <span class="title">Feel++ Solar Shading</span>
+    <span class="title">Feel++ Template Project</span>
     <span class="version"></span>
   </div>
   <ul class="components">
       <li class="component is-current">
-        <a class="title" href="../index.html">Feel++ Solar Shading</a>
+        <a class="title" href="index.html">Feel++ Template Project</a>
       </li>
   </ul>
 </div>
@@ -202,18 +201,18 @@ MathJax.Hub.Config({
 <main class="article">
 <div class="toolbar" role="navigation">
   <button class="nav-toggle"></button>
-    <a href="../index.html" class="home-link"></a>
+    <a href="index.html" class="home-link"></a>
   <nav class="breadcrumbs" aria-label="breadcrumbs">
   <ul>
-    <li><a href="../index.html">Feel++ Solar Shading</a></li>
-    <li><a href="../index.html">Introduction</a></li>
-    <li><a href="introduction.html">Report Ariel De Vora</a></li>
-    <li><a href="chap2.html">Bounding Volume Hierarchy</a></li>
+    <li><a href="index.html">Feel++ Template Project</a></li>
+    <li><a href="index.html">Introduction</a></li>
+    <li><a href="report.html">Report Ariel De Vora</a></li>
+    <li><a href="chap2.html">Chapter 2</a></li>
   </ul>
 </nav>
 
   
-    <div class="edit-this-page"><a href="https://github.com/feelpp/solar-shading/edit/21-update-internship-report/docs/modules/ROOT/pages/devora/chap2.adoc">Edit this Page</a></div>
+    <div class="edit-this-page"><a href="https://github.com/feelpp/solar-shading/edit/7-add-project-report-to-antora-pages/docs/modules/ROOT/pages/chap2.adoc">Edit this Page</a></div>
   
   <div class="page-downloads">
   <span class="label">Download as</span>
@@ -221,7 +220,7 @@ MathJax.Hub.Config({
     <li>
       <a onclick="print(this)" href="#" data-toggle="tooltip" data-placement="left" title="Print to PDF"
          class="pdf-download">
-        <img class="pdf-file-icon icon" src="../../_/img/pdf.svg"/> .pdf
+        <img class="pdf-file-icon icon" src="../_/img/pdf.svg"/> .pdf
       </a>
     </li>
   </ul>
@@ -233,9 +232,66 @@ MathJax.Hub.Config({
   <div class="toc-menu"></div>
 </aside>
 <article class="doc">
-<h1 class="page">Bounding Volume Hierarchy (BVH)</h1>
+<h1 class="page">Chapter 2 - Bounding Volume Hierarchy (BVH)</h1>
 <div id="preamble">
 <div class="sectionbody">
+<hr>
+<div class="paragraph">
+<p>INTRODUCTION
+---</p>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle" class="title">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_definition">1. Definition</a>
+<ul class="sectlevel2">
+<li><a href="#_bounding_volumes">1.1. Bounding Volumes</a></li>
+<li><a href="#_bounding_volume_hierarchy">1.2. Bounding Volume Hierarchy</a></li>
+</ul>
+</li>
+<li><a href="#_utility">2. Utility</a></li>
+<li><a href="#_construction">3. Construction</a>
+<ul class="sectlevel2">
+<li><a href="#_recursive_top_down_construction">3.1. Recursive Top-Down Construction</a></li>
+<li><a href="#_bottom_up_construction">3.2. Bottom-Up Construction</a></li>
+</ul>
+</li>
+<li><a href="#_spatial_splits_and_clustering">4. Spatial Splits and Clustering</a>
+<ul class="sectlevel2">
+<li><a href="#_agglomerative_clustering">4.1. Agglomerative Clustering</a></li>
+<li><a href="#_parallel_locally_ordered_clustering_on_gpu">4.2. Parallel locally-ordered clustering on GPU</a></li>
+<li><a href="#_linear_bvh_lbvh">4.3. Linear BVH (LBVH)</a></li>
+<li><a href="#_morton_curves">4.4. Morton Curves</a></li>
+<li><a href="#_longest_axis">4.5. Longest Axis</a></li>
+<li><a href="#_axis_cycling">4.6. Axis Cycling</a></li>
+<li><a href="#_median_cut">4.7. Median Cut</a></li>
+<li><a href="#_cost_functions">4.8. Cost Functions</a></li>
+</ul>
+</li>
+<li><a href="#_layout">5. Layout</a>
+<ul class="sectlevel2">
+<li><a href="#_array_representation">5.1. Array Representation</a></li>
+<li><a href="#_preorder_traversal_order">5.2. Preorder Traversal Order</a></li>
+<li><a href="#_cache_friendly_structures">5.3. Cache-friendly Structures</a></li>
+</ul>
+</li>
+<li><a href="#_traversal">6. Traversal</a>
+<ul class="sectlevel2">
+<li><a href="#_stack_based_algorithms">6.1. Stack-Based Algorithms</a></li>
+<li><a href="#_stack_less_algorithms">6.2. Stack-Less Algorithms</a></li>
+<li><a href="#_stack_less_gpu_friendly_algorithm">6.3. Stack-less GPU friendly Algorithm</a></li>
+<li><a href="#_conclusion">6.4. Conclusion</a></li>
+</ul>
+</li>
+<li><a href="#_optimization">7. Optimization</a>
+<ul class="sectlevel2">
+<li><a href="#_software">7.1. Software</a></li>
+<li><a href="#_hardware">7.2. Hardware</a></li>
+</ul>
+</li>
+<li><a href="#_bvh_variants_and_extensions">8. BVH Variants and Extensions</a></li>
+</ul>
+</div>
 <div class="paragraph">
 <p>Ray-Tracing is a well-known method used in many fields. In order to render physically realistic scenes, or in our case mathematical results, numerous rays must be traced to get plausible outcomes. The goal would be to accelerate the light transport simulation thanks to efficient sampling techniques, leveraging hardware architecture, or by rearranging scene primitives into an efficient spatial data structure. Naïvely, we could compute the ray/scene interactions by testing all scene primitives, which is prohibitively expensive since we rely on fine-grained meshes.</p>
 </div>
@@ -281,7 +337,7 @@ MathJax.Hub.Config({
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="../_images/BoundingVolumes.png" alt="BoundingVolumes">
+<img src="_images/BoundingVolumes.png" alt="BoundingVolumes">
 </div>
 </div>
 <div class="sect3">
@@ -291,7 +347,7 @@ MathJax.Hub.Config({
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="../_images/AABBs.png" alt="500">
+<img src="_images/AABBs.png" alt="500">
 </div>
 </div>
 <div class="paragraph">
@@ -322,7 +378,7 @@ MathJax.Hub.Config({
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="../_images/BVH.png" alt="BVH">
+<img src="_images/BVH.png" alt="BVH">
 </div>
 </div>
 <div class="paragraph">
@@ -345,12 +401,12 @@ MathJax.Hub.Config({
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="../_images/constructmet.png" alt="constructmet" width="500">
+<img src="_images/constructmet.png" alt="constructmet" width="500">
 </div>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="../_images/constructmetbis.png" alt="constructmetbis" width="500">
+<img src="_images/constructmetbis.png" alt="constructmetbis" width="500">
 </div>
 </div>
 <div class="sect2">
@@ -486,7 +542,7 @@ MathJax.Hub.Config({
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="../_images/morton.png" alt="morton" width="250px">
+<img src="_images/morton.png" alt="morton" width="250px">
 </div>
 </div>
 <div class="paragraph">
@@ -601,7 +657,7 @@ array[3] = *(root-&gt;left-&gt;left);</code></pre>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="../_images/arrayrep.png" alt="400">
+<img src="_images/arrayrep.png" alt="400">
 </div>
 </div>
 </div>
@@ -612,7 +668,7 @@ array[3] = *(root-&gt;left-&gt;left);</code></pre>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="../_images/preordertraversal.png" alt="400">
+<img src="_images/preordertraversal.png" alt="400">
 </div>
 </div>
 <div class="listingblock">
@@ -661,7 +717,7 @@ int PreorderOutput(Tree *t, Tree n[], int i)
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="../_images/cachefriendly.png" alt="600">
+<img src="_images/cachefriendly.png" alt="600">
 </div>
 </div>
 <div class="paragraph">
@@ -811,7 +867,7 @@ After having successfully intersected the parent, the traversal goes to the <cod
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="../_images/BVlayers.png" alt="BVlayers">
+<img src="_images/BVlayers.png" alt="BVlayers">
 </div>
 </div>
 <div class="paragraph">
@@ -819,7 +875,7 @@ After having successfully intersected the parent, the traversal goes to the <cod
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="../_images/BVlayerstree.png" alt="BVlayerstree">
+<img src="_images/BVlayerstree.png" alt="BVlayerstree">
 </div>
 </div>
 </div>
@@ -970,7 +1026,7 @@ struct Tree {
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="../_images/Nvidia-GPU-memory-structure.png" alt="600">
+<img src="_images/Nvidia-GPU-memory-structure.png" alt="600">
 </div>
 </div>
 </div>
@@ -990,18 +1046,18 @@ struct Tree {
     <div class="container" style="display: flex; flex-direction: column; align-items: center; gap: 0.5em;">
         <div>
             <a href="https://www.cemosis.fr">
-                <img src="../../_/img/cemosis-logo.svg" alt="Cemosis logo" height="50">
+                <img src="../_/img/cemosis-logo.svg" alt="Cemosis logo" height="50">
             </a>
         </div>
         <span style="font-size: 0.8rem; color: #9e9e9e">© 2023 <a href="https://www.cemosis.fr" style="text-decoration: underline;">Cemosis</a>, Université de Strasbourg</span>
     </div>
 </footer>
-<script id="site-script" src="../../_/js/site.js" data-ui-root-path="../../_"></script>
+<script id="site-script" src="../_/js/site.js" data-ui-root-path="../_"></script>
 
 
-<script async src="../../_/js/vendor/fontawesome-icon-defs.js"></script>
-<script async src="../../_/js/vendor/fontawesome.js"></script>
-<script async src="../../_/js/vendor/highlight.js"></script>
+<script async src="../_/js/vendor/fontawesome-icon-defs.js"></script>
+<script async src="../_/js/vendor/fontawesome.js"></script>
+<script async src="../_/js/vendor/highlight.js"></script>
 
 
 <script type="text/javascript">
