@@ -17,11 +17,11 @@ $ cmake --build --preset default -t install # <3>
 $ ctest --preset default # <4>
 $ cmake --build --preset default -t package # <5>
 ----
-<1> Configure the project
-<2> Build the project
-<3> Install the project
-<4> Run the tests
-<5> Package the project
+<.> Configure the project
+<.> Build the project
+<.> Install the project
+<.> Run the tests
+<.> Package the project
 
 
 
