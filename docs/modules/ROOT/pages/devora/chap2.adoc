@@ -1,4 +1,11 @@
-= Bounding Volume Hierarchy (BVH)
+= Chapter 2 - Bounding Volume Hierarchy (BVH)
+:toc: macro
+
+---
+INTRODUCTION
+---
+
+toc::[]
 
 Ray-Tracing is a well-known method used in many fields. In order to render physically realistic scenes, or in our case mathematical results, numerous rays must be traced to get plausible outcomes. The goal would be to accelerate the light transport simulation thanks to efficient sampling techniques, leveraging hardware architecture, or by rearranging scene primitives into an efficient spatial data structure. Naïvely, we could compute the ray/scene interactions by testing all scene primitives, which is prohibitively expensive since we rely on fine-grained meshes.
 
