@@ -1,10 +1,40 @@
-= Introduction
+= Shading Masks computation for solar radiation
+:toc: macro
+
+- - -
+
+++++
+<br>
+<center>
+<H1>
+	University of Strasbourg <br>
+    Master 1 CSMI<br>
+    2022-2023<br>
+</H1>
+</center>
+++++
+
+++++
+<br>
+<center>
+<H1>
+    Supervisors: Luca Berti, Christophe Prud'homme <br>
+</H1>
+</center>
+<br>
+++++
+
+- - -
+
+<<<
+
+toc::[]
 
 == Context
 
 == Objectives
 
-During the two months of my internship and under the directives of Luca Berti, my referent, I will be in charge of the computation of solar Shading Masks, View Factors, and Solar Faces. Since this project takes its roots in the 'plan action blablabla emissions CO2', the scale at which the computations have to be done is immense. In fact, we want to be able to compute these at city level, meaning modeling thousands of households and iterate the same computations over them.
+During the two months of my internship and under the directives of Luca Berti, my referent, I was in charge of the computation of solar shading masks, weather models and the benchmark of different random number generators. Since this project takes its roots in the 'plan action blablabla emissions CO2', the scale of the computations is substantial as the objective is to compute these at the city level, which involves modeling thousands of households and iterating the same computations over them.
 
 My work can be separated into two quasi-independent parts:
 
@@ -13,7 +43,7 @@ My work can be separated into two quasi-independent parts:
 - Code Vectorization using Eigen library
 - Use suitable RNG's for random number generation
 - Ray-tracing parallelization using OpenMP 
-- Choose a suitable storage way for the BVH structure (possibly already choose a good one for NVIDIA's OptiX Ray Tracing API)
+- Choose a suitable storage strategy for the BVH structure (possibly already choose a good one for NVIDIA's OptiX Ray Tracing API)
 - Benchmarking for speed and quality purposes
 
 **IMPLEMENTATION:**
@@ -41,23 +71,21 @@ During the two-month period, the project also aims to leverage GitHub for mainta
 
 === Parallelization on GPU
 
-The parallelization process on GPUs is a crucial part of this project, but many different architectures exist and hence many different approaches to parallelization are possible. These can be implement in various ways, but different APIs also imply differents capabilities and constraints. So depending on the available hardware, different approaches will be used. Below are listed the different APIs that will be used in this project, their advantages and drawbacks, and how they will be used.
+The parallelization process on GPUs is a crucial part of this project, but many different architectures exist and hence many different approaches to parallelization are possible. These can be implement in various ways, but different APIs also imply different capabilities and constraints. So depending on the available hardware, different approaches will be used. Below are listed the different APIs that will be used in this project, their advantages and drawbacks, and how they will be used.
 
 ==== NVIDIA OptiX 
 
-OptiX for Ray Tracing: OptiX is a ray tracing framework developed by NVIDIA. It provides a higher-level programming model specifically designed for ray tracing applications. OptiX abstracts away many of the complexities of ray tracing and provides a simplified interface for developing ray tracing applications. It handles tasks such as BVH construction, ray traversal, and intersection testing, allowing developers to focus more on the application logic rather than low-level implementation details.
+OptiX is a ray tracing framework developed by NVIDIA. It provides a higher-level programming model specifically designed for ray tracing applications, abstracting away many of the complexities of this technique and providing a simplified interface for developing applications. It handles tasks such as BVH construction, ray traversal, and intersection testing, allowing developers to focus more on the application logic rather than low-level implementation details.
 
-OptiX provides features like programmable shaders (ray generation, closest hit, any hit, miss), support for complex geometry and instancing, and built-in acceleration structures. It also integrates with other GPU-accelerated libraries and APIs, such as CUDA and OpenGL, enabling efficient data exchange between different GPU-accelerated tasks.
-
-If you are primarily working on ray tracing applications, OptiX can significantly simplify the developmentprocess and provide performance optimizations specific to ray tracing workloads.
+OptiX provides features like programmable shaders (ray generation, closest hit, any hit, miss), support for complex geometry, GPU instancing and built-in acceleration structures. It also integrates with other GPU-accelerated libraries and APIs, such as CUDA and OpenGL, enabling efficient data exchange between different GPU-accelerated tasks.
 
 - BVH Construction: OptiX provides built-in acceleration structure construction algorithms, such as bounding volume hierarchy (BVH) construction. These algorithms are highly optimized and take advantage of the underlying GPU architecture to accelerate the construction process.
 - Ray Traversal: OptiX optimizes the ray traversal process by using advanced techniques like stackless traversal and GPU-specific optimizations. These techniques minimize memory accesses and thread divergence, improving performance during the traversal phase.
-- Intersection Testing: OptiX allows developers to write custom intersection testing programs using programmable shaders. This flexibility enables the implementation of efficient intersection tests tailored to the specific geometry and shading requirements of the application.
+- Intersection Testing: OptiX allows developers to write custom intersection testing programs using programmable shaders. This flexibility enables the implementation of efficient intersection tests tailored to the specific geometry and shading requirements of the application. More generally, the intersection tests can be performed usiing the built-in method, leveraging the SIMT unit by performing a speculative traversal, where the next state is estimated using probabilities.
 
 In addition to performance optimizations, OptiX also provides parallelization capabilities at several levels : over the GPUs and over the threads, each handling the generation and traversal of one ray, just like it was done in the self-implemented CUDA version. OptiX automatically parallelizes the ray tracing workloads across multiple GPU threads. Each thread processes a different ray, allowing for high levels of parallelism. This parallelization is handled by the OptiX runtime, abstracting away the complexities of parallel programming on the GPU.
 
-OptiX provides a flexible memory management system that allows developers to efficiently manage memory usage during BVH construction and traversal. It provides options to control the memory allocation strategy, such as specifying the maximum amount of memory to be used for the BVH construction, allowing the user to optimize memory consumption based on the available GPU memory, which also works when working with GPU clusters.
+OptiX provides a flexible memory management system that allows developers to efficiently manage memory usage during BVH construction and traversal. It provides options to control the memory allocation strategy, such as specifying the maximum amount of memory to be used for the BVH construction, allowing the user to optimize memory consumption based on the available one, which also works when working with GPU clusters.
 
 NVIDIA GPUs use a SIMT (Single Instruction, Multiple Thread) execution model. The SIMT model is similar to SIMD (Single Instruction, Multiple Data) in that it allows executing the same instruction on multiple data elements in parallel. However, SIMT provides more flexibility by allowing threads to follow different execution paths based on conditional statements or data dependencies.
 

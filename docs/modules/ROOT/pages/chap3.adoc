@@ -1,6 +1,11 @@
 = Chapter 3 - Becnhmarking and Performance Measurement
+:toc: macro
 
-== Shell / Bash Scripting and Automation
+---
+INTRODUCTION
+---
+
+toc::[]
 
 == Reframe Benchmarking 
 

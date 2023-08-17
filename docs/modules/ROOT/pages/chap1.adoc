@@ -1,4 +1,11 @@
 = Chapter 1 - Shading Masks
+:toc: macro
+
+---
+INTRODUCTION
+---
+
+toc::[]
 
 == Thermal Aspects
 
@@ -6,15 +13,25 @@
 
 == Ray Tracing
 
+Ray tracing stands as a pivotal computational technique in the realm of realistic light simulation and graphics, especially when high levels of accuracy and detail are essential. In the specific context of computing shading masks, the Perez all weather sky model, and the calculation of view factors, ray tracing is invaluable. It facilitates the tracing of rays from a viewpoint into the scene, allowing for the accurate representation of how light interacts with various surfaces. This is particularly significant when working with diverse atmospheric conditions and intricate urban or architectural structures. Moreover, when integrated with the Monte Carlo technique, ray tracing becomes an even more potent tool. The Monte Carlo method, which relies on repeated random sampling to obtain numerical results, paired with ray tracing, enables precise integration over complex domains and distributions. This combination not only enhances the reliability of computations but also expands the scope of scenarios and phenomena that can be realistically modeled and studied.
+
 == Monte-Carlo
+
+---
+Reference to the page allready existing in the feelpp documentation at link::https://feelpp.github.io/ktirio/ktirio/1.0.0/models/heat/radiative-heat-transfer/montecarlo.html[Monte-Carlo]
+---
 
 == Perez all-weather sky model
 
 :stem: latexmath
 
-The Perez All-Weather model is a commonly used mathematical model for predicting the luminance distribution of the sky under various weather conditions. This model is named after its creator, Fernando Perez, who developed it in the late 20th century.
+The Perez All-Weather model is a commonly used mathematical model for predicting the luminance distribution of the sky under various weather conditions. This model is named after its creator, Fernando Perez, who developed it in the late 20th century (1993).
+
+The focus of this part was implementing the Perez All-Weather Sky Model, a complex mathematical framework used for representing the luminance distribution of the sky under various weather conditions. Our implementation leveraged open-source libraries and modern programming paradigms, resulting in a robust solution that readily integrated with existing shading mask computations. Throughout the implementation, we faced several challenges, notably, the complex nature of the Perez model, requiring careful attention to mathematical and physical details. We also grappled with issues of computational efficiency, as large amounts of data in real-time needed to be processed. The implementation was designed to be flexible and widely applicable, specifically in terms of location and time. 
 
 The model provides a method of representing the complex, variable nature of the sky's appearance by taking into account several key parameters including the sun's zenith and azimuth angles, the overall level of luminance (brightness) in the sky, the level of clearness, which describes how much the sky is dominated by the direct sunlight as opposed to the diffuse skylight and the level of turbidity, which describes the amount of aerosols or atmospheric particulates, affecting the scattering of light.
+
+It's worth mentioning that, while the Perez model is very flexible and capable of representing a wide range of sky conditions, it is a model and thus an approximation and doesn't perfectly represent all possible sky conditions. Furthermore, it assumes a certain level of homogeneity in the sky conditions, which may not always be the case in reality. For example, situations with localized cloud formations or rapidly changing weather conditions can be difficult to represent accurately with the model.
 
 The Perez model uses these parameters to generate a function that represents the luminance of the sky as a function of direction, or more precisely of the zenith angle of the considered sky element (ζ) and the angle between the sky element and the position of the sun (γ). This function is defined as follows and named 'lv' in the Perez model:
 
@@ -35,10 +52,22 @@ Where x is any of the parameters a, b, c, d or e, Z is the zenith angle and x1, 
 []
 image::PerezCoeffTable.png[]
 
-
-It's worth mentioning that, while the Perez model is very flexible and capable of representing a wide range of sky conditions, it is a model and thus an approximation. It doesn't perfectly represent all possible sky conditions. Furthermore, it assumes a certain level of homogeneity in the sky conditions, which may not always be the case in reality. For example, situations with localized cloud formations or rapidly changing weather conditions can be difficult to represent accurately with the model.
+The goal was to automatically retrieve all necessary data to compute the Perez all-weather sky models for a specific day at a specific date, considerably expanding the range of possible applications of the sky model (averaging values over a different sized ranges, days, weeks, or over different locations). Given a specific day and coordinates, the Perez sky model automatically downloads the diffuse / direct radiation, the normal incident radiation and the sun's postions accross all hours of the day. The Perez model is then computed for each hour of the day where the sun is above the horizon, and each result is stored in a table specifying the hour of the day used for its computation. 
 
 In order to compute the model, we will need to be able to track the sun's position in the sky. This is done using the Solar Position Algorithm (SPA) provided by the National Renewable Energy Laboratory (NREL), avialable link:https://midcdmz.nrel.gov/spa/[here].
+
+During the hourly iteration process, several other parameters are computed, such as the sky element's zenith angle and the angle between the sky element and the position of the sun, which is computed thanks to trigonometric functions:
+
+double cos_gamma = std::cos(Z) * std::cos(z) + std::sin(Z) * std::sin(z) * std::cos(std::abs(A - a));
+
+[stem]
+++++
+\cos(\gamma) = \cos(Z) \cos(z) + \sin(Z) \sin(z) \cos(\abs(A - a))
+++++
+
+Where z is the zenith angle of the sky element, Z is the zenith angle of the sun, a is the azimuth angle of the sky element and A is the azimuth angle of the sun. The zenith angle of the sky element is already known since the hemisphere's discretization is done when the `computePerezSkymodel()` method is called.
+
+Lastly, the Perez model was combined with a shading mask to account for the effect of obstacles blocking the sunlight. The calculation of the shading table involved an element-wise matrix multiplication operation, which required careful handling due to the large size of the matrices involved and the specific organization of data within them. Another key challenge we faced was the interpolation of matrices of different sizes, allowing us to integrate data from different sources, with different spatial resolutions, into our computations. This feature was particularly useful in the case of the shading masks, which are generated using a separate algorithm, and thus may have different spatial resolutions than the ones Perez model. But this algorithm couldn't be used when parts of the shading matrices were totaly in the shadow, because the interpolation algorithm would interpolate the values of the shadowed parts with values of the unshadowed parts, which resulted in slightly wrong shading mask when the dimensions of both matrices were mismatched. This problem was solved by using a different interpolation algorithm that only interpolated the values of the unshadowed parts of the shading mask, for example by defining the boundaries of the shadowed parts, either by directly looking up for zeros in the shading mask table, or by using techniques such as the Sobel operator, able to detect changes in intensity in the matrix, thus defining the edges.
 
 == View Factors
 
