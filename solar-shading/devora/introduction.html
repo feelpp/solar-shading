@@ -326,8 +326,6 @@ MathJax.Hub.Config({
 </div>
 <div class="sect2">
 <h3 id="_tools"><a class="anchor" href="#_tools"></a>1.3. Tools</h3>
-<div class="sect3">
-<h4 id="_global"><a class="anchor" href="#_global"></a>1.3.1. Global</h4>
 <div class="paragraph">
 <p>Seeing the scale of this project, numerous tools will have to be used, ranging from benchmarking simple methods to understanding all the underlyings of compilation flags and optimized data structures for BVH representation of complex and large scenes.</p>
 </div>
@@ -346,14 +344,14 @@ MathJax.Hub.Config({
 <div class="paragraph">
 <p>During the two-month period, the project also aims to leverage GitHub for maintaining project integrity. This involves utilizing integrated submodules for benchmarking different distributions and effectively managing packages of significant sizes, such as Intel&#8217;s oneAPI MKL library. Additionally, the project aims to enhance skills in using hardware-optimized SIMD (Single Instruction, Multiple Data) techniques, further optimizing performance and computational efficiency.</p>
 </div>
-</div>
 <div class="sect3">
-<h4 id="_parallelization_on_gpu"><a class="anchor" href="#_parallelization_on_gpu"></a>1.3.2. Parallelization on GPU</h4>
+<h4 id="_parallelization_on_gpu"><a class="anchor" href="#_parallelization_on_gpu"></a>1.3.1. Parallelization on GPU</h4>
 <div class="paragraph">
 <p>The parallelization process on GPUs is a crucial part of this project, but many different architectures exist and hence many different approaches to parallelization are possible. These can be implement in various ways, but different APIs also imply different capabilities and constraints. So depending on the available hardware, different approaches will be used. Below are listed the different APIs that will be used in this project, their advantages and drawbacks, and how they will be used.</p>
 </div>
-<div class="sect4">
-<h5 id="_nvidia_optix"><a class="anchor" href="#_nvidia_optix"></a>NVIDIA OptiX</h5>
+</div>
+<div class="sect3">
+<h4 id="_nvidia_optix"><a class="anchor" href="#_nvidia_optix"></a>1.3.2. NVIDIA OptiX</h4>
 <div class="paragraph">
 <p>OptiX is a ray tracing framework developed by NVIDIA. It provides a higher-level programming model specifically designed for ray tracing applications, abstracting away many of the complexities of this technique and providing a simplified interface for developing applications. It handles tasks such as BVH construction, ray traversal, and intersection testing, allowing developers to focus more on the application logic rather than low-level implementation details.</p>
 </div>
@@ -395,8 +393,8 @@ MathJax.Hub.Config({
 <p>When coding with the OptiX API, access is granted to optimized methods using speculative traversal methods on the warps, meaning that instead of incrementing the states linearly during traversal, the API will estimate the next state to transfer to, using speculative probabilities in order to optimize the number of threads that can be treated in parallel.</p>
 </div>
 </div>
-<div class="sect4">
-<h5 id="_cuda"><a class="anchor" href="#_cuda"></a>CUDA</h5>
+<div class="sect3">
+<h4 id="_cuda"><a class="anchor" href="#_cuda"></a>1.3.3. CUDA</h4>
 <div class="paragraph">
 <p>CUDA is a parallel computing platform and programming model developed by NVIDIA. It allows developers to write high-performance GPU-accelerated code using the CUDA programming language. CUDA provides low-level access to GPU hardware and is suitable for a wide range of general-purpose GPU computing tasks beyond ray tracing.</p>
 </div>
@@ -405,7 +403,6 @@ MathJax.Hub.Config({
 </div>
 <div class="paragraph">
 <p>CUDA allows you to optimize code at a low level and provides flexibility to customize algorithms and data structures based on specific requirements. It is well-suited for those who need fine-grained control over the GPU or want to work with specific GPU features that are not directly exposed by higher-level frameworks like OptiX.</p>
-</div>
 </div>
 </div>
 </div>

@@ -236,11 +236,6 @@ MathJax.Hub.Config({
 <h1 class="page">Chapter 2 - Bounding Volume Hierarchy (BVH)</h1>
 <div id="preamble">
 <div class="sectionbody">
-<hr>
-<div class="paragraph">
-<p>INTRODUCTION
----</p>
-</div>
 <div id="toc" class="toc">
 <div id="toctitle" class="title">Table of Contents</div>
 <ul class="sectlevel1">
@@ -259,10 +254,10 @@ MathJax.Hub.Config({
 </li>
 <li><a href="#_spatial_splits_and_clustering">4. Spatial Splits and Clustering</a>
 <ul class="sectlevel2">
-<li><a href="#_agglomerative_clustering">4.1. Agglomerative Clustering</a></li>
-<li><a href="#_parallel_locally_ordered_clustering_on_gpu">4.2. Parallel locally-ordered clustering on GPU</a></li>
-<li><a href="#_linear_bvh_lbvh">4.3. Linear BVH (LBVH)</a></li>
-<li><a href="#_morton_curves">4.4. Morton Curves</a></li>
+<li><a href="#_morton_curves">4.1. Morton Curves</a></li>
+<li><a href="#_agglomerative_clustering">4.2. Agglomerative Clustering</a></li>
+<li><a href="#_parallel_locally_ordered_clustering_on_gpu">4.3. Parallel locally-ordered clustering on GPU</a></li>
+<li><a href="#_linear_bvh_lbvh">4.4. Linear BVH (LBVH)</a></li>
 <li><a href="#_longest_axis">4.5. Longest Axis</a></li>
 <li><a href="#_axis_cycling">4.6. Axis Cycling</a></li>
 <li><a href="#_median_cut">4.7. Median Cut</a></li>
@@ -292,6 +287,9 @@ MathJax.Hub.Config({
 </li>
 <li><a href="#_bvh_variants_and_extensions">8. BVH Variants and Extensions</a></li>
 </ul>
+</div>
+<div class="paragraph">
+<p>Chapter 2 provides a comprehensive overview of the Bounding Volume Hierarchy (BVH). In the introduction, the importance of Ray-Tracing is discussed and how BVH plays a crucial role in improving the speed and efficiency of the light transport simulation. The definition section elaborates on the concepts of Bounding Volumes, with detailed explanations on Axis-Aligned Bounding Boxes (AABBs) and Oriented Bounding Boxes (OBBs). The utility, construction, and differences between the Recursive Top-Down Construction and Bottom-Up Construction of BVH are further discussed, with visual representations and code samples provided for clarity. The chapter highlights the advantages of using BVH in ray tracing and the nuances of its construction. The document also delves into optimizing the construction and representation of Bounding Volume Hierarchies (BVH) for efficient storage and traversal. It discusses spatial splits, emphasizing the importance of the splitting algorithm and the chosen axes. The Morton curves technique is explained, offering a method to map multidimensional data into a single dimension while retaining data point locality. Various methods like agglomerative clustering, GPU-based algorithms, parallel clustering, and strategies like median cut, longest axis, and axis cycling are explained for optimizing BVH constructions. The document also delves into cost functions to evaluate BVH quality, introducing concepts such as the Surface Area Heuristic (SAH). Finally, the importance of layout optimization is underscored, discussing array representations, preorder traversal ordering, cache-friendly structures for efficient data retrieval, memory storage and finally stack-based and stack-less algorithms for BVH traversal.</p>
 </div>
 <div class="paragraph">
 <p>Ray-Tracing is a well-known method used in many fields. In order to render physically realistic scenes, or in our case mathematical results, numerous rays must be traced to get plausible outcomes. The goal would be to accelerate the light transport simulation thanks to efficient sampling techniques, leveraging hardware architecture, or by rearranging scene primitives into an efficient spatial data structure. Naïvely, we could compute the ray/scene interactions by testing all scene primitives, which is prohibitively expensive since we rely on fine-grained meshes.</p>
@@ -505,28 +503,7 @@ MathJax.Hub.Config({
 <p>Performing the spatial splits in an optimized way is crucial to the performance of the BVH. In fact, this is deeply related to the BVH&#8217;s layout, which is the way the BVH is stored in memory, hence having a strong impact on it&#8217;s construction time, the resulting quality of the BVH, and the traversal performance. The first step is to choose the splitting algorithm, and more importantly the separating axes.</p>
 </div>
 <div class="sect2">
-<h3 id="_agglomerative_clustering"><a class="anchor" href="#_agglomerative_clustering"></a>4.1. Agglomerative Clustering</h3>
-<div class="paragraph">
-<p>The major inconvenience when using bottom-up algorithms is that the upper nodes are poorly locally optimized and thus the research for the closest neighbor can be very costly. To prevent this, Gu et al proposed to recursively perform spatial median splits based on Morton codes until each subtree contains less than a chosen number of clusters. The clusters are merged using agglomerative clustering. Using this at all levels in the BVH, even the top level nodes' split will be locally optimized.</p>
-</div>
-<div class="paragraph">
-<p>Meister and Bittner proposed a GPU-based algorithm using k-means clustering: scene primitives are subdivided into k clusters using k-means clustering. When done recursively, a k-ary BVH is built, which can also be converted to a binary tree by constructing intermediate levels using agglomerative clustering.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_parallel_locally_ordered_clustering_on_gpu"><a class="anchor" href="#_parallel_locally_ordered_clustering_on_gpu"></a>4.2. Parallel locally-ordered clustering on GPU</h3>
-<div class="paragraph">
-<p>Introduced by Meister and Bittner, the key observation is that the distance functions have a non-decreasing property, meaning that once we found two mutually corresponding nearest neighbors, we can immediately merge their clusters since no other closer one will be found. The clusters are kept sorted along the Morton Curve, finding the nearest cluster by searching both sides of the sorted cluster array, testing a predefined number of clusters. Since it does not rely on distance matrices, it is GPU-friendly, and only a small number of iterations are needed to build the whole tree.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_linear_bvh_lbvh"><a class="anchor" href="#_linear_bvh_lbvh"></a>4.3. Linear BVH (LBVH)</h3>
-<div class="paragraph">
-<p>The hierarchical nature of the BVH prevents a straightforward parallelization of the construction algorithm. But now, the BVH construction can be reduced to sorting scene primitives along the Morton curve (the order is given by Morton codes of fixed length, 32 or 64 bits), and using optimized sorting algorithms such as the radix sort, it can be done in 2n-1 time. The Morton code implicitly encodes a BVH constructor by spatial median splits.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_morton_curves"><a class="anchor" href="#_morton_curves"></a>4.4. Morton Curves</h3>
+<h3 id="_morton_curves"><a class="anchor" href="#_morton_curves"></a>4.1. Morton Curves</h3>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
@@ -549,6 +526,27 @@ MathJax.Hub.Config({
 <div class="paragraph">
 <p>These can be defined thanks to various algorithms presented on
 <a href="https://developer.nvidia.com/blog/thinking-parallel-part-iii-tree-construction-gpu/">NVIDIA&#8217;s website</a>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_agglomerative_clustering"><a class="anchor" href="#_agglomerative_clustering"></a>4.2. Agglomerative Clustering</h3>
+<div class="paragraph">
+<p>The major inconvenience when using bottom-up algorithms is that the upper nodes are poorly locally optimized and thus the research for the closest neighbor can be very costly. To prevent this, Gu et al proposed to recursively perform spatial median splits based on Morton codes until each subtree contains less than a chosen number of clusters. The clusters are merged using agglomerative clustering. Using this at all levels in the BVH, even the top level nodes' split will be locally optimized.</p>
+</div>
+<div class="paragraph">
+<p>Meister and Bittner proposed a GPU-based algorithm using k-means clustering: scene primitives are subdivided into k clusters using k-means clustering. When done recursively, a k-ary BVH is built, which can also be converted to a binary tree by constructing intermediate levels using agglomerative clustering.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_parallel_locally_ordered_clustering_on_gpu"><a class="anchor" href="#_parallel_locally_ordered_clustering_on_gpu"></a>4.3. Parallel locally-ordered clustering on GPU</h3>
+<div class="paragraph">
+<p>Introduced by Meister and Bittner, the key observation is that the distance functions have a non-decreasing property, meaning that once we found two mutually corresponding nearest neighbors, we can immediately merge their clusters since no other closer one will be found. The clusters are kept sorted along the Morton Curve, finding the nearest cluster by searching both sides of the sorted cluster array, testing a predefined number of clusters. Since it does not rely on distance matrices, it is GPU-friendly, and only a small number of iterations are needed to build the whole tree.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_linear_bvh_lbvh"><a class="anchor" href="#_linear_bvh_lbvh"></a>4.4. Linear BVH (LBVH)</h3>
+<div class="paragraph">
+<p>The hierarchical nature of the BVH prevents a straightforward parallelization of the construction algorithm. But now, the BVH construction can be reduced to sorting scene primitives along the Morton curve (the order is given by Morton codes of fixed length, 32 or 64 bits), and using optimized sorting algorithms such as the radix sort, it can be done in 2n-1 time. The Morton code implicitly encodes a BVH constructor by spatial median splits.</p>
 </div>
 </div>
 <div class="sect2">
@@ -587,6 +585,21 @@ std::nth_element(&amp;M_primitiveInfo[start_index_primitive], &amp;M_primitiveIn
                 return a.M_centroid[cut_dimension] &lt; b.M_centroid[cut_dimension];
             });</code></pre>
 </div>
+</div>
+<div class="paragraph">
+<p>Here is an example of a construction using the median cut strategy, but on a single splitting axis:
+image::BVlayers.png[]</p>
+</div>
+<div class="paragraph">
+<p>And such spacial divisions can lead to a similar tree as the following:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/BVlayerstree.png" alt="BVlayerstree">
+</div>
+</div>
+<div class="paragraph">
+<p>We will combine this method with the <a href="#_axis_cycling">Axis Cycling</a> one, to ensure that the splitting axes are evenly distributed and can help maintain overall balance during the BVH construction.</p>
 </div>
 </div>
 <div class="sect2">
@@ -750,7 +763,7 @@ int PreorderOutput(Tree *t, Tree n[], int i)
 <div class="sect3">
 <h4 id="_definition_3"><a class="anchor" href="#_definition_3"></a>6.2.1. Definition</h4>
 <div class="paragraph">
-<p>Traversing a ray through a bounding volume hierarchy is usually carried out in a recursive manner, therefore making it maintain a full stack per ray, which rapidly becomes very costly. Several stack-less algorithms exist, however they have to perform infrequent restarts of the traversal from the root or traverse more nodes than their stack-based counterparts.</p>
+<p>Traversing a ray through a bounding volume hierarchy is usually carried out in a recursive manner, therefore making it maintain a full stack per ray, which rapidly becomes very costly. Several stack-less algorithms exist, however they have to perform frequent restarts of the traversal from the root or traverse more nodes than their stack-based counterparts.</p>
 </div>
 <div class="paragraph">
 <p>Many reasons have pushed researches in this field, such as:</p>
@@ -804,7 +817,7 @@ int PreorderOutput(Tree *t, Tree n[], int i)
 After having successfully intersected the parent, the traversal goes to the <code>nearChild</code> (found with any type of method), and does a ray-box test for this node. If the node is missed, <code>farChild</code> is processed, But if the test was successful, it continues by intersecting its primitives (if the node is a leaf), or by recursively entering the node&#8217;s subtree (in case it&#8217;s an inner node). Once <code>nearChild</code> is fully processed, traversal resumes with <code>farChild</code> exactly and the same sequence of events takes place.</p>
 </div>
 <div class="paragraph">
-<p>This already gives us an overlook of the simple deterministic automaton algorithm. In fact, we can start and make a parallel between the three ways of how any given node can be traversed and the tree states of the algorithm. During recursive traversal, a node can either be traversed:
+<p>This already gives us an overlook of the simple deterministic automaton algorithm (pseudo-code available in "Efficient Stack-less BVH Traversal for Ray Tracing"). In fact, we can start and make a parallel between the three ways of how any given node can be traversed and the tree states of the algorithm. During recursive traversal, a node can either be traversed:
 - from its parents (case <code>fromParent</code>): we know that we are entering <code>nearChild</code>. We traverse the current node: if it&#8217;s missed, we proceed with a <code>fromSibling</code> case and if not, either it&#8217;s a leaf node and we intersect its primitives, or it&#8217;s an inner node and we continue with its subtree.
 - from its siblings (case <code>fromSibling</code>): we are entering <code>farChild</code> and we are traversing this node for the first time. If it&#8217;s missed, we back-track to its parent. Otherwise we intersect it&#8217;s primitives against the ray if it&#8217;s a leaf node and proceed to parent, and if not we enter the current node&#8217;s subtree performing a <code>fromParent</code> step.
 - from one of its children (case <code>fromChild</code>): the current node was already tested during the top to bottom phase, it <strong>should not</strong> be re-tested. The next on the list is either the current node&#8217;s <code>farChild</code> or its parent</p>
@@ -864,19 +877,6 @@ After having successfully intersected the parent, the traversal goes to the <cod
 		}
 	}
 }</code></pre>
-</div>
-</div>
-<div class="imageblock">
-<div class="content">
-<img src="../_images/BVlayers.png" alt="BVlayers">
-</div>
-</div>
-<div class="paragraph">
-<p>And such spacial divisions can lead to a similar tree as the following:</p>
-</div>
-<div class="imageblock">
-<div class="content">
-<img src="../_images/BVlayerstree.png" alt="BVlayerstree">
 </div>
 </div>
 </div>

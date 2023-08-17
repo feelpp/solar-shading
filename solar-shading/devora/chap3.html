@@ -301,11 +301,21 @@ MathJax.Hub.Config({
 <p>As said, numerous methods are open-source and available to use, built upon different fundamentals. The Xoshiro-Cpp is a lightweight, high-performance random number generator known for its speed and low memory consumption. The Mersenne Twister, on the other hand, is widely used for its long period and good statistical properties. std::random provides a standardized interface for random number generation in C++, offering various generators including Mersenne Twister. Eigen::Rand is a random number generator headers library strongly relying on Eigen&#8217;s vectorization capabilities, useful for generating random matrices in numerical computations. Intel MKL offers high-performance, vectorized random number generation routines optimized for scientific and numerical computing while <code>pcg-cpp</code> is a Permuted Congruential Generator implementation balancing speed and randomness for simulations and gaming.</p>
 </div>
 <div class="paragraph">
+<p>The tested libraries are:
+- EigenRand: a random number generator headers library strongly relying on Eigen&#8217;s vectorization capabilities, useful for generating random matrices in numerical computations (especially random vectors in our case).
+- EigenRand&#8217;s real generator casted to int: the same as above, but casting the generated real numbers to integers in order to gain speed.
+- PCG-CPP: a Permuted Congruential Generator implementation balancing speed and randomness for simulations.
+- Xoshiro-Cpp: a lightweight, high-performance random number generator reknown for its speed and low memory consumption.
+- Mersenne Twister: a widely used random number generator for its long period and good statistical properties, available in the standard library.
+- Intel MKL: a high-performance, vectorized random number generation routines optimized for scientific and numerical computing.
+- std::random: a standardized interface for random number generation in C++, offering various generators including Mersenne Twister.</p>
+</div>
+<div class="paragraph">
 <p>Below you can see a first execution time comparison, using the <code>std::chrono</code> library to measure the time taken by each method to generate 1000000 random numbers. The code was compiled using different usual flags, such as <code>-O3</code>, <code>-Ofast</code>, <code>-O2</code> and <code>-O1</code>.</p>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="../_images/colorcompare.png" alt="Barplot comparing execution time][600">
+<img src="../_images/flagcomparison.png" alt="Barplot comparing execution time][600">
 </div>
 </div>
 <div class="paragraph">
@@ -334,7 +344,7 @@ MathJax.Hub.Config({
 <p><a href="https://caiorss.github.io/C-Cpp-Notes/compiler-flags-options.html">Here</a> is a website describing the use-cases of each compilation flag and what they do.</p>
 </div>
 <div class="paragraph">
-<p>The <code>-Ofast</code> and <code>-O3</code> flags do the following work for the user:</p>
+<p>The <code>-Ofast</code> and <code>-O3</code> flags enable the following optimizations for the user:</p>
 </div>
 <div class="ulist">
 <ul>

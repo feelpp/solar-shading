@@ -250,7 +250,6 @@ MathJax.Hub.Config({
 <li><a href="#_monte_carlo">4. Monte-Carlo</a></li>
 <li><a href="#_perez_all_weather_sky_model">5. Perez all-weather sky model</a></li>
 <li><a href="#_view_factors">6. View Factors</a></li>
-<li><a href="#_shading_mask_structures">7. Shading Mask Structures</a></li>
 </ul>
 </div>
 </div>
@@ -278,10 +277,46 @@ MathJax.Hub.Config({
 <div class="sect1">
 <h2 id="_monte_carlo"><a class="anchor" href="#_monte_carlo"></a>4. Monte-Carlo</h2>
 <div class="sectionbody">
-<hr>
 <div class="paragraph">
-<p>Reference to the page allready existing in the feelpp documentation at link::https://feelpp.github.io/ktirio/ktirio/1.0.0/models/heat/radiative-heat-transfer/montecarlo.html[Monte-Carlo]
----</p>
+<p>In the domain of numerical integration, one can differentiate between deterministic and stochastic methods to estimate integrals. A classic example of deterministic methods is Simpson&#8217;s rule, which derives its approach based on pairing function values to estimate areas. Specifically, Simpson&#8217;s rule is defined as:</p>
+</div>
+<div class="stemblock">
+<div class="content">
+\[I \approx \frac{h}{6} \left( y_0 + 2\sum_{i=1}^{\frac{n}{2}} y_{2i-1} + 4\sum_{i=1}^{\frac{n}{2}-1} y_{2i} + y_n \right)\]
+</div>
+</div>
+<div class="paragraph">
+<p>where \( I \) is the estimated integral, \( h \) is the width of each sub-interval, and \( y_i \) denotes the function value at the \( i^{th} \) point.</p>
+</div>
+<div class="paragraph">
+<p>On the other hand, Monte Carlo integration adopts a stochastic method, with each sample resulting in a unique outcome. The integral approximation in this technique is:</p>
+</div>
+<div class="stemblock">
+<div class="content">
+\[I \approx Q_N \approx \frac{1}{N} \sum_{i=1}^{N} \frac{f(x_i)}{p(x_i)}\]
+</div>
+</div>
+<div class="paragraph">
+<p>where \( N \) represents the total number of random samples, \( f(x_i) \) is the function value at the random point \( x_i \) and \( p(x_i) \) is the probability density function at \( x_i \) used to draw the random samples.</p>
+</div>
+<div class="paragraph">
+<p>But if the chosen probability density function is a uniform distribution, the Monte Carlo integral can be simplified to:</p>
+</div>
+<div class="stemblock">
+<div class="content">
+\[I \approx Q_N \approx \frac{1}{N} \sum_{i=1}^{N} f(x_i)\]
+</div>
+</div>
+<div class="paragraph">
+<p>Given Monte Carlo integration&#8217;s inherent randomness, the outcome is presented as an estimate surrounded by error bars. The efficiency of the Monte Carlo approach enhances with an increase in sample size, anchored by the law of large numbers. This principle posits that as \( N \), the number of samples, approaches infinity, the average result from Monte Carlo will tend to the actual integral value. Consequently, the approximated integral \(Q_N\) is ensured to follow the law of large numbers, with the error bars shrinking as \( N \) increases:</p>
+</div>
+<div class="stemblock">
+<div class="content">
+\[\lim_{N \to \infty} Q_N = I\]
+</div>
+</div>
+<div class="paragraph">
+<p>Further references can be found in the feelpp documentation at link::https://feelpp.github.io/ktirio/ktirio/1.0.0/models/heat/radiative-heat-transfer/montecarlo.html[Monte-Carlo].</p>
 </div>
 </div>
 </div>
@@ -338,7 +373,7 @@ MathJax.Hub.Config({
 </div>
 <div class="stemblock">
 <div class="content">
-\[\cos(\gamma) = \cos(Z) \cos(z) + \sin(Z) \sin(z) \cos(\abs(A - a))\]
+\[\cos(\gamma) = \cos(Z) \cos(z) + \sin(Z) \sin(z) \cos(|A - a|)\]
 </div>
 </div>
 <div class="paragraph">
@@ -351,12 +386,6 @@ MathJax.Hub.Config({
 </div>
 <div class="sect1">
 <h2 id="_view_factors"><a class="anchor" href="#_view_factors"></a>6. View Factors</h2>
-<div class="sectionbody">
-
-</div>
-</div>
-<div class="sect1">
-<h2 id="_shading_mask_structures"><a class="anchor" href="#_shading_mask_structures"></a>7. Shading Mask Structures</h2>
 <div class="sectionbody">
 
 </div>
