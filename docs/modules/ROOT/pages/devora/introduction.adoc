@@ -3,6 +3,7 @@
 
 - - -
 
+image::logos.png[align="center",width="100%"]
 ++++
 <br>
 <center>
@@ -36,7 +37,11 @@ toc::[]
 
 === Objectives
 
-During the two months of my internship and under the directives of Luca Berti, my referent, I was in charge of the computation of solar shading masks, weather models and the benchmark of different random number generators. Since this project takes its roots in the 'plan action blablabla emissions CO2', the scale of the computations is substantial as the objective is to compute these at the city level, which involves modeling thousands of households and iterating the same computations over them.
+During my two-month internship, under the guidance of Luca Berti, I was entrusted with the task of computing solar shading masks, weather models, and benchmarking various random number generators. This significant project originates from a broader national agenda aimed at reducing energy consumption by 10% by 2024. As the building sector stands as the primary energy consumer in France, accounting for nearly 25% of the nation's greenhouse gas emissions, the implications of our project are vast. Consequently, our objective is to perform computations at the city level, involving the modeling of thousands of households and repetitively iterating computations over them.
+
+Our mission aligns seamlessly with the government's energy conservation plan, aiming to significantly reduce greenhouse gas emissions. This initiative underscores the essential role of companies like ILoomi, renowned for offering personalized energy guidance to homeowners in the Hauts-de-France region using questionnaires.
+
+A noteworthy mention must be made of HiDALGO2, an EU Horizon-funded initiative encompassing 8 partners across 7 nations. As a European Centre of Excellence, HiDALGO2 is poised to address global challenges, primarily focusing on environmental issues using computational fluid dynamics, high-performance data analytics, and AI. The project's aspirations encompass extending the capabilities of global scientific applications, aiming to offer in-depth and large-scale analyses of environmental threats. Specifically, HiDALGO2 zeroes in on five environmental use cases: enhancing urban air quality, boosting energy efficiency of buildings, optimizing renewable energy sources, combating wildfires, and refining meteo-hydrological forecasting. My involvement in this project underpins the commitment to surpass current understanding, treading into hitherto uncharted territories of knowledge and application.
 
 My work can be separated into two quasi-independent parts:
 

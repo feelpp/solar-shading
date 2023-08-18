@@ -1,10 +1,6 @@
 = Chapter 1 - Shading Masks
 :toc: macro
 
----
-INTRODUCTION
----
-
 toc::[]
 
 == Thermal Aspects
@@ -85,7 +81,7 @@ image::PerezCoeffTable.png[]
 
 The goal was to automatically retrieve all necessary data to compute the Perez all-weather sky models for a specific day at a specific date, considerably expanding the range of possible applications of the sky model (averaging values over a different sized ranges, days, weeks, or over different locations). Given a specific day and coordinates, the Perez sky model automatically downloads the diffuse / direct radiation, the normal incident radiation and the sun's postions accross all hours of the day. The Perez model is then computed for each hour of the day where the sun is above the horizon, and each result is stored in a table specifying the hour of the day used for its computation. 
 
-In order to compute the model, we will need to be able to track the sun's position in the sky. This is done using the Solar Position Algorithm (SPA) provided by the National Renewable Energy Laboratory (NREL), avialable link:https://midcdmz.nrel.gov/spa/[here].
+In order to compute the model, we will need to be able to track the sun's position in the sky. This is done using the Solar Position Algorithm (SPA) provided by the National Renewable Energy Laboratory (NREL), available link:https://midcdmz.nrel.gov/spa/[here].
 
 During the hourly iteration process, several other parameters are computed, such as the sky element's zenith angle and the angle between the sky element and the position of the sun, which is computed thanks to trigonometric functions:
 
