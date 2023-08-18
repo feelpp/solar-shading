@@ -43,7 +43,7 @@ image::AABBs.png[500]
 But these can very rapidly lead to false results when dealing with more complex shapes, specially when they are close or not aligned with the AABB's axes, as displayed below:
 
 []
-image::OverlappingElements.png
+image::OverlappingElements.png[]
 
 ----
 ADD CODE SAMPLES FOR THE INTERSECTION TESTS
