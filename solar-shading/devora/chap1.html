@@ -176,7 +176,7 @@ MathJax.Hub.Config({
     <a class="nav-link" href="chap3.html">Benchmarking and Performance Measurement</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="#devora/conclusion.adoc">Conclusion</a>
+    <a class="nav-link" href="conclusion.html">Conclusion</a>
   </li>
 </ul>
   </li>
@@ -236,11 +236,6 @@ MathJax.Hub.Config({
 <h1 class="page">Chapter 1 - Shading Masks</h1>
 <div id="preamble">
 <div class="sectionbody">
-<hr>
-<div class="paragraph">
-<p>INTRODUCTION
----</p>
-</div>
 <div id="toc" class="toc">
 <div id="toctitle" class="title">Table of Contents</div>
 <ul class="sectlevel1">
@@ -363,7 +358,7 @@ MathJax.Hub.Config({
 <p>The goal was to automatically retrieve all necessary data to compute the Perez all-weather sky models for a specific day at a specific date, considerably expanding the range of possible applications of the sky model (averaging values over a different sized ranges, days, weeks, or over different locations). Given a specific day and coordinates, the Perez sky model automatically downloads the diffuse / direct radiation, the normal incident radiation and the sun&#8217;s postions accross all hours of the day. The Perez model is then computed for each hour of the day where the sun is above the horizon, and each result is stored in a table specifying the hour of the day used for its computation.</p>
 </div>
 <div class="paragraph">
-<p>In order to compute the model, we will need to be able to track the sun&#8217;s position in the sky. This is done using the Solar Position Algorithm (SPA) provided by the National Renewable Energy Laboratory (NREL), avialable <a href="https://midcdmz.nrel.gov/spa/">here</a>.</p>
+<p>In order to compute the model, we will need to be able to track the sun&#8217;s position in the sky. This is done using the Solar Position Algorithm (SPA) provided by the National Renewable Energy Laboratory (NREL), available <a href="https://midcdmz.nrel.gov/spa/">here</a>.</p>
 </div>
 <div class="paragraph">
 <p>During the hourly iteration process, several other parameters are computed, such as the sky element&#8217;s zenith angle and the angle between the sky element and the position of the sun, which is computed thanks to trigonometric functions:</p>

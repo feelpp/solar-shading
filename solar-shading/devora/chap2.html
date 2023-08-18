@@ -176,7 +176,7 @@ MathJax.Hub.Config({
     <a class="nav-link" href="chap3.html">Benchmarking and Performance Measurement</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="#devora/conclusion.adoc">Conclusion</a>
+    <a class="nav-link" href="conclusion.html">Conclusion</a>
   </li>
 </ul>
   </li>
@@ -285,7 +285,6 @@ MathJax.Hub.Config({
 <li><a href="#_hardware">7.2. Hardware</a></li>
 </ul>
 </li>
-<li><a href="#_bvh_variants_and_extensions">8. BVH Variants and Extensions</a></li>
 </ul>
 </div>
 <div class="paragraph">
@@ -747,15 +746,59 @@ int PreorderOutput(Tree *t, Tree n[], int i)
 <h3 id="_stack_based_algorithms"><a class="anchor" href="#_stack_based_algorithms"></a>6.1. Stack-Based Algorithms</h3>
 <div class="sect3">
 <h4 id="_definition_2"><a class="anchor" href="#_definition_2"></a>6.1.1. Definition</h4>
-
+<div class="paragraph">
+<p>Stack-based algorithms for ray traversal through a bounding volume hierarchy (BVH) conventionally employ a stack to maintain the traversal state of the ray through the hierarchy. Unlike their stack-less counterparts, these algorithms do not require frequent restarts of the traversal from the root nor traverse more nodes. The use of a stack to save traversal states aids in efficiently determining the next node to be visited, enabling a more straightforward path through the hierarchy. Although stack operations (push and pop) might sound costly, their implementation on modern architectures, even GPUs, is quite efficient, especially when balanced against the potential overhead of other traversal techniques. The primary benefits of a stack-based algorithm include:
+- Speed: Generally faster than their stack-less counterparts, especially for balanced BVHs, as there are fewer extraneous operations and more direct traversal paths.
+- Simplicity: The algorithm&#8217;s structure is more intuitive, which often leads to simpler code and fewer bugs.
+- Flexibility: Easy adjustments can be made for different traversal strategies or optimizations.</p>
+</div>
+<div class="paragraph">
+<p>However, stack-based methods might suffer from memory overhead due to the need of a stack to store traversal states, which could be prohibitive in highly parallel environments, like GPUs, with limited shared memory.
+Additionally, when working with such algorithm, one can encounter parallelisation limitations, in fact, the push and pop operations on a shared stack can become bottlenecks in highly parallel systems (can be overcome by using atomic counters, available when working with CUDA).</p>
+</div>
 </div>
 <div class="sect3">
 <h4 id="_algorithm"><a class="anchor" href="#_algorithm"></a>6.1.2. Algorithm</h4>
-
+<div class="paragraph">
+<p>For a clear understanding of the stack-based approach, we can draw an analogy with a depth-first search (DFS) in graph theory, where a stack keeps track of nodes yet to be explored. Here&#8217;s a basic pseudocode for the stack-based traversal:</p>
 </div>
-<div class="sect3">
-<h4 id="_summary"><a class="anchor" href="#_summary"></a>6.1.3. Summary</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">struct StackItem {
+	Node* node;
+	float tmin, tmax; // ray's parametric range for this node
+};
 
+void traverseStackBased(ray) {
+	StackItem stack[MAX_DEPTH];
+	int stackPointer = -1;
+
+	stack[++stackPointer] = {root, 0, INFINITY}; // Push root to the stack
+
+	while (stackPointer &gt;= 0) {
+		StackItem current = stack[stackPointer--]; // Pop the top item
+
+		if (boxtest(ray, current.node, current.tmin, current.tmax) != MISSED) {
+			if (isLeaf(current.node)) {
+				// ray-primitive intersection tests
+				processLeaf(ray, current.node);
+			} else {
+				// Determine near and far child based on ray direction or other criteria
+				Node* nearChild = getNearChild(current.node, ray);
+				Node* farChild = getFarChild(current.node, ray);
+
+				// Push children onto the stack
+				stack[++stackPointer] = {farChild, current.tmin, current.tmax};
+				stack[++stackPointer] = {nearChild, current.tmin, current.tmax};
+			}
+		}
+	}
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This approach showcases the power of the stack in maintaining traversal state, providing a more direct and efficient path through the BVH. Moreover, as with all algorithms, specific improvements and tweaks can be added to optimize for particular scenarios or architectures.</p>
+</div>
 </div>
 </div>
 <div class="sect2">
@@ -1027,16 +1070,10 @@ struct Tree {
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="../_images/Nvidia-GPU-memory-structure.png" alt="600">
+<img src="../_images/Nvidia-GPU-memory-structure.png" alt="Nvidia GPU memory structure">
 </div>
 </div>
 </div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_bvh_variants_and_extensions"><a class="anchor" href="#_bvh_variants_and_extensions"></a>8. BVH Variants and Extensions</h2>
-<div class="sectionbody">
-
 </div>
 </div>
 </article>
