@@ -45,7 +45,7 @@
         {
             "name": "default",
             "configurePreset": "default",
-            "jobs": 2
+            "jobs": 10
         },
         {
             "name": "install-local",

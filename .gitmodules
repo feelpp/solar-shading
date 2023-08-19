@@ -7,3 +7,6 @@
 [submodule "benchmark/eigen"]
 	path = benchmark/extlibs/eigen
 	url = https://gitlab.com/libeigen/eigen.git
+[submodule "benchmark/extlibs/EigenRand"]
+	path = benchmark/extlibs/EigenRand
+	url = git@github.com:bab2min/EigenRand.git
