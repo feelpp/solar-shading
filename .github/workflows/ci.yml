@@ -17,8 +17,6 @@ jobs:
     if: "!contains(github.event.head_commit.message, 'docs skip')"
     steps:
     - uses: actions/checkout@v3
-      with:
-        submodules: 'recursive'
     - name: Install credentials
       run: echo https://$GITHUB_OAUTH:@github.com > $HOME/.git-credentials
       env:
@@ -46,6 +44,10 @@ jobs:
       with:
         lfs: true
         recursive: true
+    - 
+      name: List directory structure
+      run: |
+        ls -R
     - 
       name: Build 
       run: |
