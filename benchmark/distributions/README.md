@@ -29,6 +29,7 @@ int # or real after asked to choose the distribution to benchmark
 After running this, the benchmark's results can be found in the results/csv directory at the root of this repo. The benchmarks are composed of two files, `uniform_int.csv` (or `uniform_real.csv`) containing the results of the benchmarks and `uniform_int.png` (or `uniform_real.png`) containing the plots of the benchmarks in ascending order of execution time (available inthe results/images folder).
 
 The `-march=native` flag is used to compile the benchmarks with the best possible optimization for the machine on which the benchmarks are run. If you want to compile the benchmarks for an execution on another machine, you can change this flag in the script by using `-mavx2` or `-msse4.2` for example. 
+
 ## With Reframe
 
 After installing reframe on your machine and adding the `reframe` command to your path, you can run the benchmarks with the following command when located at the root of the repository:

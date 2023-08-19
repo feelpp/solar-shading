@@ -202,8 +202,7 @@ target_link_libraries(example_ShadingMasks_comparison8 PRIVATE
     Feelpp::feelpp
 )
 target_compile_options(example_ShadingMasks_comparison8 PRIVATE
-    -Ofast
-    -march=znver2
+    -O2
     -Wno-date-time
 )
 
@@ -220,6 +219,5 @@ target_link_libraries(example_ShadingMasks_comparison9 PRIVATE
 )
 target_compile_options(example_ShadingMasks_comparison9 PRIVATE
     -Ofast
-    -flto
     -Wno-date-time
 )
