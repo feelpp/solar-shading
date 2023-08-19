@@ -31,7 +31,6 @@ public:
 
             M_bvh_tree_vector.insert(std::make_pair( buildingName , bvhBuilding ));
             M_submeshes.insert(std::make_pair( buildingName , surfaceSubmesh ));            
-         
         }
         
         // Define the discretization of the azimuth and altitude vectors
@@ -70,8 +69,7 @@ public:
         for(int i=0; i<intervalsAltitude; i++)
         {
             M_altitudeAngles[i] = i * deltaAltitude;        
-        } 
-                  
+        }
     }
 
     // Choose a random pair of indices in the discretized azimuth and altitude vectors
@@ -309,7 +307,7 @@ public:
                 std::vector<int> n_rays_thread;
                 n_rays_thread.push_back(M_Nrays - (M_Nthreads-1) * (int)(M_Nrays / M_Nthreads));
                 for(int t= 1; t < M_Nthreads; ++t){
-                   n_rays_thread.push_back( M_Nrays / M_Nthreads);
+                    n_rays_thread.push_back( M_Nrays / M_Nthreads);
                 }
                 
                 // Used to store the future results

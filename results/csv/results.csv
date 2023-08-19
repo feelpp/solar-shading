@@ -1,29 +1,884 @@
 METHOD,TIME
-Shading mask STD RNG -Ofast -march=native,9.99015
-Shading mask PCG RNG -Ofast -march=native,8.34877
-Shading mask XOSHIRO RNG -Ofast -march=native,7.88745
-Shading mask MIX RNG -Ofast -march=native,9.741
-Shading mask STD RNG -Ofast -march=native,9.88132
-Shading mask PCG RNG -Ofast -march=native,9.80248
-Shading mask XOSHIRO RNG -Ofast -march=native,9.92391
-Shading mask MIX RNG -Ofast -march=native,10.1443
-Shading mask STD RNG -Ofast -march=native,10.9991
-Shading mask PCG RNG -Ofast -march=native,9.99749
-Shading mask XOSHIRO RNG -Ofast -march=native,9.81854
-Shading mask MIX RNG -Ofast -march=native,9.63068
-Shading mask STD RNG -Ofast -march=native,11.0136
-Shading mask PCG RNG -Ofast -march=native,10.4724
-Shading mask XOSHIRO RNG -Ofast -march=native,10.855
-Shading mask MIX RNG -Ofast -march=native,10.9804
-Shading mask STD RNG -Ofast -march=native -funroll-loops -funsafe-math-optimizations,11.7976
-Shading mask PCG RNG -Ofast -march=native -funroll-loops -funsafe-math-optimizations,10.2469
-Shading mask XOSHIRO RNG -Ofast -march=native -funroll-loops -funsafe-math-optimizations,9.38577
-Shading mask MIX RNG -Ofast -march=native -funroll-loops -funsafe-math-optimizations,10.0054
-Shading mask STD RNG -O3 -march=native,10.7028
-Shading mask PCG RNG -O3 -march=native,10.8316
-Shading mask XOSHIRO RNG -O3 -march=native,10.3154
-Shading mask MIX RNG -O3 -march=native,11.3336
-Shading mask STD RNG -Ofast -march=native,25.8522
-Shading mask PCG RNG -Ofast -march=native,22.4726
-Shading mask XOSHIRO RNG -Ofast -march=native,20.1977
-Shading mask MIX RNG -Ofast -march=native,18.8925
+
+Shading mask STD RNG,9.44108
+Shading mask PCG RNG,9.5741
+Shading mask XOSHIRO RNG,9.69733
+Shading mask MIX RNG,9.66231
+Shading mask EIGEN RNG,11.3504
+Shading mask EIGEN CAST RNG,9.6947
+Shading mask EIGEN VECTORIZED RNG,9.75544
+Shading mask STD RNG,9.00561
+Shading mask PCG RNG,9.37669
+Shading mask XOSHIRO RNG,8.83367
+Shading mask MIX RNG,9.50589
+Shading mask EIGEN RNG,10.4519
+Shading mask EIGEN CAST RNG,9.2225
+Shading mask EIGEN VECTORIZED RNG,9.41771
+Shading mask STD RNG,9.68584
+Shading mask PCG RNG,9.82111
+Shading mask XOSHIRO RNG,9.51636
+Shading mask MIX RNG,9.29834
+Shading mask EIGEN RNG,11.2148
+Shading mask EIGEN CAST RNG,9.40379
+Shading mask EIGEN VECTORIZED RNG,9.18099
+Shading mask STD RNG,9.61266
+Shading mask PCG RNG,9.6143
+Shading mask XOSHIRO RNG,9.4713
+Shading mask MIX RNG,9.58077
+Shading mask EIGEN RNG,11.0595
+Shading mask EIGEN CAST RNG,9.65756
+Shading mask EIGEN VECTORIZED RNG,9.57353
+Shading mask STD RNG,9.499
+Shading mask PCG RNG,9.48912
+Shading mask XOSHIRO RNG,9.81673
+Shading mask MIX RNG,9.64782
+Shading mask EIGEN RNG,11.1112
+Shading mask EIGEN CAST RNG,9.46582
+Shading mask EIGEN VECTORIZED RNG,9.48857
+Shading mask STD RNG,9.41281
+Shading mask PCG RNG,9.24703
+Shading mask XOSHIRO RNG,9.41188
+Shading mask MIX RNG,9.42639
+Shading mask EIGEN RNG,10.6528
+Shading mask EIGEN CAST RNG,9.24722
+Shading mask EIGEN VECTORIZED RNG,9.17701
+Shading mask STD RNG,9.60995
+Shading mask PCG RNG,9.68044
+Shading mask XOSHIRO RNG,9.73487
+Shading mask MIX RNG,9.74219
+Shading mask EIGEN RNG,10.9334
+Shading mask EIGEN CAST RNG,9.76189
+Shading mask EIGEN VECTORIZED RNG,9.46085
+Shading mask STD RNG,9.53775
+Shading mask PCG RNG,9.59504
+Shading mask XOSHIRO RNG,9.60387
+Shading mask MIX RNG,9.34949
+Shading mask EIGEN RNG,11.0349
+Shading mask EIGEN CAST RNG,9.83321
+Shading mask EIGEN VECTORIZED RNG,9.48243
+Shading mask STD RNG,9.2538
+Shading mask PCG RNG,9.3099
+Shading mask XOSHIRO RNG,9.22238
+Shading mask MIX RNG,9.48113
+Shading mask EIGEN RNG,10.9029
+Shading mask EIGEN CAST RNG,9.2705
+Shading mask EIGEN VECTORIZED RNG,9.33441
+Shading mask STD RNG,9.55493
+Shading mask PCG RNG,9.59756
+Shading mask XOSHIRO RNG,9.65356
+Shading mask MIX RNG,9.92891
+Shading mask EIGEN RNG,9.91584
+Shading mask EIGEN CAST RNG,9.99164
+Shading mask EIGEN VECTORIZED RNG,9.44423
+Shading mask STD RNG,9.71665
+Shading mask PCG RNG,9.46571
+Shading mask XOSHIRO RNG,9.65804
+Shading mask MIX RNG,9.89843
+Shading mask EIGEN RNG,9.79267
+Shading mask EIGEN CAST RNG,9.27376
+Shading mask EIGEN VECTORIZED RNG,9.56805
+Shading mask STD RNG,9.48466
+Shading mask PCG RNG,9.32239
+Shading mask XOSHIRO RNG,9.53246
+Shading mask MIX RNG,9.28674
+Shading mask EIGEN RNG,9.57492
+Shading mask EIGEN CAST RNG,9.39914
+Shading mask EIGEN VECTORIZED RNG,9.46953
+Shading mask STD RNG,9.56471
+Shading mask PCG RNG,9.75103
+Shading mask XOSHIRO RNG,9.77219
+Shading mask MIX RNG,9.88686
+Shading mask EIGEN RNG,9.78247
+Shading mask EIGEN CAST RNG,9.58702
+Shading mask EIGEN VECTORIZED RNG,9.31748
+Shading mask STD RNG,9.31634
+Shading mask PCG RNG,9.23821
+Shading mask XOSHIRO RNG,9.15326
+Shading mask MIX RNG,9.2947
+Shading mask EIGEN RNG,9.43879
+Shading mask EIGEN CAST RNG,9.26807
+Shading mask EIGEN VECTORIZED RNG,9.14321
+Shading mask STD RNG,9.40684
+Shading mask PCG RNG,9.5421
+Shading mask XOSHIRO RNG,8.90293
+Shading mask MIX RNG,9.07721
+Shading mask EIGEN RNG,9.56979
+Shading mask EIGEN CAST RNG,9.58624
+Shading mask EIGEN VECTORIZED RNG,9.19882
+Shading mask STD RNG,9.55137
+Shading mask PCG RNG,9.51533
+Shading mask XOSHIRO RNG,9.66987
+Shading mask MIX RNG,9.6411
+Shading mask EIGEN RNG,9.41586
+Shading mask EIGEN CAST RNG,9.36499
+Shading mask EIGEN VECTORIZED RNG,9.51253
+Shading mask STD RNG,9.52579
+Shading mask PCG RNG,9.59986
+Shading mask XOSHIRO RNG,9.59619
+Shading mask MIX RNG,9.68352
+Shading mask EIGEN RNG,9.63453
+Shading mask EIGEN CAST RNG,9.38915
+Shading mask EIGEN VECTORIZED RNG,9.44687
+Shading mask STD RNG,9.37981
+Shading mask PCG RNG,9.48316
+Shading mask XOSHIRO RNG,9.46165
+Shading mask MIX RNG,9.53111
+Shading mask EIGEN RNG,9.56673
+Shading mask EIGEN CAST RNG,9.56081
+Shading mask EIGEN VECTORIZED RNG,9.46884
+Shading mask STD RNG,9.35965
+Shading mask PCG RNG,9.4696
+Shading mask XOSHIRO RNG,9.45358
+Shading mask MIX RNG,9.45258
+Shading mask EIGEN RNG,9.35763
+Shading mask EIGEN CAST RNG,9.44888
+Shading mask EIGEN VECTORIZED RNG,9.42229
+Shading mask STD RNG,9.66228
+Shading mask PCG RNG,9.68542
+Shading mask XOSHIRO RNG,9.72201
+Shading mask MIX RNG,9.76903
+Shading mask EIGEN RNG,9.49001
+Shading mask EIGEN CAST RNG,9.73631
+Shading mask EIGEN VECTORIZED RNG,9.30368
+Shading mask STD RNG,9.49838
+Shading mask PCG RNG,9.4558
+Shading mask XOSHIRO RNG,9.58911
+Shading mask MIX RNG,9.55345
+Shading mask EIGEN RNG,9.26902
+Shading mask EIGEN CAST RNG,9.20184
+Shading mask EIGEN VECTORIZED RNG,9.1919
+Shading mask STD RNG,9.52211
+Shading mask PCG RNG,9.45899
+Shading mask XOSHIRO RNG,9.68514
+Shading mask MIX RNG,9.37305
+Shading mask EIGEN RNG,9.54234
+Shading mask EIGEN CAST RNG,9.54747
+Shading mask EIGEN VECTORIZED RNG,9.26234
+Shading mask STD RNG,9.75101
+Shading mask PCG RNG,9.82968
+Shading mask XOSHIRO RNG,9.80248
+Shading mask MIX RNG,9.67128
+Shading mask EIGEN RNG,9.91781
+Shading mask EIGEN CAST RNG,9.70641
+Shading mask EIGEN VECTORIZED RNG,9.74399
+Shading mask STD RNG,9.63106
+Shading mask PCG RNG,9.65245
+Shading mask XOSHIRO RNG,9.62838
+Shading mask MIX RNG,9.63403
+Shading mask EIGEN RNG,9.75056
+Shading mask EIGEN CAST RNG,9.68314
+Shading mask EIGEN VECTORIZED RNG,9.54266
+Shading mask STD RNG,9.23766
+Shading mask PCG RNG,9.39249
+Shading mask XOSHIRO RNG,9.19737
+Shading mask MIX RNG,9.28306
+Shading mask EIGEN RNG,9.38396
+Shading mask EIGEN CAST RNG,9.23893
+Shading mask EIGEN VECTORIZED RNG,9.37177
+Shading mask STD RNG,9.56681
+Shading mask PCG RNG,9.43611
+Shading mask XOSHIRO RNG,9.58967
+Shading mask MIX RNG,9.57278
+Shading mask EIGEN RNG,9.40604
+Shading mask EIGEN CAST RNG,9.52449
+Shading mask EIGEN VECTORIZED RNG,9.63535
+Shading mask STD RNG,9.52049
+Shading mask PCG RNG,9.48662
+Shading mask XOSHIRO RNG,9.53319
+Shading mask MIX RNG,9.48863
+Shading mask EIGEN RNG,9.95412
+Shading mask EIGEN CAST RNG,9.7313
+Shading mask EIGEN VECTORIZED RNG,9.53051
+Shading mask STD RNG,9.3251
+Shading mask PCG RNG,9.32153
+Shading mask XOSHIRO RNG,9.16122
+Shading mask MIX RNG,9.52095
+Shading mask EIGEN RNG,9.30263
+Shading mask EIGEN CAST RNG,9.10227
+Shading mask EIGEN VECTORIZED RNG,9.27257
+Shading mask STD RNG,9.33528
+Shading mask PCG RNG,9.46573
+Shading mask XOSHIRO RNG,9.48342
+Shading mask MIX RNG,9.58344
+Shading mask EIGEN RNG,9.71318
+Shading mask EIGEN CAST RNG,9.09189
+Shading mask EIGEN VECTORIZED RNG,9.59215
+Shading mask STD RNG,9.63356
+Shading mask PCG RNG,9.69799
+Shading mask XOSHIRO RNG,9.66293
+Shading mask MIX RNG,9.67992
+Shading mask EIGEN RNG,9.67133
+Shading mask EIGEN CAST RNG,9.47082
+Shading mask EIGEN VECTORIZED RNG,9.73106
+Shading mask STD RNG,9.5476
+Shading mask PCG RNG,9.5807
+Shading mask XOSHIRO RNG,9.56305
+Shading mask MIX RNG,9.7106
+Shading mask EIGEN RNG,9.59127
+Shading mask EIGEN CAST RNG,9.39225
+Shading mask EIGEN VECTORIZED RNG,9.31367
+Shading mask STD RNG,9.66011
+Shading mask PCG RNG,9.62345
+Shading mask XOSHIRO RNG,9.80987
+Shading mask MIX RNG,9.82647
+Shading mask EIGEN RNG,9.72612
+Shading mask EIGEN CAST RNG,9.61611
+Shading mask EIGEN VECTORIZED RNG,9.8423
+Shading mask STD RNG,9.60223
+Shading mask PCG RNG,9.79869
+Shading mask XOSHIRO RNG,9.45253
+Shading mask MIX RNG,9.60539
+Shading mask EIGEN RNG,9.79178
+Shading mask EIGEN CAST RNG,9.65222
+Shading mask EIGEN VECTORIZED RNG,9.69562
+Shading mask STD RNG,9.63468
+Shading mask PCG RNG,9.61856
+Shading mask XOSHIRO RNG,9.65787
+Shading mask MIX RNG,9.67926
+Shading mask EIGEN RNG,9.67251
+Shading mask EIGEN CAST RNG,9.24997
+Shading mask EIGEN VECTORIZED RNG,9.50447
+Shading mask STD RNG,9.49855
+Shading mask PCG RNG,9.81284
+Shading mask XOSHIRO RNG,9.47323
+Shading mask MIX RNG,9.82388
+Shading mask EIGEN RNG,9.31563
+Shading mask EIGEN CAST RNG,9.44846
+Shading mask EIGEN VECTORIZED RNG,9.56684
+Shading mask STD RNG,9.43978
+Shading mask PCG RNG,9.48296
+Shading mask XOSHIRO RNG,9.42147
+Shading mask MIX RNG,9.72071
+Shading mask EIGEN RNG,9.64824
+Shading mask EIGEN CAST RNG,9.46352
+Shading mask EIGEN VECTORIZED RNG,9.4785
+Shading mask STD RNG,9.19739
+Shading mask PCG RNG,9.67552
+Shading mask XOSHIRO RNG,9.41103
+Shading mask MIX RNG,9.60734
+Shading mask EIGEN RNG,9.46305
+Shading mask EIGEN CAST RNG,9.52539
+Shading mask EIGEN VECTORIZED RNG,9.69259
+Shading mask STD RNG,9.44387
+Shading mask PCG RNG,9.40353
+Shading mask XOSHIRO RNG,9.38347
+Shading mask MIX RNG,9.42065
+Shading mask EIGEN RNG,9.81097
+Shading mask EIGEN CAST RNG,9.43634
+Shading mask EIGEN VECTORIZED RNG,9.46091
+Shading mask STD RNG,9.40552
+Shading mask PCG RNG,9.36079
+Shading mask XOSHIRO RNG,9.43106
+Shading mask MIX RNG,9.56736
+Shading mask EIGEN RNG,9.51935
+Shading mask EIGEN CAST RNG,9.5694
+Shading mask EIGEN VECTORIZED RNG,9.19643
+Shading mask STD RNG,9.50719
+Shading mask PCG RNG,9.69079
+Shading mask XOSHIRO RNG,9.85629
+Shading mask MIX RNG,9.83229
+Shading mask EIGEN RNG,9.68901
+Shading mask EIGEN CAST RNG,9.59702
+Shading mask EIGEN VECTORIZED RNG,9.5487
+Shading mask STD RNG,9.40082
+Shading mask PCG RNG,9.10647
+Shading mask XOSHIRO RNG,9.38751
+Shading mask MIX RNG,9.59668
+Shading mask EIGEN RNG,9.55608
+Shading mask EIGEN CAST RNG,10.3464
+Shading mask EIGEN VECTORIZED RNG,9.91557
+Shading mask STD RNG,9.40948
+Shading mask PCG RNG,9.30231
+Shading mask XOSHIRO RNG,9.82774
+Shading mask MIX RNG,9.53592
+Shading mask EIGEN RNG,9.35434
+Shading mask EIGEN CAST RNG,9.16662
+Shading mask EIGEN VECTORIZED RNG,9.3985
+Shading mask STD RNG,9.5611
+Shading mask PCG RNG,9.65374
+Shading mask XOSHIRO RNG,9.53313
+Shading mask MIX RNG,9.7738
+Shading mask EIGEN RNG,9.69373
+Shading mask EIGEN CAST RNG,9.47474
+Shading mask EIGEN VECTORIZED RNG,9.67707
+Shading mask STD RNG,9.46818
+Shading mask PCG RNG,9.21189
+Shading mask XOSHIRO RNG,9.23599
+Shading mask MIX RNG,9.42646
+Shading mask EIGEN RNG,9.4082
+Shading mask EIGEN CAST RNG,9.37784
+Shading mask EIGEN VECTORIZED RNG,9.41437
+Shading mask STD RNG,9.6588
+Shading mask PCG RNG,9.42103
+Shading mask XOSHIRO RNG,9.76904
+Shading mask MIX RNG,9.86212
+Shading mask EIGEN RNG,9.52979
+Shading mask EIGEN CAST RNG,9.61074
+Shading mask EIGEN VECTORIZED RNG,9.74152
+Shading mask STD RNG,9.39765
+Shading mask PCG RNG,9.22965
+Shading mask XOSHIRO RNG,9.32149
+Shading mask MIX RNG,9.29627
+Shading mask EIGEN RNG,9.27478
+Shading mask EIGEN CAST RNG,9.30267
+Shading mask EIGEN VECTORIZED RNG,9.34438
+Shading mask STD RNG,9.47368
+Shading mask PCG RNG,9.58645
+Shading mask XOSHIRO RNG,9.14423
+Shading mask MIX RNG,9.45135
+Shading mask EIGEN RNG,9.48699
+Shading mask EIGEN CAST RNG,9.37292
+Shading mask EIGEN VECTORIZED RNG,9.45031
+Shading mask STD RNG,9.64423
+Shading mask PCG RNG,9.48182
+Shading mask XOSHIRO RNG,9.47635
+Shading mask MIX RNG,9.64056
+Shading mask EIGEN RNG,9.54065
+Shading mask EIGEN CAST RNG,9.50703
+Shading mask EIGEN VECTORIZED RNG,9.41321
+Shading mask STD RNG,9.37251
+Shading mask PCG RNG,9.45234
+Shading mask XOSHIRO RNG,9.61937
+Shading mask MIX RNG,9.61671
+Shading mask EIGEN RNG,9.26224
+Shading mask EIGEN CAST RNG,9.19532
+Shading mask EIGEN VECTORIZED RNG,9.37626
+Shading mask STD RNG,9.31075
+Shading mask PCG RNG,9.11825
+Shading mask XOSHIRO RNG,9.28688
+Shading mask MIX RNG,9.39147
+Shading mask EIGEN RNG,9.3675
+Shading mask EIGEN CAST RNG,9.46694
+Shading mask EIGEN VECTORIZED RNG,9.24302
+Shading mask STD RNG,9.33856
+Shading mask PCG RNG,9.25163
+Shading mask XOSHIRO RNG,9.09302
+Shading mask MIX RNG,9.40359
+Shading mask EIGEN RNG,9.25572
+Shading mask EIGEN CAST RNG,9.17999
+Shading mask EIGEN VECTORIZED RNG,9.13258
+Shading mask STD RNG,9.3387
+Shading mask PCG RNG,9.51773
+Shading mask XOSHIRO RNG,9.287
+Shading mask MIX RNG,9.57989
+Shading mask EIGEN RNG,9.46159
+Shading mask EIGEN CAST RNG,9.517
+Shading mask EIGEN VECTORIZED RNG,9.5071
+Shading mask STD RNG,9.24544
+Shading mask PCG RNG,9.29202
+Shading mask XOSHIRO RNG,9.32508
+Shading mask MIX RNG,9.53478
+Shading mask EIGEN RNG,9.54149
+Shading mask EIGEN CAST RNG,9.26643
+Shading mask EIGEN VECTORIZED RNG,9.22473
+Shading mask STD RNG,9.3569
+Shading mask PCG RNG,9.39506
+Shading mask XOSHIRO RNG,9.50367
+Shading mask MIX RNG,9.03527
+Shading mask EIGEN RNG,9.17707
+Shading mask EIGEN CAST RNG,9.16246
+Shading mask EIGEN VECTORIZED RNG,9.334
+Shading mask STD RNG,9.4553
+Shading mask PCG RNG,9.20317
+Shading mask XOSHIRO RNG,9.36274
+Shading mask MIX RNG,9.46879
+Shading mask EIGEN RNG,9.09278
+Shading mask EIGEN CAST RNG,9.17754
+Shading mask EIGEN VECTORIZED RNG,9.16599
+Shading mask STD RNG,9.50436
+Shading mask PCG RNG,9.30004
+Shading mask XOSHIRO RNG,9.46541
+Shading mask MIX RNG,9.46096
+Shading mask EIGEN RNG,9.34797
+Shading mask EIGEN CAST RNG,9.28516
+Shading mask EIGEN VECTORIZED RNG,9.32156
+Shading mask STD RNG,9.0223
+Shading mask PCG RNG,9.33136
+Shading mask XOSHIRO RNG,9.31482
+Shading mask MIX RNG,9.5821
+Shading mask EIGEN RNG,9.56818
+Shading mask EIGEN CAST RNG,9.32012
+Shading mask EIGEN VECTORIZED RNG,9.34307
+Shading mask STD RNG,9.1597
+Shading mask PCG RNG,9.32271
+Shading mask XOSHIRO RNG,9.41296
+Shading mask MIX RNG,9.4197
+Shading mask EIGEN RNG,9.24157
+Shading mask EIGEN CAST RNG,9.32581
+Shading mask EIGEN VECTORIZED RNG,9.07925
+Shading mask STD RNG,9.14515
+Shading mask PCG RNG,9.22133
+Shading mask XOSHIRO RNG,9.30102
+Shading mask MIX RNG,9.27821
+Shading mask EIGEN RNG,9.14456
+Shading mask EIGEN CAST RNG,9.25443
+Shading mask EIGEN VECTORIZED RNG,9.373
+Shading mask STD RNG,9.45803
+Shading mask PCG RNG,9.65758
+Shading mask XOSHIRO RNG,9.69863
+Shading mask MIX RNG,9.75614
+Shading mask EIGEN RNG,9.49317
+Shading mask EIGEN CAST RNG,9.5648
+Shading mask EIGEN VECTORIZED RNG,9.54735
+Shading mask STD RNG,9.13611
+Shading mask PCG RNG,8.9799
+Shading mask XOSHIRO RNG,9.44928
+Shading mask MIX RNG,9.00752
+Shading mask EIGEN RNG,8.87113
+Shading mask EIGEN CAST RNG,9.45525
+Shading mask EIGEN VECTORIZED RNG,9.50289
+Shading mask STD RNG,9.14
+Shading mask PCG RNG,9.11886
+Shading mask XOSHIRO RNG,9.19613
+Shading mask MIX RNG,9.31748
+Shading mask EIGEN RNG,8.95339
+Shading mask EIGEN CAST RNG,9.14998
+Shading mask EIGEN VECTORIZED RNG,9.03592
+Shading mask STD RNG,9.27308
+Shading mask PCG RNG,9.08191
+Shading mask XOSHIRO RNG,9.42421
+Shading mask MIX RNG,9.29016
+Shading mask EIGEN RNG,9.40404
+Shading mask EIGEN CAST RNG,9.38062
+Shading mask EIGEN VECTORIZED RNG,9.35918
+Shading mask STD RNG,9.29
+Shading mask PCG RNG,9.11774
+Shading mask XOSHIRO RNG,9.14353
+Shading mask MIX RNG,9.29796
+Shading mask EIGEN RNG,9.06348
+Shading mask EIGEN CAST RNG,9.22815
+Shading mask EIGEN VECTORIZED RNG,9.14033
+Shading mask STD RNG,9.11474
+Shading mask PCG RNG,9.29469
+Shading mask XOSHIRO RNG,9.18903
+Shading mask MIX RNG,9.31457
+Shading mask EIGEN RNG,9.47867
+Shading mask EIGEN CAST RNG,9.91986
+Shading mask EIGEN VECTORIZED RNG,9.54047
+Shading mask STD RNG,9.36603
+Shading mask PCG RNG,9.61157
+Shading mask XOSHIRO RNG,9.39289
+Shading mask MIX RNG,9.31157
+Shading mask EIGEN RNG,9.16512
+Shading mask EIGEN CAST RNG,9.47086
+Shading mask EIGEN VECTORIZED RNG,9.70153
+Shading mask STD RNG,10.0652
+Shading mask PCG RNG,9.69544
+Shading mask XOSHIRO RNG,10.0146
+Shading mask MIX RNG,9.9752
+Shading mask EIGEN RNG,9.8316
+Shading mask EIGEN CAST RNG,9.913
+Shading mask EIGEN VECTORIZED RNG,9.9169
+Shading mask STD RNG,9.82326
+Shading mask PCG RNG,9.70235
+Shading mask XOSHIRO RNG,9.79984
+Shading mask MIX RNG,10.0171
+Shading mask EIGEN RNG,9.84414
+Shading mask EIGEN CAST RNG,9.97487
+Shading mask EIGEN VECTORIZED RNG,10.1271
+Shading mask STD RNG,9.90779
+Shading mask PCG RNG,9.73475
+Shading mask XOSHIRO RNG,9.93426
+Shading mask MIX RNG,9.86355
+Shading mask EIGEN RNG,9.99761
+Shading mask EIGEN CAST RNG,10.162
+Shading mask EIGEN VECTORIZED RNG,9.91911
+Shading mask STD RNG,9.77986
+Shading mask PCG RNG,9.54944
+Shading mask XOSHIRO RNG,10.0544
+Shading mask MIX RNG,9.95813
+Shading mask EIGEN RNG,10.2159
+Shading mask EIGEN CAST RNG,10.072
+Shading mask EIGEN VECTORIZED RNG,9.78524
+Shading mask STD RNG,9.84185
+Shading mask PCG RNG,9.79539
+Shading mask XOSHIRO RNG,9.96739
+Shading mask MIX RNG,9.91237
+Shading mask EIGEN RNG,10.045
+Shading mask EIGEN CAST RNG,9.99359
+Shading mask EIGEN VECTORIZED RNG,10.5842
+Shading mask STD RNG,9.57087
+Shading mask PCG RNG,9.95382
+Shading mask XOSHIRO RNG,9.78046
+Shading mask MIX RNG,9.89293
+Shading mask EIGEN RNG,10.0319
+Shading mask EIGEN CAST RNG,10.1875
+Shading mask EIGEN VECTORIZED RNG,9.63387
+Shading mask STD RNG,9.72922
+Shading mask PCG RNG,9.78619
+Shading mask XOSHIRO RNG,9.90234
+Shading mask MIX RNG,9.92348
+Shading mask EIGEN RNG,9.76999
+Shading mask EIGEN CAST RNG,9.90811
+Shading mask EIGEN VECTORIZED RNG,9.89366
+Shading mask STD RNG,9.75717
+Shading mask PCG RNG,9.79355
+Shading mask XOSHIRO RNG,9.77645
+Shading mask MIX RNG,9.97372
+Shading mask EIGEN RNG,9.91113
+Shading mask EIGEN CAST RNG,9.93431
+Shading mask EIGEN VECTORIZED RNG,10.0181
+Shading mask STD RNG,9.73549
+Shading mask PCG RNG,9.8321
+Shading mask XOSHIRO RNG,10.1624
+Shading mask MIX RNG,9.79864
+Shading mask EIGEN RNG,9.91949
+Shading mask EIGEN CAST RNG,9.8852
+Shading mask EIGEN VECTORIZED RNG,9.85953
+Shading mask STD RNG,10.2128
+Shading mask PCG RNG,9.59265
+Shading mask XOSHIRO RNG,9.78798
+Shading mask MIX RNG,10.0578
+Shading mask EIGEN RNG,10.1339
+Shading mask EIGEN CAST RNG,10.0961
+Shading mask EIGEN VECTORIZED RNG,9.98453
+Shading mask STD RNG,9.87397
+Shading mask PCG RNG,9.97008
+Shading mask XOSHIRO RNG,9.63472
+Shading mask MIX RNG,9.77566
+Shading mask EIGEN RNG,10.2529
+Shading mask EIGEN CAST RNG,9.78805
+Shading mask EIGEN VECTORIZED RNG,9.77361
+Shading mask STD RNG,9.86347
+Shading mask PCG RNG,9.75723
+Shading mask XOSHIRO RNG,9.89035
+Shading mask MIX RNG,9.67237
+Shading mask EIGEN RNG,10.6006
+Shading mask EIGEN CAST RNG,10.0539
+Shading mask EIGEN VECTORIZED RNG,10.0675
+Shading mask STD RNG,9.98576
+Shading mask PCG RNG,9.37604
+Shading mask XOSHIRO RNG,10.121
+Shading mask MIX RNG,9.52363
+Shading mask EIGEN RNG,10.0026
+Shading mask EIGEN CAST RNG,10.0802
+Shading mask EIGEN VECTORIZED RNG,9.61605
+Shading mask STD RNG,9.92889
+Shading mask PCG RNG,9.78175
+Shading mask XOSHIRO RNG,9.95279
+Shading mask MIX RNG,9.7706
+Shading mask EIGEN RNG,9.97719
+Shading mask EIGEN CAST RNG,10.0957
+Shading mask EIGEN VECTORIZED RNG,10.0941
+Shading mask STD RNG,9.74425
+Shading mask PCG RNG,9.73257
+Shading mask XOSHIRO RNG,9.87303
+Shading mask MIX RNG,10.0248
+Shading mask EIGEN RNG,9.82734
+Shading mask EIGEN CAST RNG,10.0404
+Shading mask EIGEN VECTORIZED RNG,10.0883
+Shading mask STD RNG,9.3068
+Shading mask PCG RNG,9.4187
+Shading mask XOSHIRO RNG,9.39884
+Shading mask MIX RNG,9.27196
+Shading mask EIGEN RNG,9.27265
+Shading mask EIGEN CAST RNG,9.32075
+Shading mask EIGEN VECTORIZED RNG,9.38635
+Shading mask STD RNG,9.63391
+Shading mask PCG RNG,9.58032
+Shading mask XOSHIRO RNG,9.52277
+Shading mask MIX RNG,9.98413
+Shading mask EIGEN RNG,9.62849
+Shading mask EIGEN CAST RNG,9.39718
+Shading mask EIGEN VECTORIZED RNG,9.64313
+Shading mask STD RNG,9.29372
+Shading mask PCG RNG,9.25691
+Shading mask XOSHIRO RNG,9.413
+Shading mask MIX RNG,9.46375
+Shading mask EIGEN RNG,9.39798
+Shading mask EIGEN CAST RNG,9.40896
+Shading mask EIGEN VECTORIZED RNG,9.26567
+Shading mask STD RNG,11.2913
+Shading mask PCG RNG,11.3949
+Shading mask XOSHIRO RNG,9.75097
+Shading mask MIX RNG,10.733
+Shading mask EIGEN RNG,8.67239
+Shading mask EIGEN CAST RNG,9.96295
+Shading mask EIGEN VECTORIZED RNG,10.18
+Shading mask STD RNG,9.7727
+Shading mask PCG RNG,9.92573
+Shading mask XOSHIRO RNG,9.88952
+Shading mask MIX RNG,9.89983
+Shading mask EIGEN RNG,9.88949
+Shading mask EIGEN CAST RNG,9.91845
+Shading mask EIGEN VECTORIZED RNG,9.95544
+Shading mask STD RNG,9.46479
+Shading mask PCG RNG,9.45797
+Shading mask XOSHIRO RNG,9.24649
+Shading mask MIX RNG,9.52448
+Shading mask EIGEN RNG,9.49145
+Shading mask EIGEN CAST RNG,9.11179
+Shading mask EIGEN VECTORIZED RNG,9.49105
+Shading mask STD RNG,9.16874
+Shading mask PCG RNG,9.32023
+Shading mask XOSHIRO RNG,9.42693
+Shading mask MIX RNG,9.28587
+Shading mask EIGEN RNG,9.23277
+Shading mask EIGEN CAST RNG,9.42134
+Shading mask EIGEN VECTORIZED RNG,9.31642
+Shading mask STD RNG,9.1193
+Shading mask PCG RNG,9.2322
+Shading mask XOSHIRO RNG,9.18227
+Shading mask MIX RNG,9.12592
+Shading mask EIGEN RNG,9.28236
+Shading mask EIGEN CAST RNG,9.38465
+Shading mask EIGEN VECTORIZED RNG,9.36581
+Shading mask STD RNG,9.10996
+Shading mask PCG RNG,9.27032
+Shading mask XOSHIRO RNG,9.39305
+Shading mask MIX RNG,9.52908
+Shading mask EIGEN RNG,9.49332
+Shading mask EIGEN CAST RNG,9.30112
+Shading mask EIGEN VECTORIZED RNG,9.35755
+Shading mask STD RNG,9.21483
+Shading mask PCG RNG,9.33401
+Shading mask XOSHIRO RNG,9.59249
+Shading mask MIX RNG,9.24989
+Shading mask EIGEN RNG,9.7162
+Shading mask EIGEN CAST RNG,9.45828
+Shading mask EIGEN VECTORIZED RNG,9.33436
+Shading mask STD RNG,9.22207
+Shading mask PCG RNG,9.15202
+Shading mask XOSHIRO RNG,9.23133
+Shading mask MIX RNG,9.5747
+Shading mask EIGEN RNG,9.08813
+Shading mask EIGEN CAST RNG,9.4054
+Shading mask EIGEN VECTORIZED RNG,9.26643
+Shading mask STD RNG,9.06007
+Shading mask PCG RNG,9.00054
+Shading mask XOSHIRO RNG,9.28661
+Shading mask MIX RNG,9.04893
+Shading mask EIGEN RNG,9.30291
+Shading mask EIGEN CAST RNG,9.2488
+Shading mask EIGEN VECTORIZED RNG,9.41804
+Shading mask STD RNG,9.45981
+Shading mask PCG RNG,9.17316
+Shading mask XOSHIRO RNG,9.28826
+Shading mask MIX RNG,9.2341
+Shading mask EIGEN RNG,9.19836
+Shading mask EIGEN CAST RNG,9.1334
+Shading mask EIGEN VECTORIZED RNG,9.32312
+Shading mask STD RNG,9.27843
+Shading mask PCG RNG,9.27176
+Shading mask XOSHIRO RNG,9.26302
+Shading mask MIX RNG,9.30082
+Shading mask EIGEN RNG,9.42962
+Shading mask EIGEN CAST RNG,9.41512
+Shading mask EIGEN VECTORIZED RNG,9.30411
+Shading mask STD RNG,9.30427
+Shading mask PCG RNG,9.52998
+Shading mask XOSHIRO RNG,9.5162
+Shading mask MIX RNG,9.66531
+Shading mask EIGEN RNG,9.5348
+Shading mask EIGEN CAST RNG,9.60745
+Shading mask EIGEN VECTORIZED RNG,9.52905
+Shading mask STD RNG,9.44755
+Shading mask PCG RNG,9.51695
+Shading mask XOSHIRO RNG,9.4184
+Shading mask MIX RNG,9.57787
+Shading mask EIGEN RNG,9.58095
+Shading mask EIGEN CAST RNG,9.5289
+Shading mask EIGEN VECTORIZED RNG,9.76967
+Shading mask STD RNG,10.0869
+Shading mask PCG RNG,9.66975
+Shading mask XOSHIRO RNG,10.0272
+Shading mask MIX RNG,10.1451
+Shading mask EIGEN RNG,9.48448
+Shading mask EIGEN CAST RNG,10.0546
+Shading mask EIGEN VECTORIZED RNG,9.90919
+Shading mask STD RNG,9.94086
+Shading mask PCG RNG,9.83627
+Shading mask XOSHIRO RNG,9.85269
+Shading mask MIX RNG,10.081
+Shading mask EIGEN RNG,9.97609
+Shading mask EIGEN CAST RNG,10.0687
+Shading mask EIGEN VECTORIZED RNG,10.0692
+Shading mask STD RNG,10.0581
+Shading mask PCG RNG,9.77197
+Shading mask XOSHIRO RNG,9.75109
+Shading mask MIX RNG,9.77781
+Shading mask EIGEN RNG,9.81864
+Shading mask EIGEN CAST RNG,10.6811
+Shading mask EIGEN VECTORIZED RNG,10.9277
+Shading mask STD RNG,9.75072
+Shading mask PCG RNG,9.78564
+Shading mask XOSHIRO RNG,10.0484
+Shading mask MIX RNG,9.74946
+Shading mask EIGEN RNG,9.71082
+Shading mask EIGEN CAST RNG,9.52788
+Shading mask EIGEN VECTORIZED RNG,10.2742
+Shading mask STD RNG,9.34161
+Shading mask PCG RNG,9.42615
+Shading mask XOSHIRO RNG,9.41146
+Shading mask MIX RNG,9.60412
+Shading mask EIGEN RNG,9.37367
+Shading mask EIGEN CAST RNG,9.48976
+Shading mask EIGEN VECTORIZED RNG,9.40295
+Shading mask STD RNG,9.46946
+Shading mask PCG RNG,9.36701
+Shading mask XOSHIRO RNG,9.53985
+Shading mask MIX RNG,9.49079
+Shading mask EIGEN RNG,10.1219
+Shading mask EIGEN CAST RNG,9.63543
+Shading mask EIGEN VECTORIZED RNG,9.6909
+Shading mask STD RNG,9.86404
+Shading mask PCG RNG,9.96481
+Shading mask XOSHIRO RNG,9.54703
+Shading mask MIX RNG,10.1799
+Shading mask EIGEN RNG,9.67208
+Shading mask EIGEN CAST RNG,10.1124
+Shading mask EIGEN VECTORIZED RNG,10.0073
+Shading mask STD RNG,9.63648
+Shading mask PCG RNG,9.27325
+Shading mask XOSHIRO RNG,9.27436
+Shading mask MIX RNG,9.59973
+Shading mask EIGEN RNG,9.77385
+Shading mask EIGEN CAST RNG,9.2178
+Shading mask EIGEN VECTORIZED RNG,9.60797
+Shading mask STD RNG,9.26989
+Shading mask PCG RNG,9.79056
+Shading mask XOSHIRO RNG,9.34552
+Shading mask MIX RNG,9.77778
+Shading mask EIGEN RNG,9.73659
+Shading mask EIGEN CAST RNG,9.94003
+Shading mask EIGEN VECTORIZED RNG,9.89683
+Shading mask STD RNG,9.68508
+Shading mask PCG RNG,9.91781
+Shading mask XOSHIRO RNG,9.59608
+Shading mask MIX RNG,10.0661
+Shading mask EIGEN RNG,10.0146
+Shading mask EIGEN CAST RNG,9.66891
+Shading mask EIGEN VECTORIZED RNG,10.0263
+Shading mask STD RNG,10.1749
+Shading mask PCG RNG,9.9484
+Shading mask XOSHIRO RNG,9.70802
+Shading mask MIX RNG,9.92628
+Shading mask EIGEN RNG,9.65167
+Shading mask EIGEN CAST RNG,9.99586
+Shading mask EIGEN VECTORIZED RNG,9.75693
+Shading mask STD RNG,9.37248
+Shading mask PCG RNG,9.2944
+Shading mask XOSHIRO RNG,9.36354
+Shading mask MIX RNG,9.38532
+Shading mask EIGEN RNG,9.74463
+Shading mask EIGEN CAST RNG,9.15524
+Shading mask EIGEN VECTORIZED RNG,9.64233
+Shading mask STD RNG,9.43756
+Shading mask PCG RNG,9.50797
+Shading mask XOSHIRO RNG,9.31393
+Shading mask MIX RNG,9.85839
+Shading mask EIGEN RNG,9.81268
+Shading mask EIGEN CAST RNG,9.83512
+Shading mask EIGEN VECTORIZED RNG,9.81144
+Shading mask STD RNG,9.65452
+Shading mask PCG RNG,9.67039
+Shading mask XOSHIRO RNG,9.95926
+Shading mask MIX RNG,9.75684
+Shading mask EIGEN RNG,9.65145
+Shading mask EIGEN CAST RNG,9.78479
+Shading mask EIGEN VECTORIZED RNG,9.74571
+Shading mask STD RNG,9.64507
+Shading mask PCG RNG,9.588
+Shading mask XOSHIRO RNG,9.45434
+Shading mask MIX RNG,9.52428
+Shading mask EIGEN RNG,9.64741
+Shading mask EIGEN CAST RNG,9.26965
+Shading mask EIGEN VECTORIZED RNG,9.73691
+Shading mask STD RNG,9.45396
+Shading mask PCG RNG,9.42904
+Shading mask XOSHIRO RNG,9.51321
+Shading mask MIX RNG,9.61533
+Shading mask EIGEN RNG,9.77532
+Shading mask EIGEN CAST RNG,9.71801
+Shading mask EIGEN VECTORIZED RNG,9.74236
+Shading mask STD RNG,9.86345
+Shading mask PCG RNG,9.88498
+Shading mask XOSHIRO RNG,9.79393
+Shading mask MIX RNG,10.1377
+Shading mask EIGEN RNG,10.1322
+Shading mask EIGEN CAST RNG,10.8633
+Shading mask EIGEN VECTORIZED RNG,10.1979
+Shading mask STD RNG,9.89312
+Shading mask PCG RNG,9.69707
+Shading mask XOSHIRO RNG,9.70955
+Shading mask MIX RNG,10.05
+Shading mask EIGEN RNG,9.59966
+Shading mask EIGEN CAST RNG,10.0128
+Shading mask EIGEN VECTORIZED RNG,9.9359
+Shading mask STD RNG,11.0918
+Shading mask PCG RNG,10.9303
+Shading mask XOSHIRO RNG,10.9747
+Shading mask MIX RNG,11.09
+Shading mask EIGEN RNG,9.94347
+Shading mask EIGEN CAST RNG,10.1782
+Shading mask EIGEN VECTORIZED RNG,10.1829
+Shading mask STD RNG,9.88461
+Shading mask PCG RNG,9.99135
+Shading mask XOSHIRO RNG,9.97641
+Shading mask MIX RNG,10.1019
+Shading mask EIGEN RNG,9.87306
+Shading mask EIGEN CAST RNG,10.0248
+Shading mask EIGEN VECTORIZED RNG,9.93081
+Shading mask STD RNG,9.28417
+Shading mask PCG RNG,9.19214
+Shading mask XOSHIRO RNG,9.29903
+Shading mask MIX RNG,9.57927
+Shading mask EIGEN RNG,9.15374
+Shading mask EIGEN CAST RNG,9.16306
+Shading mask EIGEN VECTORIZED RNG,9.35191
+Shading mask STD RNG,10.0606
+Shading mask PCG RNG,10.0701
+Shading mask XOSHIRO RNG,10.1076
+Shading mask MIX RNG,10.2722
+Shading mask EIGEN RNG,9.97721
+Shading mask EIGEN CAST RNG,10.0459
+Shading mask EIGEN VECTORIZED RNG,10.0645
+Shading mask STD RNG,9.18569
+Shading mask PCG RNG,9.53972
+Shading mask XOSHIRO RNG,9.20431
+Shading mask MIX RNG,9.3269
+Shading mask EIGEN RNG,9.41932
+Shading mask EIGEN CAST RNG,9.31628
+Shading mask EIGEN VECTORIZED RNG,9.40232
+Shading mask STD RNG,9.49377
+Shading mask PCG RNG,9.57053
+Shading mask XOSHIRO RNG,9.23194
+Shading mask MIX RNG,9.33849
+Shading mask EIGEN RNG,9.40192
+Shading mask EIGEN CAST RNG,9.68931
+Shading mask EIGEN VECTORIZED RNG,9.58625
+Shading mask STD RNG,9.93979
+Shading mask PCG RNG,9.87355
+Shading mask XOSHIRO RNG,9.8124
+Shading mask MIX RNG,10.1407
+Shading mask EIGEN RNG,9.87416
+Shading mask EIGEN CAST RNG,9.94783
+Shading mask EIGEN VECTORIZED RNG,9.96902
+Shading mask STD RNG,9.33656
+Shading mask PCG RNG,9.11187
+Shading mask XOSHIRO RNG,9.33786
+Shading mask MIX RNG,9.5063
+Shading mask EIGEN RNG,10.2191
+Shading mask EIGEN CAST RNG,9.2033
+Shading mask EIGEN VECTORIZED RNG,9.39754
+Shading mask STD RNG,9.50673
+Shading mask PCG RNG,9.26685
+Shading mask XOSHIRO RNG,9.50871
+Shading mask MIX RNG,9.55284
+Shading mask EIGEN RNG,9.32355
+Shading mask EIGEN CAST RNG,9.45742
+Shading mask EIGEN VECTORIZED RNG,9.42442
+Shading mask STD RNG,10.0297
+Shading mask PCG RNG,9.86608
+Shading mask XOSHIRO RNG,10.0961
+Shading mask MIX RNG,10.278
+Shading mask EIGEN RNG,10.1063
+Shading mask EIGEN CAST RNG,9.78951
+Shading mask EIGEN VECTORIZED RNG,10.0489
+Shading mask STD RNG,10.0784
+Shading mask PCG RNG,9.80764
+Shading mask XOSHIRO RNG,9.99974
+Shading mask MIX RNG,10.0355
+Shading mask EIGEN RNG,10.0617
+Shading mask EIGEN CAST RNG,10.0662
+Shading mask EIGEN VECTORIZED RNG,10.1617
