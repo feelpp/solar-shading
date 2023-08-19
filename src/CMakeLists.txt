@@ -69,8 +69,8 @@ add_executable(example_ShadingMasks_comparison1 example_ShadingMasks_comparison.
 target_include_directories(example_ShadingMasks_comparison1 PRIVATE
     ${CMAKE_SOURCE_DIR}/benchmark/extlibs/eigen
     ${CMAKE_SOURCE_DIR}/benchmark/extlibs/pcg-cpp/include
-    ${CMAKE_SOURCE_DIR}/benchmark/extlibs/eigen/Eigen
     ${CMAKE_SOURCE_DIR}/benchmark/extlibs/Xoshiro-cpp
+    ${CMAKE_SOURCE_DIR}/benchmark/extlibs/EigenRand
 )
 target_link_libraries(example_ShadingMasks_comparison1 PRIVATE
     Feelpp::feelpp
@@ -87,8 +87,8 @@ add_executable(example_ShadingMasks_comparison2 example_ShadingMasks_comparison.
 target_include_directories(example_ShadingMasks_comparison2 PRIVATE
     ${CMAKE_SOURCE_DIR}/benchmark/extlibs/eigen
     ${CMAKE_SOURCE_DIR}/benchmark/extlibs/pcg-cpp/include
-    ${CMAKE_SOURCE_DIR}/benchmark/extlibs/eigen/Eigen
     ${CMAKE_SOURCE_DIR}/benchmark/extlibs/Xoshiro-cpp
+    ${CMAKE_SOURCE_DIR}/benchmark/extlibs/EigenRand
 )
 target_link_libraries(example_ShadingMasks_comparison2 PRIVATE
     Feelpp::feelpp
@@ -105,8 +105,8 @@ add_executable(example_ShadingMasks_comparison3 example_ShadingMasks_comparison.
 target_include_directories(example_ShadingMasks_comparison3 PRIVATE
     ${CMAKE_SOURCE_DIR}/benchmark/extlibs/eigen
     ${CMAKE_SOURCE_DIR}/benchmark/extlibs/pcg-cpp/include
-    ${CMAKE_SOURCE_DIR}/benchmark/extlibs/eigen/Eigen
     ${CMAKE_SOURCE_DIR}/benchmark/extlibs/Xoshiro-cpp
+    ${CMAKE_SOURCE_DIR}/benchmark/extlibs/EigenRand
 )
 target_link_libraries(example_ShadingMasks_comparison3 PRIVATE
     Feelpp::feelpp
@@ -122,8 +122,8 @@ add_executable(example_ShadingMasks_comparison4 example_ShadingMasks_comparison.
 target_include_directories(example_ShadingMasks_comparison4 PRIVATE
     ${CMAKE_SOURCE_DIR}/benchmark/extlibs/eigen
     ${CMAKE_SOURCE_DIR}/benchmark/extlibs/pcg-cpp/include
-    ${CMAKE_SOURCE_DIR}/benchmark/extlibs/eigen/Eigen
     ${CMAKE_SOURCE_DIR}/benchmark/extlibs/Xoshiro-cpp
+    ${CMAKE_SOURCE_DIR}/benchmark/extlibs/EigenRand
 )
 target_link_libraries(example_ShadingMasks_comparison4 PRIVATE
     Feelpp::feelpp
@@ -140,8 +140,8 @@ add_executable(example_ShadingMasks_comparison5 example_ShadingMasks_comparison.
 target_include_directories(example_ShadingMasks_comparison5 PRIVATE
     ${CMAKE_SOURCE_DIR}/benchmark/extlibs/eigen
     ${CMAKE_SOURCE_DIR}/benchmark/extlibs/pcg-cpp/include
-    ${CMAKE_SOURCE_DIR}/benchmark/extlibs/eigen/Eigen
     ${CMAKE_SOURCE_DIR}/benchmark/extlibs/Xoshiro-cpp
+    ${CMAKE_SOURCE_DIR}/benchmark/extlibs/EigenRand
 )
 target_link_libraries(example_ShadingMasks_comparison5 PRIVATE
     Feelpp::feelpp
@@ -158,8 +158,8 @@ add_executable(example_ShadingMasks_comparison6 example_ShadingMasks_comparison.
 target_include_directories(example_ShadingMasks_comparison6 PRIVATE
     ${CMAKE_SOURCE_DIR}/benchmark/extlibs/eigen
     ${CMAKE_SOURCE_DIR}/benchmark/extlibs/pcg-cpp/include
-    ${CMAKE_SOURCE_DIR}/benchmark/extlibs/eigen/Eigen
     ${CMAKE_SOURCE_DIR}/benchmark/extlibs/Xoshiro-cpp
+    ${CMAKE_SOURCE_DIR}/benchmark/extlibs/EigenRand
 )
 target_link_libraries(example_ShadingMasks_comparison6 PRIVATE
     Feelpp::feelpp
@@ -177,8 +177,8 @@ add_executable(example_ShadingMasks_comparison7 example_ShadingMasks_comparison.
 target_include_directories(example_ShadingMasks_comparison7 PRIVATE
     ${CMAKE_SOURCE_DIR}/benchmark/extlibs/eigen
     ${CMAKE_SOURCE_DIR}/benchmark/extlibs/pcg-cpp/include
-    ${CMAKE_SOURCE_DIR}/benchmark/extlibs/eigen/Eigen
     ${CMAKE_SOURCE_DIR}/benchmark/extlibs/Xoshiro-cpp
+    ${CMAKE_SOURCE_DIR}/benchmark/extlibs/EigenRand
 )
 target_link_libraries(example_ShadingMasks_comparison7 PRIVATE
     Feelpp::feelpp
@@ -195,8 +195,8 @@ add_executable(example_ShadingMasks_comparison8 example_ShadingMasks_comparison.
 target_include_directories(example_ShadingMasks_comparison8 PRIVATE
     ${CMAKE_SOURCE_DIR}/benchmark/extlibs/eigen
     ${CMAKE_SOURCE_DIR}/benchmark/extlibs/pcg-cpp/include
-    ${CMAKE_SOURCE_DIR}/benchmark/extlibs/eigen/Eigen
     ${CMAKE_SOURCE_DIR}/benchmark/extlibs/Xoshiro-cpp
+    ${CMAKE_SOURCE_DIR}/benchmark/extlibs/EigenRand
 )
 target_link_libraries(example_ShadingMasks_comparison8 PRIVATE
     Feelpp::feelpp
@@ -211,8 +211,8 @@ add_executable(example_ShadingMasks_comparison9 example_ShadingMasks_comparison.
 target_include_directories(example_ShadingMasks_comparison9 PRIVATE
     ${CMAKE_SOURCE_DIR}/benchmark/extlibs/eigen
     ${CMAKE_SOURCE_DIR}/benchmark/extlibs/pcg-cpp/include
-    ${CMAKE_SOURCE_DIR}/benchmark/extlibs/eigen/Eigen
     ${CMAKE_SOURCE_DIR}/benchmark/extlibs/Xoshiro-cpp
+    ${CMAKE_SOURCE_DIR}/benchmark/extlibs/EigenRand
 )
 target_link_libraries(example_ShadingMasks_comparison9 PRIVATE
     Feelpp::feelpp

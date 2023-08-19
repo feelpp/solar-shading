@@ -882,3 +882,17 @@ Shading mask MIX RNG,10.0355
 Shading mask EIGEN RNG,10.0617
 Shading mask EIGEN CAST RNG,10.0662
 Shading mask EIGEN VECTORIZED RNG,10.1617
+Shading mask STD RNG,9.73845
+Shading mask PCG RNG,9.91541
+Shading mask XOSHIRO RNG,9.85246
+Shading mask MIX RNG,9.99039
+Shading mask EIGEN RNG,9.83682
+Shading mask EIGEN CAST RNG,10.1094
+Shading mask EIGEN VECTORIZED RNG,9.69331
+Shading mask STD RNG,9.86966
+Shading mask PCG RNG,9.87866
+Shading mask XOSHIRO RNG,10.0411
+Shading mask MIX RNG,10.1074
+Shading mask EIGEN RNG,10.069
+Shading mask EIGEN CAST RNG,9.6748
+Shading mask EIGEN VECTORIZED RNG,9.4841

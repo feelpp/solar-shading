@@ -1,6 +1,8 @@
 #include <feel/feelmesh/bvh.hpp>
 #include <feel/feelcore/environment.hpp>
-#include "../benchmark/extlibs/EigenRand/EigenRand/EigenRand"
+// #include "../benchmark/extlibs/EigenRand/EigenRand/EigenRand"
+#include <EigenRand/EigenRand>
+
 
 namespace Feel { 
 
