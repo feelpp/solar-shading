@@ -6,9 +6,136 @@ toc::[]
 
 == Reframe Benchmarking 
 
-=== Definition
+Reframe is a framework designed to abstract the complexities behind running regression tests on different high-performance computing (HPC) systems, hence facilitating the validation of software across varying systems. The framework aims to decouple runtime-specific behavior from the logic of individual tests, allowing for a single test to run seamlessly across different environments. Written in Python, it allows users to express their testing logic in Python, and utilizes decorators and hooks to provide extensibility and adaptability.
 
 === Utility
+
+Reframe offers several advantages over shell scripts and other testing frameworks:
+
+- Portability: One of the primary reasons for using Reframe is its ability to run the same test across different HPC platforms without modification.
+- Flexibility: Users can write their own tests in Python, taking advantage of the expressiveness and extensibility of the language.
+- Extensibility: Through hooks and decorators, Reframe can be extended and adapted to support a wide range of testing scenarios.
+- Scalability: It supports running tests in parallel, making it efficient for large-scale testing scenarios.
+- Monitoring: With built-in performance tracking, Reframe makes it simple to monitor the performance of software components over time.
+
+The given Python code is an example of how Reframe can be utilized to benchmark different random number generators using various compilation flags. The benchmarks are executed across five different C++ files representing different RNGs. Using parameterization, each RNG is compiled and run with various optimization flags. Post-execution, the runtime of each RNG with the respective flags is extracted and the best runtime for each RNG is reported. This systematic approach of using Reframe makes it easier to discern the performance implications of different compiler flags on RNGs, facilitating optimal compiler flag selection for desired performance.
+
+[source,python]
+----
+flags = [
+    "-O1", "-O2", "-O3", "-Ofast",
+    "-O1 -march=native", "-O2 -march=native", "-O3 -march=native", "-Ofast -march=native",
+    "-O1 -march=native -funroll-loops", "-O2 -march=native -funroll-loops", "-O3 -march=native -funroll-loops", "-Ofast -march=native -funroll-loops",
+    "-O1 -march=native -fdisable-tree-cunrolli", "-O2 -march=native -fdisable-tree-cunrolli", "-O3 -march=native -fdisable-tree-cunrolli", "-Ofast -march=native -fdisable-tree-cunrolli"
+]
+
+cpp_files = [
+    'eigenrand_int.cpp',
+    'pcg_int.cpp',
+    'xoshiro_int.cpp',
+    'mersenne_twister_int.cpp',
+    'std_int.cpp'
+]
+
+@rfm.simple_test
+class RNGBenchmarkTest(rfm.RegressionTest):
+    best_times = {}
+    valid_systems = ['*']
+    valid_prog_environs = ['gcc']
+    build_system = 'SingleSource'
+    sourcesdir = 'src/reframe'
+    flags = parameter(flags)
+    cpp_file = parameter(cpp_files)
+
+    def __init__(self, flags=None, cpp_file=None):
+        super().__init__()
+
+        # Default values for flags and cpp_file if not provided
+        self.flags = flags if flags else '-O3 -march=native'
+        self.cpp_file = cpp_file if cpp_file else 'std_int.cpp'
+
+        self.valid_systems = ['*']
+        self.valid_prog_environs = ['*']
+        self.build_system = 'SingleSource'
+        self.build_system.cxx = 'g++'
+        self.build_system.cxxflags = [self.flags]
+        self.sourcepath = self.cpp_file
+        # self.sanity_patterns = sn.assert_found(r'PASSED', self.stdout)
+
+        self.tags = {'production'}
+
+    @property
+    def name(self):
+        return f'{self.__class__.__name__}_flags_{self.flags.replace(" ", "_")}_{os.path.splitext(self.cpp_file)[0]}'
+
+    @run_before('run')
+    def set_prerun_cmds(self):
+        if self.cpp_file == 'eigenrand_int.cpp':
+            build_cmd = f'g++ -Wno-enum-compare {self.flags} -I{os.path.abspath("../extlibs/EigenRand")} -o {os.path.splitext(self.cpp_file)[0]} {self.cpp_file}'
+            self.prerun_cmds = [
+                f'echo "Building {self.cpp_file} with {self.flags}"',
+                'echo "Executing build command: ' + build_cmd + '"',
+                build_cmd,
+                f'./{os.path.splitext(self.cpp_file)[0]}'
+            ]
+        if self.cpp_file == 'pcg_int.cpp':
+            build_cmd = f'g++ -Wno-enum-compare {self.flags} -I{os.path.abspath("../extlibs/pcg-cpp/include")} -o {os.path.splitext(self.cpp_file)[0]} {self.cpp_file}'
+            self.prerun_cmds = [
+                f'echo "Building {self.cpp_file} with {self.flags}"',
+                'echo "Executing build command: ' + build_cmd + '"',
+                build_cmd,
+                f'./{os.path.splitext(self.cpp_file)[0]}'
+            ]
+        if self.cpp_file == 'xoshiro_int.cpp':
+            build_cmd = f'g++ -Wno-enum-compare {self.flags} -I{os.path.abspath("../extlibs/Xoshiro-cpp/include")} -o {os.path.splitext(self.cpp_file)[0]} {self.cpp_file}'
+            self.prerun_cmds = [
+                f'echo "Building {self.cpp_file} with {self.flags}"',
+                'echo "Executing build command: ' + build_cmd + '"',
+                build_cmd,
+                f'./{os.path.splitext(self.cpp_file)[0]}'
+            ]
+        if self.cpp_file == 'mersenne_twister_int.cpp':
+            build_cmd = f'g++ -Wno-enum-compare {self.flags} -o {os.path.splitext(self.cpp_file)[0]} {self.cpp_file}'
+            self.prerun_cmds = [
+                f'echo "Building {self.cpp_file} with {self.flags}"',
+                'echo "Executing build command: ' + build_cmd + '"',
+                build_cmd,
+                f'./{os.path.splitext(self.cpp_file)[0]}'
+            ]
+        if self.cpp_file == 'std_int.cpp':
+            build_cmd = f'g++ -Wno-enum-compare {self.flags} -o {os.path.splitext(self.cpp_file)[0]} {self.cpp_file}'
+            self.prerun_cmds = [
+                f'echo "Building {self.cpp_file} with {self.flags}"',
+                build_cmd,
+                f'./{os.path.splitext(self.cpp_file)[0]}'
+            ]
+
+    @performance_function('μs')
+    def extract_runtime(self):
+        regex_map = {
+            'eigenrand_int.cpp': 'EigenRand,(\S+)',
+            'pcg_int.cpp': 'pcg-cpp,(\S+)',
+            'xoshiro_int.cpp': 'xoshiro-cpp,(\S+)',
+            'mersenne_twister_int.cpp': 'MersenneTwister,(\S+)',
+            'std_int.cpp': 'std::uniform_distribution,(\S+)'
+        }
+        perf = sn.extractsingle(regex_map[self.cpp_file], self.stdout, 1, float)
+        if self.cpp_file not in RNGBenchmarkTest.best_times or RNGBenchmarkTest.best_times[self.cpp_file][0] > perf:
+            RNGBenchmarkTest.best_times[self.cpp_file] = (perf, self.flags)  # update if this time is the best
+        return perf
+
+
+    @sanity_function
+    def assert_output(self):
+        regex_map = {
+            'eigenrand_int.cpp': 'EigenRand,(\S+)',
+            'pcg_int.cpp': 'pcg-cpp,(\S+)',
+            'xoshiro_int.cpp': 'xoshiro-cpp,(\S+)',
+            'mersenne_twister_int.cpp': 'MersenneTwister,(\S+)',
+            'std_int.cpp': 'std::uniform_distribution,(\S+)'
+        }
+        return sn.assert_found(regex_map[self.cpp_file], self.stdout)
+----
 
 == Random Number Generators
 
@@ -98,6 +225,45 @@ for method in "${!best_times_map[@]}"; do
 done
 printf "==============================================================================\n"
 ----
+
+This is one of its outputs, showing an improvement of 8.63% in execution time when using the `-Ofast -funroll-loop` flags on the Xoshiro method:
+
+[source,bash]
+----
+==============================================================================
+METHOD                    TIME (seconds) FLAGS
+==============================================================================
+RNG STD:                  9.389095158 s   '-O2'
+RNG EIGEN:                9.121100925 s   '-O2'
+RNG EIGEN CAST:           9.19422145 s    '-O2 -funroll-loops'
+RNG PCG:                  9.382495989 s   '-Ofast -funroll-loops'
+RNG XOSHIRO:              8.578198413 s   '-Ofast -funroll-loops'
+RNG EIGEN VEC:            9.554856035 s   '-Ofast -funroll-loops'
+RNG MIX:                  9.412993456 s   '-O2'
+==============================================================================
+----
+
+But such performance improvements are not consistent, even for a single method and flag since some RNGs, or the tasks using them (like the state-based traversal algorithm), might have non-deterministic paths. This means that even with the same seed, the exact sequence of operations might differ slightly in different runs, leading to performance variations.
+
+These benchmarks can be launched after launching these commands from the root of the repo:
+
+[source,bash]
+----
+cmake --preset default
+cmake --build build/default
+./src/run_all.sh
+----
+
+If one intents to benchmark all methods on a specific set of flags, the `run_examples.sh` script can be used as follows:
+
+[source,bash]
+----
+cmake --preset default
+cmake --build build/default
+./src/run_examples.sh
+----
+
+And choosing the flags and test cases using the terminal.
 
 ==== Available Methods
 

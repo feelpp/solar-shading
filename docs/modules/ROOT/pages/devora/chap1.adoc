@@ -215,7 +215,7 @@ lx = \frac{lm}{m^2} = \frac{lm}{W} \times \frac{W}{m^2}
 Given that the luminous efficacy is about 120/lm/W for sunlight and that the human eye is most sensitive to green light around 550nm, the conversion factor can computed as follows:
 [stem]
 ++++
-lm_Sun \approx 120 \times \frac{lm}{W} 
+lm_{SUN} \approx 120 \times \frac{lm}{W} 
 ++++
 Which implies that:
 [stem]
@@ -225,7 +225,7 @@ lx = 120 \frac{W}{m^2}
 And finally:
 [stem]
 ++++
-\frac{W}{m^2} = \frac{lx}{120} = 0.0083 lx
+\frac{W}{m^2} = \frac{lx}{120} = 0.0083 \space lx
 ++++
 
 Where lm are lumens, lx lux and W stands for Watts. This lays out the connection between lux and \(W/m^2\) using the luminous efficacy of sunlight as it relates to human visual sensitivity.
