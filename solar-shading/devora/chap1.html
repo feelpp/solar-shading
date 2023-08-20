@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Chapter 1 - Shading Masks :: Solar Shading</title>
+    <link rel="canonical" href="https://feelpp.github.io/solar-shading/solar-shading/devora/chap1.html">
+    <meta name="generator" content="Antora 3.1.4">
+    <link rel="stylesheet" href="../../_/css/site.css">
+<link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon">
+<script>!function(l,p){if(l.protocol!==p&&l.host=="docs.antora.org"){l.protocol=p}else if(/\.gitlab\.io$/.test(l.host)){l.replace(p+"//docs.antora.org"+l.pathname.substr(l.pathname.indexOf("/",1))+l.search+l.hash)}}(location,"https:")</script>
+
+<script src="../../_/js/vendor/tabs-block-extension.js"></script>
+<script src="../../_/js/vendor/tabs-block-behavior.js"></script>
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  messageStyle: "none",
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$'], ['\\[','\\]']],
+    processEscapes: true,
+    processEnvironments: true,
+    ignoreClass: "nostem|nolatexmath"
+  },
+  asciimath2jax: {
+    delimiters: [["\\$", "\\$"]],
+    ignoreClass: "nostem|noasciimath"
+  },
+
+  TeX: {
+      Macros: {
+      RR: "{\\mathbb R}",
+      NN: "{\\mathbb N}",
+      Nso: "{N_{\\mathrm{so}}}",
+      Nma: "{N_{\\mathrm{ma}}}",
+      Nno: "{N_{\\mathrm{no}}}",
+      Ne: "{N_{\\mathrm{e}}}",
+      Ilag: ["{\\mathcal{I}^{\\mathrm{lag}}_{#1}}",1],
+      calTh: "{\\mathcal{T}_h}",
+      Ck: ["{\\mathcal{C}^{#1}}",1],
+      Pk: ["{\\mathcal{P}^{#1}}",1],
+      Qk: ["{\\mathcal{Q}^{#1}}",1],
+      Pch: ["{P^{#1}_{c,h}}",1],
+      Pcho: ["{P^{#1}_{c,h,0}}",1],
+      Qch: ["{Q^{#1}_{c,h}}",1],
+      Ich: ["{\\mathcal{I}^{#1}_{c,h}#2}",2],
+      poly: ["{\\mathbb{#1}}",1],
+      nf: "{n_f}",
+      ngeo: "{n_{\\mathrm{geo}}}",
+      geo: "{\\mathrm{geo}}",
+      card: ["{\\operatorname{card}(#1)}",1],
+      dim: ["{\\operatorname{dim}(#1)}",1],
+      opdim: "{\\operatorname{dim}}",
+      card: ["{\\operatorname{card}(#1)}",1],
+      poly: ["{\\mathbb{#1}",1],
+      R: ["{\\mathbb{R}^{#1}}",1],
+      set: ["{\\left\\{#1\\right\\}}",1],
+      diam: "{\\operatorname{diam}}",
+      jump: ["{[\\![ #1 ]\\!]}",1],
+      Next: "{\\mathrm{n}}",
+      essinf: "{\\operatorname{ess}\\, \\operatorname{inf}}",
+      tr: "{\\operatorname{tr}}",
+      Id: "{\\mathcal{I}}",
+      disp: ["{\\mathbf{#1}}",1],
+      stresst: ["{\\mathbf{\\sigma(#1)}}",1],
+      deformt: ["{\\mathbf{\\varepsilon(#1)}}",1],
+      domain: "{\\Omega}",
+      prect: ["{\\left\\(#1\\right\\)}",1],
+      ds: "",
+      bold: ["{\\bf #1}",1],
+      p: "{\\mathrm{p}}",
+      q:"{\\mathbf{q}}",
+      n:"{\\mathbf{n}}",
+      T:"{\\mathcal{T}}",
+      F:"{\\mathcal{F}}",
+      P:"{\\mathcal{P}}",
+      v:"{\\mathbf{v}}"
+  },
+  extensions: ["mhchem.js"] }
+});
+</script>
+<!--<script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.3/MathJax.js?config=TeX-MML-AM_CHTML"></script>-->
+<!-- <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML' async></script> -->
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS_CHTML'>
+</script>
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.6.0/MathJax.js?config=TeX-MML-AM_HTMLorMML"></script>-->
+
+<!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0/katex.min.css" integrity="sha384-TEMocfGvRuD1rIAacqrknm5BQZ7W7uWitoih+jMNFXQIbNl16bO8OZmylH/Vi/Ei" crossorigin="anonymous">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0/katex.min.js" integrity="sha384-jmxIlussZWB7qCuB+PgKG1uLjjxbVVIayPJwi6cG6Zb4YKq0JIw+OMnkkEC7kYCq" crossorigin="anonymous"></script>-->
+<script>var uiRootPath = '../../_'</script>
+
+  </head>
+  <body class="article">
+<header class="header">
+    <nav class="navbar navbar-expand-sm bg-dark navbar-dark navbar-template-project"
+        style="border-top: 4px solid #9E9E9E">
+        <div class="navbar-brand">
+            <div class="navbar-item feelpp-logo">
+                <a href="https://feelpp.github.io/solar-shading">Solar Shading</a>
+            </div>
+            <button class="navbar-burger" data-target="topbar-nav">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+
+        <div id="topbar-nav" class="navbar-menu">
+            <div class="navbar-end">
+                <div class="navbar-item">
+                    <a href="https://docs.feelpp.org/">Documentation Reference</a>
+                </div>
+                <div class="navbar-item has-dropdown is-hoverable download-item">
+                    <div class="navbar-item"><a href="https://docs.feelpp.org/user/latest/install/index.html"
+                            class="download-btn">Get Feel++</a></div>
+                </div>
+                <div class="navbar-item">
+                    <a class="navbar-brand" href="https://www.cemosis.fr">
+                        <img class="cemosis-logo" src="../../_/img/cemosis-logo.svg" alt="Cemosis logo" />
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+</header><div class="body">
+<a href="#" class="menu-expand-toggle"></a>
+<div class="nav-container" data-component="solar-shading" data-version="">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="../index.html">Feel++ Solar Shading</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../index.html">Introduction</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Solar Shading environment</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../cmake.html">cmake environment</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../antora.html">antora environment</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../vscode.html">vscode integration</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../githubactions.html">Github Actions</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../rename.html">Renaming the project</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../jupyter.html">Jupyter Notebook</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="introduction.html">Report Ariel De Vora</a>
+<ul class="nav-list">
+  <li class="nav-item is-current-page" data-depth="2">
+    <a class="nav-link" href="chap1.html">Shading Masks</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="chap2.html">Bounding Volume Hierarchy</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="chap3.html">Benchmarking and Performance Measurement</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="conclusion.html">Conclusion</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">Feel++ Solar Shading</span>
+    <span class="version"></span>
+  </div>
+  <ul class="components">
+      <li class="component is-current">
+        <a class="title" href="../index.html">Feel++ Solar Shading</a>
+      </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+  <button class="nav-toggle"></button>
+    <a href="../index.html" class="home-link"></a>
+  <nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="../index.html">Feel++ Solar Shading</a></li>
+    <li><a href="../index.html">Introduction</a></li>
+    <li><a href="introduction.html">Report Ariel De Vora</a></li>
+    <li><a href="chap1.html">Shading Masks</a></li>
+  </ul>
+</nav>
+
+  
+    <div class="edit-this-page"><a href="https://github.com/feelpp/solar-shading/edit/21-update-internship-report/docs/modules/ROOT/pages/devora/chap1.adoc">Edit this Page</a></div>
+  
+  <div class="page-downloads">
+  <span class="label">Download as</span>
+  <ul class="download-options">
+    <li>
+      <a onclick="print(this)" href="#" data-toggle="tooltip" data-placement="left" title="Print to PDF"
+         class="pdf-download">
+        <img class="pdf-file-icon icon" src="../../_/img/pdf.svg"/> .pdf
+      </a>
+    </li>
+  </ul>
+</div>
+</div>
+
+  <div class="content">
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+<article class="doc">
+<h1 class="page">Chapter 1 - Shading Masks</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div id="toc" class="toc">
+<div id="toctitle" class="title">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_ray_tracing">1. Ray Tracing</a></li>
+<li><a href="#_monte_carlo">2. Monte-Carlo</a></li>
+<li><a href="#_perez_all_weather_sky_model">3. Perez all-weather sky model</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_ray_tracing"><a class="anchor" href="#_ray_tracing"></a>1. Ray Tracing</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Ray tracing stands as a pivotal computational technique in the realm of realistic light simulation and graphics, especially when high levels of accuracy and detail are essential. In the specific context of computing shading masks, the Perez all weather sky model, and the calculation of view factors, ray tracing is invaluable. It facilitates the tracing of rays from a viewpoint into the scene, allowing for the accurate representation of how light interacts with various surfaces. This is particularly significant when working with diverse atmospheric conditions and intricate urban or architectural structures. Moreover, when integrated with the Monte Carlo technique, ray tracing becomes an even more potent tool. The Monte Carlo method, which relies on repeated random sampling to obtain numerical results, paired with ray tracing, enables precise integration over complex domains and distributions. This combination not only enhances the reliability of computations but also expands the scope of scenarios and phenomena that can be realistically modeled and studied.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_monte_carlo"><a class="anchor" href="#_monte_carlo"></a>2. Monte-Carlo</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In the domain of numerical integration, one can differentiate between deterministic and stochastic methods to estimate integrals. A classic example of deterministic methods is Simpson&#8217;s rule, which derives its approach based on pairing function values to estimate areas. Specifically, Simpson&#8217;s rule is defined as:</p>
+</div>
+<div class="stemblock">
+<div class="content">
+\[I \approx \frac{h}{6} \left( y_0 + 2\sum_{i=1}^{\frac{n}{2}} y_{2i-1} + 4\sum_{i=1}^{\frac{n}{2}-1} y_{2i} + y_n \right)\]
+</div>
+</div>
+<div class="paragraph">
+<p>where \( I \) is the estimated integral, \( h \) is the width of each sub-interval, and \( y_i \) denotes the function value at the \( i^{th} \) point.</p>
+</div>
+<div class="paragraph">
+<p>On the other hand, Monte Carlo integration adopts a stochastic method, with each sample resulting in a unique outcome. The integral approximation in this technique is:</p>
+</div>
+<div class="stemblock">
+<div class="content">
+\[I \approx Q_N \approx \frac{1}{N} \sum_{i=1}^{N} \frac{f(x_i)}{p(x_i)}\]
+</div>
+</div>
+<div class="paragraph">
+<p>where \( N \) represents the total number of random samples, \( f(x_i) \) is the function value at the random point \( x_i \) and \( p(x_i) \) is the probability density function at \( x_i \) used to draw the random samples.</p>
+</div>
+<div class="paragraph">
+<p>But if the chosen probability density function is a uniform distribution, the Monte Carlo integral can be simplified to:</p>
+</div>
+<div class="stemblock">
+<div class="content">
+\[I \approx Q_N \approx V \frac{1}{N} \sum_{i=1}^{N} f(x_i)\]
+</div>
+</div>
+<div class="paragraph">
+<p>Where \( V \) is the volume of the domain of integration, since \( p(x_i) \) is constant.</p>
+</div>
+<div class="stemblock">
+<div class="content">
+\[V = \int_{\Omega} d\bar{x}\]
+</div>
+</div>
+<div class="paragraph">
+<p>Where \( \Omega \) is the domain of integration, a subset of \( \mathbb{R}^n \).</p>
+</div>
+<div class="paragraph">
+<p>Given Monte Carlo integration&#8217;s inherent randomness, the outcome is presented as an estimate surrounded by error bars. The efficiency of the Monte Carlo approach enhances with an increase in sample size, anchored by the law of large numbers. This principle posits that as \( N \), the number of samples, approaches infinity, the average result from Monte Carlo will tend to the actual integral value. Consequently, the approximated integral \(Q_N\) is ensured to follow the law of large numbers, with the error bars shrinking as \( N \) increases:</p>
+</div>
+<div class="stemblock">
+<div class="content">
+\[\lim_{N \to \infty} Q_N = I\]
+</div>
+</div>
+<div class="paragraph">
+<p>Further references can be found in the feelpp documentation at link::https://feelpp.github.io/ktirio/ktirio/1.0.0/models/heat/radiative-heat-transfer/montecarlo.html[Monte-Carlo].</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_perez_all_weather_sky_model"><a class="anchor" href="#_perez_all_weather_sky_model"></a>3. Perez all-weather sky model</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The Perez All-Weather model is a commonly used mathematical model for predicting the luminance distribution of the sky under various weather conditions. This model is named after its creator, Fernando Perez, who developed it in the late 20th century (1993).</p>
+</div>
+<div class="paragraph">
+<p>The focus of this part was implementing the Perez All-Weather Sky Model, a complex mathematical framework used for representing the luminance distribution of the sky under various weather conditions. Our implementation leveraged open-source libraries and modern programming paradigms, resulting in a robust solution that readily integrated with existing shading mask computations. Throughout the implementation, we faced several challenges, notably, the complex nature of the Perez model, requiring careful attention to mathematical and physical details. We also grappled with issues of computational efficiency, as large amounts of data in real-time needed to be processed. The implementation was designed to be flexible and widely applicable, specifically in terms of location and time.</p>
+</div>
+<div class="paragraph">
+<p>The model provides a method of representing the complex, variable nature of the sky&#8217;s appearance by taking into account several key parameters including the sun&#8217;s zenith and azimuth angles, the overall level of luminance (brightness) in the sky, the level of clearness, which describes how much the sky is dominated by the direct sunlight as opposed to the diffuse skylight and the level of turbidity, which describes the amount of aerosols or atmospheric particulates, affecting the scattering of light.</p>
+</div>
+<div class="paragraph">
+<p>It&#8217;s worth mentioning that, while the Perez model is very flexible and capable of representing a wide range of sky conditions, it is a model and thus an approximation and doesn&#8217;t perfectly represent all possible sky conditions. Furthermore, it assumes a certain level of homogeneity in the sky conditions, which may not always be the case in reality. For example, situations with localized cloud formations or rapidly changing weather conditions can be difficult to represent accurately with the model.</p>
+</div>
+<div class="paragraph">
+<p>The Perez model uses these parameters to generate a function that represents the luminance of the sky as a function of direction, or more precisely of the zenith angle of the considered sky element (ζ) and the angle between the sky element and the position of the sun (γ). This function is defined as follows and named 'lv' in the Perez model:</p>
+</div>
+<div class="stemblock">
+<div class="content">
+\[lv = f(\zeta, \gamma) = (1 + a \exp(\frac{b}{\cos(\zeta)})) (1 + c \exp(d \gamma) + e \cos^2(\gamma))\]
+</div>
+</div>
+<div class="paragraph">
+<p>The parameters a, b, c, d and e are determined by the level of clearness (ε) and brightness (Δ) as follows :</p>
+</div>
+<div class="stemblock">
+<div class="content">
+\[x = x_1(\epsilon) + x_2(\epsilon)Z + \Delta(x_3(\epsilon) + x_4(\epsilon)Z)\]
+</div>
+</div>
+<div class="paragraph">
+<p>Where x is any of the parameters a, b, c, d or e, Z is the zenith angle and x1, x2, x3 and x4 are constants and discrete functions of the clearness level ε. The values of these functions are given in the following table:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/PerezCoeffTable.png" alt="PerezCoeffTable">
+</div>
+</div>
+<div class="paragraph">
+<p>The goal was to automatically retrieve all necessary data to compute the Perez all-weather sky models for a specific day at a specific date, considerably expanding the range of possible applications of the sky model (averaging values over a different sized ranges, days, weeks, or over different locations). Given a specific day and coordinates, the Perez sky model automatically downloads the diffuse / direct radiation, the normal incident radiation and the sun&#8217;s postions accross all hours of the day. The Perez model is then computed for each hour of the day where the sun is above the horizon, and each result is stored in a table specifying the hour of the day used for its computation.</p>
+</div>
+<div class="paragraph">
+<p>In order to compute the model, we will need to be able to track the sun&#8217;s position in the sky. This is done using the Solar Position Algorithm (SPA) provided by the National Renewable Energy Laboratory (NREL), available <a href="https://midcdmz.nrel.gov/spa/">here</a>.</p>
+</div>
+<div class="paragraph">
+<p>During the hourly iteration process, several other parameters are computed, such as the sky element&#8217;s zenith angle and the angle between the sky element and the position of the sun, which is computed thanks to trigonometric functions:</p>
+</div>
+<div class="stemblock">
+<div class="content">
+\[\cos(\gamma) = \cos(Z) \cos(z) + \sin(Z) \sin(z) \cos(|A - a|)\]
+</div>
+</div>
+<div class="paragraph">
+<p>Where z is the zenith angle of the sky element, Z is the zenith angle of the sun, a is the azimuth angle of the sky element and A is the azimuth angle of the sun. The zenith angle of the sky element is already known since the hemisphere&#8217;s discretization is done when the <code>computePerezSkymodel()</code> method is called. Everything is automated inside this method, even the computation of the timezone needed to retrieve correct sun positions based on the hours wanted.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-cpp hljs" data-lang="cpp">void computePerezSkyModel(double longitude, double latitude, std::string start_date, nl::json const&amp; specs, int AzimuthSize = 72, int AltitudeSize = 10)
+    {
+        RetrieveData(longitude, latitude, start_date);
+        for(std::string Building_name : specs["Buildings"])
+        {
+            M_BuildingName = Building_name;
+            std::cout &lt;&lt; fmt::format("Start Computation of the Sky Model for the building {}\n", M_BuildingName);
+
+            std::string meteo_folder = (boost::filesystem::path(Environment::appRepository())/("meteo")).string();
+            if (!boost::filesystem::exists(meteo_folder))
+                boost::filesystem::create_directory(meteo_folder);
+            std::string meteo_filename = meteo_folder + "/openmeteo.json";
+            std::ifstream jsonFile(meteo_filename);
+
+            // Check if the file was opened successfully
+            if (!jsonFile) {
+                throw std::logic_error( "Unable to open JSON file" );
+            }
+
+            // Parse the JSON file into a json object
+            nlohmann::json j;
+            jsonFile &gt;&gt; j;
+
+            // Close the file stream
+            jsonFile.close();
+
+            int year = std::stoi(start_date.substr(0, 4)); // Year: 2023
+            int month = std::stoi(start_date.substr(5, 2)); // Month: 07
+            int day = std::stoi(start_date.substr(8, 2)); // Day: 21
+
+            int timezone = getTimezoneOffset(longitude);
+            // Compute the sun's position
+            std::vector&lt;std::pair&lt;double, double&gt;&gt; sun_positions = computeSunPosition(year, month, day, latitude, longitude, timezone, getTime(j));
+
+            // set the Angles, and convert them to radians
+            for (size_t i = 0; i &lt; sun_positions.size(); i++) {
+                M_SolarAzimuth.push_back(rad(sun_positions[i].first));
+                M_ZenithAngles.push_back(rad(sun_positions[i].second));
+            }
+            checkSolarAngles();
+
+            // Instanctiate
+            M_SkyModel = Eigen::MatrixXd::Zero(AzimuthSize, AltitudeSize);
+
+            // Access the time, direct radiation, diffuse radiation, direct normal irradiance
+            M_azimuthSize = AzimuthSize;
+            M_altitudeSize = AltitudeSize;
+            M_Time = getTime(j);
+            M_DirectRadiation = getDirectRadiation(j);
+            M_DiffuseRadiation = getDiffuseRadiation(j);
+            M_DirectNormalIrradiance = getDirectNormalIrradiance(j);
+
+            // Verify the correctness of the downloaded data
+            checkData();
+
+            // Compute the diffuse illuminance, air mass, clearness and brightness
+            M_DiffuseIlluminance = getDiffuseIlluminance(M_DiffuseRadiation);
+            M_AirMass = computeAirMass(M_ZenithAngles);
+            M_Clearness = computeClearness(M_DiffuseRadiation, M_DirectNormalIrradiance, M_ZenithAngles);
+            M_Brightness = computeBrightness(M_DiffuseRadiation, M_AirMass);
+
+            // Loop over the hours of the day in order to compute all models
+            for (int i = 0; i &lt; M_Time.size(); i++)
+            {
+                M_SkyModel.setZero();
+                int hour = M_Time[i];
+                double delta = M_Brightness[i];
+                double epsilon = M_Clearness[i];
+                double A = M_SolarAzimuth[i];
+                double Z = M_ZenithAngles[i];
+                setPerezParameters(epsilon, delta, Z);
+                double integral_value = compute_integral(A, Z);
+                std::cout &lt;&lt; "The Perez Parameters at hour " &lt;&lt; hour &lt;&lt; " are : " &lt;&lt; M_PerezParameters(0) &lt;&lt; "   " &lt;&lt; M_PerezParameters(1) &lt;&lt; "   " &lt;&lt; M_PerezParameters(2) &lt;&lt; "   " &lt;&lt; M_PerezParameters(3) &lt;&lt; "   " &lt;&lt; M_PerezParameters(4) &lt;&lt; "\n";
+
+                for (int j = 0; j &lt; AltitudeSize; j++)
+                {
+                    for (int k = 0; k &lt; AzimuthSize; k++)
+                    {
+                        double z = M_PI / 2.0 - (double)j / (double)AltitudeSize * M_PI / 2.0;  // zenith of the sky element
+                        double a = (double)k / (double)AzimuthSize * 2.0 * M_PI;  // azimuth of the sky element
+                        if ( j == 0 )
+                            z = M_PI / 2.0 - 1e-6; // avoid division by zero
+
+                        // Calculate gamma with error checking
+                        double gamma;
+                        double cos_gamma = std::cos(Z) * std::cos(z) + std::sin(Z) * std::sin(z) * std::cos(std::abs(A - a));
+                        if (cos_gamma &gt; 1 &amp;&amp; cos_gamma &lt; 1.1)
+                            gamma = 0;
+                        else if (cos_gamma &gt; 1.1)
+                        {
+                            throw std::logic_error ("Error in calculation of gamma (angle between point and sun)");
+                        }
+                        else
+                        {
+                            gamma = std::acos(cos_gamma);
+                        }
+                        M_SkyModel(k, j) += getNormalizedLuminance(z, gamma, M_DiffuseIlluminance[i], A, Z, integral_value);
+                    }
+                }
+                saveSkyModel(hour);
+            }
+        }
+    }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Lastly, the Perez model was combined with a shading mask to account for the effect of obstacles blocking the sunlight. The calculation of the shading table involved an element-wise matrix multiplication operation, which required careful handling due to the large size of the matrices involved and the specific organization of data within them. Another key challenge we faced was the interpolation of matrices of different sizes, allowing us to integrate data from different sources, with different spatial resolutions, into our computations. This feature was particularly useful in the case of the shading masks, which are generated using a separate algorithm, and thus may have different spatial resolutions than the ones Perez model. But this algorithm couldn&#8217;t be used when parts of the shading matrices were totaly in the shadow, because the interpolation algorithm would interpolate the values of the shadowed parts with values of the unshadowed parts, which resulted in slightly wrong shading mask when the dimensions of both matrices were mismatched. This problem was solved by using a different interpolation algorithm that only interpolated the values of the unshadowed parts of the shading mask, for example by defining the boundaries of the shadowed parts, either by directly looking up for zeros in the shading mask table, or by using techniques such as the Sobel operator, able to detect changes in intensity in the matrix, thus defining the edges.</p>
+</div>
+<div class="paragraph">
+<p>The results can be shown as illuminance matrices (lux) as well as irradiance matrices (W/m2), depending on the user&#8217;s needs. The irradiance is computed from the illuminance, possible since the sun is the only light source in the sky model, by multiplying the illuminance by 0.0083, which is the conversion factor between illuminance and irradiance used by scientists.</p>
+</div>
+<div class="paragraph">
+<p>The general equation for illuminance:</p>
+</div>
+<div class="stemblock">
+<div class="content">
+\[lx = \frac{lm}{m^2} = \frac{lm}{W} \times \frac{W}{m^2}\]
+</div>
+</div>
+<div class="paragraph">
+<p>Given that the luminous efficacy is about 120/lm/W for sunlight and that the human eye is most sensitive to green light around 550nm, the conversion factor can computed as follows:</p>
+</div>
+<div class="stemblock">
+<div class="content">
+\[lm_Sun \approx 120 \times \frac{lm}{W}\]
+</div>
+</div>
+<div class="paragraph">
+<p>Which implies that:</p>
+</div>
+<div class="stemblock">
+<div class="content">
+\[lx = 120 \frac{W}{m^2}\]
+</div>
+</div>
+<div class="paragraph">
+<p>And finally:</p>
+</div>
+<div class="stemblock">
+<div class="content">
+\[\frac{W}{m^2} = \frac{lx}{120} = 0.0083 lx\]
+</div>
+</div>
+<div class="paragraph">
+<p>Where lm are lumens, lx lux and W stands for Watts. This lays out the connection between lux and \(W/m^2\) using the luminous efficacy of sunlight as it relates to human visual sensitivity.</p>
+</div>
+</div>
+</div>
+</article>
+  </div>
+</main>
+</div>
+<footer class="footer" style="border-top: 2px solid #e9e9e9; background-color: #fafafa; padding-bottom: 2em; padding-top: 2em;">
+    <div class="container" style="display: flex; flex-direction: column; align-items: center; gap: 0.5em;">
+        <div>
+            <a href="https://www.cemosis.fr">
+                <img src="../../_/img/cemosis-logo.svg" alt="Cemosis logo" height="50">
+            </a>
+        </div>
+        <span style="font-size: 0.8rem; color: #9e9e9e">© 2023 <a href="https://www.cemosis.fr" style="text-decoration: underline;">Cemosis</a>, Université de Strasbourg</span>
+    </div>
+</footer>
+<script id="site-script" src="../../_/js/site.js" data-ui-root-path="../../_"></script>
+
+
+<script async src="../../_/js/vendor/fontawesome-icon-defs.js"></script>
+<script async src="../../_/js/vendor/fontawesome.js"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
+
+
+<script type="text/javascript">
+function toggleFullScreen() {
+   var doc = window.document;
+   var docEl = doc.documentElement;
+
+   var requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
+   var cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
+
+   if(!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement && !doc.msFullscreenElement) {
+       requestFullScreen.call(docEl);
+   }
+   else {
+       cancelFullScreen.call(doc);
+   }
+}
+</script>
+  </body>
+</html>
