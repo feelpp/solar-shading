@@ -13,11 +13,20 @@ BVH has become popular in many use cases, in particular when using ray-tracing, 
 - **predictable memory footprints:** The memory complexity is linearly bounded to the number of scene primitives since each is only referenced once in the tree, so that the BVH contains at most \(2n-1\) nodes for a binary BVH when dealing with \(n\) primitives / leafs. Even in the case of spatial splits where primitives can be referred to multiple times, the number of occurrences can still be controlled to a certain extent.
 - **efficient query:** Using a BVH, we can efficiently prune branches that do not intersect a given ray, and thus reduce the time complexity from linear to logarithmic on average. This will be tested in the benchmark sections.
 - **scalable construction:** There are various BVH construction algorithms, ranging from very fast algorithms to complex algorithms that provide highly optimized BVHs.
-- **dynamic geometry:** since fast BVH construction is available, they are suitable for use with dynamic geometries
 
+.Quality
+[.def#def:Quality]
+****
+[stem]
 **Quality of a BVH:** The quality of such a structure corresponds to the ray tracing speed in millions of rays cast per second
+****
 
+.Node
+[.def#def:Node]
+****
+[stem]
 **BVH Node:** Contains information such as child node pointers, the number of leaves, and bounding boxes. Hence, the memory consumption of a BVH drastically increases with the scene's size growth.
+****
 
 == Definition
 
@@ -27,7 +36,7 @@ BVH has become popular in many use cases, in particular when using ray-tracing, 
 [.def#def:BV]
 ****
 [stem]
-A **Bounding Volume** is a single simple volume encapsulating one or several objects of more complex nature. The idea is that they have way cheaper overlap tests than the complex ones, very useful when calculating the Ray-Object intersections during traversal. This will result in very fast overlapping rejections.
+A **Bounding Volume** is a single simple volume encapsulating one or several objects of more complex nature. The idea is that they have way cheaper overlap tests than the complex ones, very useful when calculating the Ray-Object intersections during traversal.
 ****
 
 []
@@ -70,7 +79,7 @@ The construction of an effective and well-optimized Bounding Volume Hierarchy (B
 
 Numerous techniques have been developed to construct BVHs efficiently, and the choice of technique can significantly affect the structure and traversal behavior of the resulting BVH. Techniques vary from classic bottom-up approaches like the Surface Area Heuristic (SAH) to top-down techniques like Binary Space Partitioning (BSP).
 
-Each technique has its strengths and weaknesses, and their impact becomes even more pronounced when applied to solar shading mask calculations. For instance, scenes with highly detailed geometry might benefit from BVHs constructed with the SAH algorithm, as it efficiently reduces the number of unnecessary ray-object intersection tests. On the other hand, scenes with varying object densities could benefit from median splits and axis-cycling, ensuring that the splitting axes are evenly distributed and can help maintain overall balance during the BVH construction.
+Each technique has its strengths and weaknesses, and their impact becomes even more pronounced when applied to solar shading mask calculations. For instance, scenes with highly detailed geometry might benefit from BVHs constructed with the SAH algorithm (<<Cost Functions>>), as it efficiently reduces the number of unnecessary ray-object intersection tests. On the other hand, scenes with varying object densities could benefit from median splits and axis-cycling, ensuring that the splitting axes are evenly distributed and can help maintain overall balance during the BVH construction.
 
 Furthermore, the trade-off between construction time and traversal efficiency cannot be overlooked. While some techniques may yield BVHs with faster traversal times, they might require longer construction times, but this would be acceptable for the computation of solar shading masks, since the BVH is constructed only once and then used for many ray-object intersection tests.
 
@@ -81,9 +90,6 @@ image::BVH.png[]
 
 In this context, `N1` would be the bounding volume for the entire object or scene, `N2` and `N3` would be those respectively containing `N4` and `N5`, and so on, until we reach the leaves of the tree, which are directly the bounding boxes of the primitives.
 
-
-== Utility
-
 == Construction
 
 Visual representation of the construction process of a BVH :
@@ -92,7 +98,7 @@ image::constructmet.png[width=500]
 
 === Recursive Top-Down Construction
 
-In the code snippet below, written by Luca Berti, a recursive top-down construction algorithm was proposed for further improvements. We can see that he adopts a recursive build function, which is called to create each node of the tree: if there is only one primitive, then a leaf is build, else, an internal node is created and the build function is called recursively on the left and right child nodes. Here is the proposed implementation:
+In the code snippet below, written by Luca Berti, a recursive top-down construction algorithm was proposed for further improvements. We can see that he adopts a recursive build function, which is called to create each node of the tree. Here is the proposed implementation:
 
 
 [source,cpp]
@@ -140,9 +146,16 @@ In the code snippet below, written by Luca Berti, a recursive top-down construct
 
 This function is responsible for constructing the BVH tree from the primitives. It's called recursively and each time it either creates a leaf node if there's only one primitive left, or an internal node with two child nodes. The primitives are split by choosing a cutting dimension and sorting them by their centroids along this dimension, and then the data is divided into two equally sized parts, for each of which a new node is created. 
 
-The cutting dimension is cycled between 0, 1, 2 (representing the x, y, and z axes in a 3D space) by using `(cut_dimension+1)%nDim` in the recursive calls. This is the main "Divide and Conquer" idea behind this top-down construction algorithm.
+The cutting dimension is cycled between 0, 1, 2 (representing the x, y, and z axes in a 3D space) by using `(cut_dimension+1)%nDim` in the recursive calls (<<Axis Cycling>>). This is the main "Divide and Conquer" idea behind this top-down construction algorithm.
 
-It then sorts the primitives by their centroids along the cutting dimension, using the `std::nth_element` function, which partially sorts the primitives so that the element at the mid index will be in the place it would be in a fully sorted array, and all elements before it are less than or equal to the elements after it. The comparison function `[cut_dimension](const BVHPrimitiveInfo &a, const BVHPrimitiveInfo &b) { return a.M_centroid[cut_dimension] < b.M_centroid[cut_dimension]; }` is used to sort the elements based on their centroids along the cutting dimension.
+It then sorts the primitives by their centroids along the cutting dimension, using the `std::nth_element` function, which partially sorts the primitives so that the element at the mid index will be in the place it would be in a fully sorted array, and all elements before it are less than or equal to the elements after it. The comparison function :
+
+[source,c++]
+----
+[cut_dimension](const BVHPrimitiveInfo &a, const BVHPrimitiveInfo &b) { return a.M_centroid[cut_dimension] < b.M_centroid[cut_dimension]; }
+----
+
+is used to sort the elements based on their centroids along the cutting dimension (<<Median Cut>>).
 
 Finally, the data is divided into two equally sized parts when calculating the midpoint of the primitives' indexes.
 
@@ -152,7 +165,7 @@ Other splitting algorithms can be used, such as the Surface Area Heuristic (SAH)
 
 Instead of starting with all scene primitives in one cluster and recursively splitting them, bottom-up construction algorithms start with each primitive in its own cluster and recursively merge the closest pairs. This is done either until the desired number of clusters is reached, or each cluster contains a maximum number of primitives. The clusters are then used as the primitives for the next level of the tree. This process is repeated until the root node is reached.
 
-But suhc a method wouldn't be the best for our purpose, first of all, looking at its inefficiency in finding pairs, we observe that every time we need to merge two clusters, we have to determine which two are the closest. This operation can be computationally expensive and can result in O(n^2) time complexity if not optimized. For a large number of primitives, this can slow down the construction process considerably. Most important, such techniques suffer from a strong lack in flexibility: the algorithm involves the creation and deletion of nodes dynamically, and the management of an array of active nodes. This can lead to fragmentation and additional memory overhead, which is unacceptable due to the need of scaling up the algorithm to be performed on GPUs, where memory is very limited. The bottom-up approach generally lacks the flexibility to adapt the BVH structure based on specific traversal use-cases. For instance, in solar shading masks computations, certain areas might need more detailed BVH structures (higher resolution) than others. Bottom-up methods don't inherently allow for this granularity during construction, as opposed to the top-down approach, where the BVH structure can be adapted to our needs at each step of the construction process.
+But such a method wouldn't be the best for our purpose, first of all, looking at its inefficiency in finding pairs, we observe that every time we need to merge two clusters, we have to determine which two are the closest. This operation can be computationally expensive and can result in O(n^2) time complexity if not optimized. For a large number of primitives, this can slow down the construction process considerably. Most important, such techniques suffer from a strong lack in flexibility: the algorithm involves the creation and deletion of nodes dynamically, and the management of an array of active nodes. This can lead to fragmentation and additional memory overhead, which is unacceptable due to the need of scaling up the algorithm to be performed on GPUs, where memory is very limited. The bottom-up approach generally lacks the flexibility to adapt the BVH structure based on specific traversal use-cases. For instance, in solar shading masks computations, certain areas might need more detailed BVH structures (higher resolution) than others. Bottom-up methods don't inherently allow for this granularity during construction, as opposed to the top-down approach, where the BVH structure can be adapted to our needs at each step of the construction process.
 
 Below is an example of a bottom-up construction algorithm, found in `Real-Time Collision Detection` by Christer Ericson:
 
@@ -257,11 +270,11 @@ std::nth_element(&M_primitiveInfo[start_index_primitive], &M_primitiveInfo[mid],
 
 Here is an example of a construction using the median cut strategy, but on a single splitting axis:
 
-image::BVlayers.png[]
+image::BVlayers.png[400]
 
 And such spacial divisions can lead to a similar tree as the following:
 
-image::BVlayerstree.png[]
+image::BVlayerstree.png[400]
 
 We will combine this method with the <<Axis Cycling>> one, to ensure that the splitting axes are evenly distributed and can help maintain overall balance during the BVH construction.
 
@@ -302,7 +315,7 @@ The problem of finding an optimal BVH is believed to be NP-hard. But these assum
 
 == Layout
 
-After successfully constructing the tree in an optimized way, it is important to note that both optimizing the traversal code and the tree's representation itself are very important to see an increase in performance. Two obvious ways of dealing with that are to minimize the size of the data structures involved and to rearrange the data in a more cache-friendly way to reduce time for the search of relevant information (for example, it would be better to structure the array holding the pointers in such a way to minimize the time spent during traversal).
+After successfully constructing the tree in an optimized way, it is important to note that both optimizing the traversal code and the tree's representation itself are very important to see an increase in performance. Two obvious ways of dealing with that are to minimize the size of the data structures involved and to rearrange the data in a more cache-friendly way to reduce time for the search of relevant information (for example, it would be better to structure the array holding the pointers in such a way to minimize the time spent during traversal). Most of the information in this part comes from the paper `Real-Time Collision Detection` by Christer Ericson.
 
 === Array Representation
 Let's look at a natural way of structuring the tree by mapping its nodes in a breadth-first level-by-level manner:
@@ -455,7 +468,7 @@ Additionally, when working with such algorithm, one can encounter parallelisatio
 
 ==== Algorithm
 
-For a clear understanding of the stack-based approach, we can draw an analogy with a depth-first search (DFS) in graph theory, where a stack keeps track of nodes yet to be explored. Here's a basic pseudocode for the stack-based traversal:
+For a clear understanding of the stack-based approach, we can draw an analogy with a depth-first search (DFS) in graph theory, where a stack keeps track of nodes yet to be explored. Here's a basic pseudocode for the stack-based traversal (found in `Real-Time Collision Detection` by Christer Ericson):
 
 [source, c++]
 ----
@@ -491,7 +504,7 @@ void traverseStackBased(ray) {
 }
 ----
 
-This approach showcases the power of the stack in maintaining traversal state, providing a more direct and efficient path through the BVH. Moreover, as with all algorithms, specific improvements and tweaks can be added to optimize for particular scenarios or architectures.
+This approach showcases the power of the stack in maintaining traversal state, providing a more direct and efficient path through the BVH.
 
 === Stack-Less Algorithms
 
@@ -502,8 +515,6 @@ Traversing a ray through a bounding volume hierarchy is usually carried out in a
 Many reasons have pushed researches in this field, such as:
 
 - *efficient memory usage:* since stack-less algorithms don't require keeping track of the traversal state. This is critical when implementing it on GPUs, where memory is very limited
-- *coherency:* these algorithms can be more coherent in terms of memory access patterns, since they have more predictable behaviors
-- *predictability:* predictable performance due lack of deep recursion possibilities, mostly occurring when applying a stack-based algorithm on a unbalanced BVH.
 - *parallelism:* since they do not require to push and pop from a stack, these methods offer rich parallelization capabilities
 
 The presented algorithm presents a stack-less iterative method traversing the BVH structure in the exact same order as stack-based ones, mainly thanks to added parent-pointers stored within each node and thus performing only one ray-box intersection test per internal node.
@@ -520,16 +531,15 @@ A commonly-used way of storing the parent's information is to store an explicit 
 
 For traversal order, a first method would be to store for each node the coordinate axis along which the builder split the parent node and use the ray's direction sign in this dimension to determine the traversal order. On the other hand, we can directly use the dimension in which the nodes' centroids are widest apart. Finally, we could also directly compute the distance to the sibling's bounding boxes, inferring many computations.
 
-First, in order to fully understand the methods benefits, let us understand all the underlyings of recursive algorithms. How does the traversal algorithm work? 
-After having successfully intersected the parent, the traversal goes to the `nearChild` (found with any type of method), and does a ray-box test for this node. If the node is missed, `farChild` is processed, But if the test was successful, it continues by intersecting its primitives (if the node is a leaf), or by recursively entering the node's subtree (in case it's an inner node). Once `nearChild` is fully processed, traversal resumes with `farChild` exactly and the same sequence of events takes place.
+First, in order to fully understand the methods benefits, let us understand all the underlyings of recursive algorithms.After having successfully intersected the parent, the traversal goes to the `nearChild` (found with any type of method), and does a ray-box test for this node. If the node is missed, `farChild` is processed, But if the test was successful, it continues by intersecting its primitives (if the node is a leaf), or by recursively entering the node's subtree (in case it's an inner node). Once `nearChild` is fully processed, traversal resumes with `farChild` exactly and the same sequence of events takes place.
 
-This already gives us an overlook of the simple deterministic automaton algorithm (pseudo-code available in "Efficient Stack-less BVH Traversal for Ray Tracing"). In fact, we can start and make a parallel between the three ways of how any given node can be traversed and the tree states of the algorithm. During recursive traversal, a node can either be traversed:
+This already gives us an overlook of the deterministic automaton algorithm (pseudo-code available in "Efficient Stack-less BVH Traversal for Ray Tracing"). In fact, we can start and make a parallel between the three ways of how any given node can be traversed and the tree states of the algorithm. During recursive traversal, a node can either be traversed:
 - from its parents (case `fromParent`): we know that we are entering `nearChild`. We traverse the current node: if it's missed, we proceed with a `fromSibling` case and if not, either it's a leaf node and we intersect its primitives, or it's an inner node and we continue with its subtree.
 - from its siblings (case `fromSibling`): we are entering `farChild` and we are traversing this node for the first time. If it's missed, we back-track to its parent. Otherwise we intersect it's primitives against the ray if it's a leaf node and proceed to parent, and if not we enter the current node's subtree performing a `fromParent` step. 
 - from one of its children (case `fromChild`): the current node was already tested during the top to bottom phase, it **should not** be re-tested. The next on the list is either the current node's `farChild` or its parent
 
 []
-Algorithm Developed by the Authors (Michal Hapala, Tomas Davidovic, Ingo Wald, Vlastimil Havran and Philipp Slusallek) of the article "Efficient Stack-less BVH Traversal for Ray Tracing".
+Algorithm Developed by the Authors (Michal Hapala, Tomas Davidovic, Ingo Wald, Vlastimil Havran and Philipp Slusallek) of the article "Efficient Stack-less BVH Traversal for Ray Tracing", further implemented by Luca Berti in the original code of this project:
 
 [source,c++]
 ----
@@ -777,7 +787,7 @@ Further optimizations can be made by assigning different parts of the shading ma
 
 ==== Copy-by-value 
 
-As presented on link:https://developer.nvidia.com/blog/thinking-parallel-part-ii-tree-traversal-gpu/[NVIDIA's website], we can directly create a copy of the wanted BVH structure, enabling it to be able to access all needed functions preceded with `__device__`. If the memory allows it we can use the state-based traversal algorithm presented above. NVIDIA's website presents the following code:
+As presented on link:https://developer.nvidia.com/blog/thinking-parallel-part-ii-tree-traversal-gpu/[NVIDIA's website], we can directly create a copy of the wanted BVH structure, enabling it to be able to access all needed functions preceded with `__device__`. If the memory allows it we can use the state-based traversal algorithm presented above, or use NVIDIA's iterative traversal method:
 
 [source,c++]
 ----
@@ -828,7 +838,7 @@ __device__ void traverseIterative( CollisionList& list,
 }
 ----
 
-But we will optimize it by using the state-based traversal algorithm presented above. Implementing it in CUDA will be similar, leveraging the complex BVH structure containing all the needed functions and attributes. We will also use the `__device__` keyword to make the functions accessible from the GPU.
+But we will optimize it by using the state-based traversal algorithm presented above. Implementing it in CUDA will be similar, leveraging the complex BVH structure containing all the needed functions and attributes.
 
 ==== Preordering Algorithm
 
@@ -889,14 +899,10 @@ Even when taking into account the changes occurring due to the seasonality of th
 
 === Software
 
-Certainly! Let's transform this information into a more narrative format:
-
----
-
 NVIDIA's OptiX API stands as a testament to the power of purpose-built design. With its sole focus on accelerating ray tracing on NVIDIA GPUs, it offers a suite of capabilities that often outshines traditional hand-crafted traversal algorithms. We will discuss the inner workings of OptiX, its advantages, and how it can be harnessed to achieve better results.
 
 ==== The Speed Factor of OptiX
-Its foundation is built purely for ray tracing operations, allowing it to fine-tune both hardware and software optimizations suited for this task. Being a brainchild of NVIDIA means OptiX gets intimate access to all the unique features and capabilities of NVIDIA GPUs. This "close to the metal" design pushes the boundaries of what's achievable, bypassing many constraints of general-purpose designs.
+Its foundation is built purely for ray tracing operations, allowing it to fine-tune both hardware and software optimizations suited for this task. Being a brainchild of NVIDIA means OptiX gets intimate access to all the unique features and capabilities of NVIDIA GPUs.
 
 At its core, OptiX employs advanced tools such as Bounding Volume Hierarchies and various other data structures optimized for ray tracing, actively diminishing the need for excessive ray-primitive tests.
 

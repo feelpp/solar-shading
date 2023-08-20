@@ -51,7 +51,7 @@ Given Monte Carlo integration's inherent randomness, the outcome is presented as
 \lim_{N \to \infty} Q_N = I
 ++++
 
-Further references can be found in the feelpp documentation at link::https://feelpp.github.io/ktirio/ktirio/1.0.0/models/heat/radiative-heat-transfer/montecarlo.html[Monte-Carlo].
+Further references can be found in the link::https://feelpp.github.io/ktirio/ktirio/1.0.0/models/heat/radiative-heat-transfer/montecarlo.html[feelpp documentation] and at <<RNG Quality Benchmark and influence on the Monte Carlo Integration>>.
 
 == Perez all-weather sky model
 
@@ -65,7 +65,7 @@ The model provides a method of representing the complex, variable nature of the 
 
 It's worth mentioning that, while the Perez model is very flexible and capable of representing a wide range of sky conditions, it is a model and thus an approximation and doesn't perfectly represent all possible sky conditions. Furthermore, it assumes a certain level of homogeneity in the sky conditions, which may not always be the case in reality. For example, situations with localized cloud formations or rapidly changing weather conditions can be difficult to represent accurately with the model.
 
-The Perez model uses these parameters to generate a function that represents the luminance of the sky as a function of direction, or more precisely of the zenith angle of the considered sky element (ζ) and the angle between the sky element and the position of the sun (γ). This function is defined as follows and named 'lv' in the Perez model:
+The Perez model uses these parameters to generate a function that represents the luminance of the sky as a function of direction, or more precisely of the zenith angle of the considered sky element (ζ) and the angle between the sky element and the position of the sun (γ). This function is defined as follows and named \(lv\) in the Perez model:
 
 [stem]
 ++++
@@ -79,7 +79,7 @@ The parameters a, b, c, d and e are determined by the level of clearness (ε) an
 x = x_1(\epsilon) + x_2(\epsilon)Z + \Delta(x_3(\epsilon) + x_4(\epsilon)Z) 
 ++++
 
-Where x is any of the parameters a, b, c, d or e, Z is the zenith angle and x1, x2, x3 and x4 are constants and discrete functions of the clearness level ε. The values of these functions are given in the following table:
+Where x is any of the parameters \(a, b, c, d\) or \(e\), Z is the zenith angle and x1, x2, x3 and x4 are constants and discrete functions of the clearness level ε. The values of these functions are given in the following table (available in Perez', Seals' and Michalsky's paper "all-weather model for sky luminance distribution"):
 
 []
 image::PerezCoeffTable.png[]
