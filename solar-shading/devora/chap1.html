@@ -175,9 +175,6 @@ MathJax.Hub.Config({
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="chap3.html">Benchmarking and Performance Measurement</a>
   </li>
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="conclusion.html">Conclusion</a>
-  </li>
 </ul>
   </li>
 </ul>
@@ -307,7 +304,7 @@ MathJax.Hub.Config({
 </div>
 </div>
 <div class="paragraph">
-<p>Further references can be found in the feelpp documentation at link::https://feelpp.github.io/ktirio/ktirio/1.0.0/models/heat/radiative-heat-transfer/montecarlo.html[Monte-Carlo].</p>
+<p>Further references can be found in the link::https://feelpp.github.io/ktirio/ktirio/1.0.0/models/heat/radiative-heat-transfer/montecarlo.html[feelpp documentation] and at <a href="#RNG Quality Benchmark and influence on the Monte Carlo Integration">[RNG Quality Benchmark and influence on the Monte Carlo Integration]</a>.</p>
 </div>
 </div>
 </div>
@@ -327,7 +324,7 @@ MathJax.Hub.Config({
 <p>It&#8217;s worth mentioning that, while the Perez model is very flexible and capable of representing a wide range of sky conditions, it is a model and thus an approximation and doesn&#8217;t perfectly represent all possible sky conditions. Furthermore, it assumes a certain level of homogeneity in the sky conditions, which may not always be the case in reality. For example, situations with localized cloud formations or rapidly changing weather conditions can be difficult to represent accurately with the model.</p>
 </div>
 <div class="paragraph">
-<p>The Perez model uses these parameters to generate a function that represents the luminance of the sky as a function of direction, or more precisely of the zenith angle of the considered sky element (ζ) and the angle between the sky element and the position of the sun (γ). This function is defined as follows and named 'lv' in the Perez model:</p>
+<p>The Perez model uses these parameters to generate a function that represents the luminance of the sky as a function of direction, or more precisely of the zenith angle of the considered sky element (ζ) and the angle between the sky element and the position of the sun (γ). This function is defined as follows and named \(lv\) in the Perez model:</p>
 </div>
 <div class="stemblock">
 <div class="content">
@@ -343,7 +340,7 @@ MathJax.Hub.Config({
 </div>
 </div>
 <div class="paragraph">
-<p>Where x is any of the parameters a, b, c, d or e, Z is the zenith angle and x1, x2, x3 and x4 are constants and discrete functions of the clearness level ε. The values of these functions are given in the following table:</p>
+<p>Where x is any of the parameters \(a, b, c, d\) or \(e\), Z is the zenith angle and x1, x2, x3 and x4 are constants and discrete functions of the clearness level ε. The values of these functions are given in the following table (available in Perez', Seals' and Michalsky&#8217;s paper "all-weather model for sky luminance distribution"):</p>
 </div>
 <div class="imageblock">
 <div class="content">
