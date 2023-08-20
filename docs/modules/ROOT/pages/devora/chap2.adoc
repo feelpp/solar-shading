@@ -40,22 +40,39 @@ There are 3 main manners of defining such boxes. The overlap tests are straightf
 []
 image::AABBs.png[500]
 
-But these can very rapidly lead to false results when dealing with more complex shapes, specially when they are close or not aligned with the AABB's axes, as displayed below:
-
+But these can very rapidly lead to false results when dealing with more complex shapes, specially when they are close or not aligned with the AABB's axes, since the overlapp test on the bounding box of one object can be a false-True, meaning it's possible for the second object to never be tested against rays incomming from the first object's bounding box.
 []
 image::OverlappingElements.png[]
 
+Such overlapping tests can be done using simple comparisons, as shown in the following code snippet for a `min-max` 3D representation:
+
+[source,c++]
 ----
-ADD CODE SAMPLES FOR THE INTERSECTION TESTS
+int TestAABBAABB(AABB a, AABB b)
+{
+    // Exit with no intersection if separated along an axis
+	if (a.max[0] < b.min[0] || a.min[0] > b.max[0]) return 0; 
+	if (a.max[1] < b.min[1] || a.min[1] > b.max[1]) return 0; 
+	if (a.max[2] < b.min[2] || a.min[2] > b.max[2]) return 0; 
+	// Overlapping on all axes means AABBs are intersecting 
+	return 1;
+}
 ----
 
 ==== Oriented Bounding Boxes (OBBs)
 
-----
-ADD COMPLETE DEFINITION AND INTERSECTION TESTS
-----
+On the other hand, one can use OBBs in order to represent complex or overlapping shapes. Thos are of rectangular shape but try to minimize the volume of the box by aligning it with the object's orientation. This can be done by using the object's center point plus an orientation matrix and three halfedge lengths. This way, the box will be as tight as possible around the object, and the overlap tests will be as effective as possible. But this comes at a cost as the overlap tests are more expensive, since many different separating axes must be tested (15 in 3D), and their instanciation is more complex. 
+
+But since our discretization is composed of simple shapes, triangles, we used AABBs to optimize the traversal time, since no overlappings are allowed in our meshes.
 
 === Bounding Volume Hierarchy
+The construction of an effective and well-optimized Bounding Volume Hierarchy (BVH) plays a pivotal role in determining the efficiency of these calculations. Choosing the right BVH construction algorithm can greatly impact the speed and accuracy of solar shading mask calculations.
+
+Numerous techniques have been developed to construct BVHs efficiently, and the choice of technique can significantly affect the structure and traversal behavior of the resulting BVH. Techniques vary from classic bottom-up approaches like the Surface Area Heuristic (SAH) to top-down techniques like Binary Space Partitioning (BSP).
+
+Each technique has its strengths and weaknesses, and their impact becomes even more pronounced when applied to solar shading mask calculations. For instance, scenes with highly detailed geometry might benefit from BVHs constructed with the SAH algorithm, as it efficiently reduces the number of unnecessary ray-object intersection tests. On the other hand, scenes with varying object densities could benefit from median splits and axis-cycling, ensuring that the splitting axes are evenly distributed and can help maintain overall balance during the BVH construction.
+
+Furthermore, the trade-off between construction time and traversal efficiency cannot be overlooked. While some techniques may yield BVHs with faster traversal times, they might require longer construction times, but this would be acceptable for the computation of solar shading masks, since the BVH is constructed only once and then used for many ray-object intersection tests.
 
 A visual definition of a BVH structure using Axis-Aligned Bounding-Boxes.
 
@@ -73,9 +90,6 @@ In this context, `N1` would be the bounding volume for the entire object or scen
 Visual representation of the construction process of a BVH :
 []
 image::constructmet.png[width=500]
-
-[]
-image::constructmetbis.png[width=500]
 
 === Recursive Top-Down Construction
 
@@ -139,14 +153,46 @@ Other splitting algorithms can be used, such as the Surface Area Heuristic (SAH)
 
 Instead of starting with all scene primitives in one cluster and recursively splitting them, bottom-up construction algorithms start with each primitive in its own cluster and recursively merge the closest pairs. This is done either until the desired number of clusters is reached, or each cluster contains a maximum number of primitives. The clusters are then used as the primitives for the next level of the tree. This process is repeated until the root node is reached.
 
-----
-ADD COMPLETE DEFINITION AND WHY IT WONT BE USED
-----
+But suhc a method wouldn't be the best for our purpose, first of all, looking at its inefficiency in finding pairs, we observe that every time we need to merge two clusters, we have to determine which two are the closest. This operation can be computationally expensive and can result in O(n^2) time complexity if not optimized. For a large number of primitives, this can slow down the construction process considerably. Most important, such techniques suffer from a strong lack in flexibility: the algorithm involves the creation and deletion of nodes dynamically, and the management of an array of active nodes. This can lead to fragmentation and additional memory overhead, which is unacceptable due to the need of scaling up the algorithm to be performed on GPUs, where memory is very limited. The bottom-up approach generally lacks the flexibility to adapt the BVH structure based on specific traversal use-cases. For instance, in solar shading masks computations, certain areas might need more detailed BVH structures (higher resolution) than others. Bottom-up methods don't inherently allow for this granularity during construction, as opposed to the top-down approach, where the BVH structure can be adapted to our needs at each step of the construction process.
 
-Below is an example of a bottom-up construction algorithm:
+Below is an example of a bottom-up construction algorithm, found in `Real-Time Collision Detection` by Christer Ericson:
 
+[source,c++]
 ---- 
-ADD BOTTOM-UP CONSTRUCTION ALGORITHM
+Node *BottomUpBVTree(Object object[], int numObjects)
+{
+    assert(numObjects != 0);
+	int i, j;
+	// Allocate temporary memory for holding node pointers to // the current set of active nodes (initially the leaves) NodePtr *pNodes = new NodePtr[numObjects];
+    // Form the leaf nodes for the given input objects
+    for (i = 0; i < numObjects; i++) {
+        pNodes[i] = new Node;
+        pNodes[i]->type = LEAF;
+        pNodes[i]->object = &object[i];
+	}
+    // Merge pairs together until just the root object left
+    while (numObjects > 1) {
+        // Find indices of the two "nearest" nodes, based on some criterion
+        FindNodesToMerge(&pNodes[0], numObjects, &i, &j);
+        // Group nodes i and j together under a new internal node
+		Node *pPair = new Node;
+		pPair->type = NODE;
+		pPair->left = pNodes[i];
+		pPair->right = pNodes[j];
+		// Compute a bounding volume for the two nodes
+		pPair->BV = ComputeBoundingVolume(pNodes[i]->object, pNodes[j]->object);
+		// Remove the two nodes from the active set and add in the new node.
+		// Done by putting new node at index ’min’ and copying last entry to ’max’ int min = i, max = j;
+		if (i > j) min = j, max = i;
+		pNodes[min] = pPair;
+		pNodes[max] = pNodes[numObjects - 1];
+		numObjects--;
+	}
+    // Free temporary storage and return root of tree
+    Node *pRoot = pNodes[0];
+    delete pNodes;
+    return pRoot;
+}
 ----
 
 Introduced by Walter et al., bottom-up construction by agglomerative clustering proposes to start with all scene primitives considered as individual clusters and recursively merges the closest pairs (the distance function being for example the surface area of a bounding box enclosing both clusters). In general, these trees tend to have lower global costs, but the construction is more time-consuming.
