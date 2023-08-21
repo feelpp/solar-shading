@@ -930,4 +930,4 @@ This could be taken further, by assigning parts of a matrix to a specific block 
 
 image::Nvidia-GPU-memory-structure.png[]
 
-(image found link::https://www.researchgate.net/figure/Nvidia-GPU-memory-structure_fig3_346228460[here])
+(image found link:https://www.researchgate.net/figure/Nvidia-GPU-memory-structure_fig3_346228460[here])
