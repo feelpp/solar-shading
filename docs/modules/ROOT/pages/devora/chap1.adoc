@@ -1,4 +1,5 @@
 = Chapter 1 - Shading Masks
+include::partials$bib.adoc[]
 :toc: macro
 
 toc::[]
@@ -57,7 +58,7 @@ Further references can be found in the link::https://feelpp.github.io/ktirio/kti
 
 :stem: latexmath
 
-The Perez All-Weather model is a commonly used mathematical model for predicting the luminance distribution of the sky under various weather conditions. This model is named after its creator, Fernando Perez, who developed it in the late 20th century (1993).
+The Perez xref:partials$bib.adoc#perez-1993-luminance[All-Weather model] is a commonly used mathematical model for predicting the luminance distribution of the sky under various weather conditions. This model is named after its creator, Fernando Perez, who developed it in the late 20th century (1993).
 
 The focus of this part was implementing the Perez All-Weather Sky Model, a complex mathematical framework used for representing the luminance distribution of the sky under various weather conditions. Our implementation leveraged open-source libraries and modern programming paradigms, resulting in a robust solution that readily integrated with existing shading mask computations. Throughout the implementation, we faced several challenges, notably, the complex nature of the Perez model, requiring careful attention to mathematical and physical details. We also grappled with issues of computational efficiency, as large amounts of data in real-time needed to be processed. The implementation was designed to be flexible and widely applicable, specifically in terms of location and time.
 
@@ -65,7 +66,7 @@ The model provides a method of representing the complex, variable nature of the 
 
 It's worth mentioning that, while the Perez model is very flexible and capable of representing a wide range of sky conditions, it is a model and thus an approximation and doesn't perfectly represent all possible sky conditions. Furthermore, it assumes a certain level of homogeneity in the sky conditions, which may not always be the case in reality. For example, situations with localized cloud formations or rapidly changing weather conditions can be difficult to represent accurately with the model.
 
-The Perez model uses these parameters to generate a function that represents the luminance of the sky as a function of direction, or more precisely of the zenith angle of the considered sky element (ζ) and the angle between the sky element and the position of the sun (γ). This function is defined as follows and named \(lv\) in the Perez model:
+The Perez model uses these parameters to generate a function that represents the luminance of the sky as a function of direction, or more precisely of the zenith angle of the considered sky element (ζ) and the angle between the sky element and the position of the sun (γ). This function is defined as follows and named \(lv\) in the xref:partial$bib.adoc#perez-1993-geostatistical[Perez model]:
 
 [stem]
 ++++
@@ -79,7 +80,7 @@ The parameters a, b, c, d and e are determined by the level of clearness (ε) an
 x = x_1(\epsilon) + x_2(\epsilon)Z + \Delta(x_3(\epsilon) + x_4(\epsilon)Z) 
 ++++
 
-Where x is any of the parameters \(a, b, c, d\) or \(e\), Z is the zenith angle and x1, x2, x3 and x4 are constants and discrete functions of the clearness level ε. The values of these functions are given in the following table (available in Perez', Seals' and Michalsky's paper "all-weather model for sky luminance distribution"):
+Where x is any of the parameters \(a, b, c, d\) or \(e\), Z is the zenith angle and x1, x2, x3 and x4 are constants and discrete functions of the clearness level ε. The values of these functions are given in the following table (available xref:partial$bib.adoc#perez-1993-luminance[here]):
 
 []
 image::PerezCoeffTable.png[]
@@ -219,14 +220,14 @@ Seeing the output, namely the cast shadow of the second building on the first on
 image::2BuildingsMesh.png[]
 
 
-In order to verify our results, we compared our results with the ones obtained by Andrew Marsh available link::https://drajmarsh.bitbucket.io/cie-sky.html[here]. We tested a case in New York, USA, on the 3rd of March 2020, at 8:00 AM, 10:00 AM, 12:00 PM, 2:00 PM and 4:00 PM. The results are the following:
+In order to verify our results, we compared our results with the ones obtained by Andrew Marsh available xref:partial$bib.adoc#marsh-webapp[here]. We tested a case in New York, USA, on the 3rd of March 2020, at 8:00 AM, 10:00 AM, 12:00 PM, 2:00 PM and 4:00 PM. The results are the following:
 
 image::skyModelsNY.png[]
 
 Seeing both ranges of results, we can assume that our implementation is correct, as the results are identical, with a difference of 3-4 W/m^2 due to the fact that the Perez model is an approximation of the sky's luminance distribution and that Andrew Marsh's implementation is using the CIE standard sky model, and a different interpolation algorithm. One should overlook the legend in Andrew Marsh's implementation, as the values are expressed in W/m^2, and not in cd/m^2, as the legend suggests, and when the legend shows W/m^2, it should be understood as the normalization of the irradiance to the maximum irradiance of the sun at the chosen hours. 
 
 Due to the poorly implemented method for computing the timezone difference, some of the results can be slightly off, namely the hours used to compute the suns position in the sky (by a maximum of one hour, two hours if the location is in France, especially offshore during winter/summer times).
-The results can be shown as illuminance matrices (lux) as well as irradiance matrices (W/m2), depending on the user's needs. The irradiance is computed from the illuminance, possible since the sun is the only light source in the sky model, by multiplying the illuminance by 0.0083, which is the conversion factor between illuminance and irradiance used by scientists.
+The results can be shown as illuminance matrices (lux) as well as irradiance matrices (W/m2), depending on the user's needs. The irradiance is computed from the illuminance, possible since the sun is the only light source in the sky model, by multiplying the illuminance by 0.0083, which is the conversion factor between illuminance and irradiance used by scientists (according to link::https://www.researchgate.net/post/Howto_convert_solar_intensity_in_LUX_to_watt_per_meter_square_for_sunlight#:~:text=The%20LUX%20meter%20is%20used,of%20the%20incident%20solar%20radiation.&text=multiply%20lux%20to%200.0079%20which%20give%20you%20value%20of%20w%2Fm2.[researchgate]). The conversion factor is computed as follows:
 
 The general equation for illuminance:
 [stem]

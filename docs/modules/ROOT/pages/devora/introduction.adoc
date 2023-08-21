@@ -1,4 +1,5 @@
 = Shading Masks computation for solar radiation
+include::partials$bib.adoc[]
 :toc: macro
 
 - - -
