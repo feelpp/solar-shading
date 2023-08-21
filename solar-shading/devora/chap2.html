@@ -376,6 +376,9 @@ MathJax.Hub.Config({
 }</code></pre>
 </div>
 </div>
+<div class="paragraph">
+<p>Code snippet from <a href="#partials$bib.adoc#real-time-collision-detection" class="xref unresolved">Real-Time Collision Detection</a> by Christer Ericson</p>
+</div>
 </div>
 <div class="sect3">
 <h4 id="_oriented_bounding_boxes_obbs"><a class="anchor" href="#_oriented_bounding_boxes_obbs"></a>1.1.2. Oriented Bounding Boxes (OBBs)</h4>
@@ -425,6 +428,9 @@ MathJax.Hub.Config({
 <div class="content">
 <img src="../_images/constructmet.png" alt="constructmet" width="500">
 </div>
+</div>
+<div class="paragraph">
+<p>Image coming from <a href="#partials$bib.adoc#freiburg-lecture-bvh" class="xref unresolved">Freiburg Lecture on BVH video</a>.</p>
 </div>
 <div class="sect2">
 <h3 id="_recursive_top_down_construction"><a class="anchor" href="#_recursive_top_down_construction"></a>2.1. Recursive Top-Down Construction</h3>
@@ -507,7 +513,7 @@ MathJax.Hub.Config({
 <p>But such a method wouldn&#8217;t be the best for our purpose, first of all, looking at its inefficiency in finding pairs, we observe that every time we need to merge two clusters, we have to determine which two are the closest. This operation can be computationally expensive and can result in O(n^2) time complexity if not optimized. For a large number of primitives, this can slow down the construction process considerably. Most important, such techniques suffer from a strong lack in flexibility: the algorithm involves the creation and deletion of nodes dynamically, and the management of an array of active nodes. This can lead to fragmentation and additional memory overhead, which is unacceptable due to the need of scaling up the algorithm to be performed on GPUs, where memory is very limited. The bottom-up approach generally lacks the flexibility to adapt the BVH structure based on specific traversal use-cases. For instance, in solar shading masks computations, certain areas might need more detailed BVH structures (higher resolution) than others. Bottom-up methods don&#8217;t inherently allow for this granularity during construction, as opposed to the top-down approach, where the BVH structure can be adapted to our needs at each step of the construction process.</p>
 </div>
 <div class="paragraph">
-<p>Below is an example of a bottom-up construction algorithm, found in <code>Real-Time Collision Detection</code> by Christer Ericson:</p>
+<p>Below is an example of a bottom-up construction algorithm, found in <a href="#partials$bib.adoc#real-time-collision-detection" class="xref unresolved">Real-time Collision Detection</a> by Christer Ericson:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -591,7 +597,7 @@ MathJax.Hub.Config({
 <p>The major inconvenience when using bottom-up algorithms is that the upper nodes are poorly locally optimized and thus the research for the closest neighbor can be very costly. To prevent this, Gu et al proposed to recursively perform spatial median splits based on Morton codes until each subtree contains less than a chosen number of clusters. The clusters are merged using agglomerative clustering. Using this at all levels in the BVH, even the top level nodes' split will be locally optimized.</p>
 </div>
 <div class="paragraph">
-<p>Meister and Bittner proposed a GPU-based algorithm using k-means clustering: scene primitives are subdivided into k clusters using k-means clustering. When done recursively, a k-ary BVH is built, which can also be converted to a binary tree by constructing intermediate levels using agglomerative clustering.</p>
+<p>Meister and Bittner proposed a GPU-based algorithm using k-means clustering (found in xref:partials$bib.adoc#real-time-collision-detection): scene primitives are subdivided into k clusters using k-means clustering. When done recursively, a k-ary BVH is built, which can also be converted to a binary tree by constructing intermediate levels using agglomerative clustering.</p>
 </div>
 </div>
 <div class="sect2">
@@ -666,7 +672,7 @@ std::nth_element(&amp;M_primitiveInfo[start_index_primitive], &amp;M_primitiveIn
 <div class="sect2">
 <h3 id="_cost_functions"><a class="anchor" href="#_cost_functions"></a>3.8. Cost Functions</h3>
 <div class="paragraph">
-<p>The quality of a particular BVH can be estimated in terms of the expected number of operations needed for finding the nearest intersection with a given ray. It can be estimated thanks to the recurrence equation:</p>
+<p>The quality of a particular BVH can be estimated in terms of the expected number of operations needed for finding the nearest intersection with a given ray. It can be estimated thanks to the recurrence equation according to <a href="#partials$bib.adoc#survey-BVHs-for-ray-tracing" class="xref unresolved">Daniel Meister et al.</a>:</p>
 </div>
 <div class="stemblock">
 <div class="content">
@@ -709,7 +715,7 @@ The problem of finding an optimal BVH is believed to be NP-hard. But these assum
 <h2 id="_layout"><a class="anchor" href="#_layout"></a>4. Layout</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>After successfully constructing the tree in an optimized way, it is important to note that both optimizing the traversal code and the tree&#8217;s representation itself are very important to see an increase in performance. Two obvious ways of dealing with that are to minimize the size of the data structures involved and to rearrange the data in a more cache-friendly way to reduce time for the search of relevant information (for example, it would be better to structure the array holding the pointers in such a way to minimize the time spent during traversal). Most of the information in this part comes from the paper <code>Real-Time Collision Detection</code> by Christer Ericson.</p>
+<p>After successfully constructing the tree in an optimized way, it is important to note that both optimizing the traversal code and the tree&#8217;s representation itself are very important to see an increase in performance. Two obvious ways of dealing with that are to minimize the size of the data structures involved and to rearrange the data in a more cache-friendly way to reduce time for the search of relevant information (for example, it would be better to structure the array holding the pointers in such a way to minimize the time spent during traversal). Most of the information in this part comes from the book xref:partials$bib.adoc#real-time-collision-detection by Christer Ericson (namely all images used in this section).</p>
 </div>
 <div class="sect2">
 <h3 id="_array_representation"><a class="anchor" href="#_array_representation"></a>4.1. Array Representation</h3>
@@ -936,7 +942,7 @@ Additionally, when working with such algorithm, one can encounter parallelisatio
 <div class="sect3">
 <h4 id="_algorithm"><a class="anchor" href="#_algorithm"></a>5.1.2. Algorithm</h4>
 <div class="paragraph">
-<p>For a clear understanding of the stack-based approach, we can draw an analogy with a depth-first search (DFS) in graph theory, where a stack keeps track of nodes yet to be explored. Here&#8217;s a basic pseudocode for the stack-based traversal (found in <code>Real-Time Collision Detection</code> by Christer Ericson):</p>
+<p>For a clear understanding of the stack-based approach, we can draw an analogy with a depth-first search (DFS) in graph theory, where a stack keeps track of nodes yet to be explored. Here&#8217;s a basic pseudocode for the stack-based traversal (found in <a href="#partials$bib.adoc#real-time-collision-detection" class="xref unresolved">Real Time Collision Detection</a>):</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1035,7 +1041,7 @@ void traverseStackBased(ray) {
 - from one of its children (case <code>fromChild</code>): the current node was already tested during the top to bottom phase, it <strong>should not</strong> be re-tested. The next on the list is either the current node&#8217;s <code>farChild</code> or its parent</p>
 </div>
 <div class="paragraph">
-<p>Algorithm Developed by the Authors (Michal Hapala, Tomas Davidovic, Ingo Wald, Vlastimil Havran and Philipp Slusallek) of the article "Efficient Stack-less BVH Traversal for Ray Tracing", further implemented by Luca Berti in the original code of this project:</p>
+<p>Algorithm Developed by the Authors (Michal Hapala, Tomas Davidovic, Ingo Wald, Vlastimil Havran and Philipp Slusallek) of the article <a href="#partials$bib.adoc#efficient-stackless-bvh-traversal" class="xref unresolved"> Efficient Stack-less BVH Traversal for Ray Tracing</a> further implemented by Luca Berti in the original code of this project:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1440,10 +1446,8 @@ struct Tree {
 <div class="sect3">
 <h4 id="_speculative_traversal"><a class="anchor" href="#_speculative_traversal"></a>6.1.2. Speculative Traversal</h4>
 <div class="paragraph">
-<p>Imagine a scenario where multiple ray paths are processed all at once, even if eventually, some might not be needed. This concept, known as speculative traversal, shines brightly in the SIMT (Single Instruction, Multiple Threads) or SIMD (Single Instruction, Multiple Data) realms. With multiple units working in tandem, all executing the same operation but on varied data:</p>
-</div>
-<div class="paragraph">
-<p>When a ray hits a decision point within an acceleration structure, like a node in the BVH, it doesn&#8217;t just pick one way. It speculatively chooses all possible paths. This approach keeps NVIDIA GPUs, which operate on SIMT/SIMD architectures, active at all time. Different threads or lanes work on different paths concurrently, maximizing throughput. As paths are traversed, the unnecessary ones—like those not intersecting with any primitives in a BVH section—get discarded, paving the way for more essential operations.</p>
+<p>Imagine a scenario where multiple ray paths are processed all at once, even if eventually, some might not be needed. This concept, known as speculative traversal, shines brightly in the SIMT (Single Instruction, Multiple Threads) or SIMD (Single Instruction, Multiple Data) realms. With multiple units working in tandem, all executing the same operation but on varied data:
+When a ray hits a decision point within an acceleration structure, like a node in the BVH, it doesn&#8217;t just pick one way, it speculatively chooses all possible paths. This approach keeps NVIDIA GPUs, which operate on SIMT/SIMD architectures, active at all time. Different threads or lanes work on different paths concurrently, maximizing throughput. As paths are traversed, the unnecessary ones—like those not intersecting with any primitives in a BVH section—get discarded, paving the way for more essential operations (see <a href="#partials$bib.adoc#stanford-lecture-optix" class="xref unresolved">Stanford&#8217;s lecture on optix</a> for more details)</p>
 </div>
 <div class="paragraph">
 <p>This method is akin to casting a wide net, ensuring that all possible paths are explored, then discarding the unnecessary ones.</p>
@@ -1468,6 +1472,9 @@ struct Tree {
 <div class="content">
 <img src="../_images/Nvidia-GPU-memory-structure.png" alt="Nvidia GPU memory structure">
 </div>
+</div>
+<div class="paragraph">
+<p>(image found link::https://www.researchgate.net/figure/Nvidia-GPU-memory-structure_fig3_346228460[here])</p>
 </div>
 </div>
 </div>
