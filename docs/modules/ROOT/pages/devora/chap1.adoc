@@ -52,7 +52,7 @@ Given Monte Carlo integration's inherent randomness, the outcome is presented as
 \lim_{N \to \infty} Q_N = I
 ++++
 
-Further references can be found in the link::https://feelpp.github.io/ktirio/ktirio/1.0.0/models/heat/radiative-heat-transfer/montecarlo.html[feelpp documentation] and at <<RNG Quality Benchmark and influence on the Monte Carlo Integration>>.
+Further references can be found in the link::https://feelpp.github.io/ktirio/ktirio/1.0.0/models/heat/radiative-heat-transfer/montecarlo[feelpp documentation] and at <<RNG Quality Benchmark and influence on the Monte Carlo Integration>>.
 
 == Perez all-weather sky model
 
