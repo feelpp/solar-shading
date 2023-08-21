@@ -1,20 +1,20 @@
 #include "Bvh_GPU.cuh"
 #include "bvh.hpp"
 #include <feel/feelcore/environment.hpp>
-namespace Feel { 
+namespace Feel {
 
 template <typename MeshType>
-class ShadingMask 
+class ShadingMask
 {
     typedef typename MeshType::ptrtype mesh_ptrtype;
     typedef typename MeshType::trace_mesh_ptrtype tr_mesh_ptrtype;
     typedef typename matrix_node<double>::type matrix_node_type;
 
-public:    
+public:
     using value_type = double;
-    
+
     ShadingMask(mesh_ptrtype mesh, nl::json const& specs, int intervalsAzimuth=72, int intervalsAltitude=10 )
-    {    
+    {
         // Read the number of rays per triangle and the number of threads
         j_ = specs;
         M_Nrays = specs["Nrays"];
@@ -24,34 +24,34 @@ public:
         for(std::string buildingName : specs["Buildings"])
         {
             std::cout << fmt::format("{}\n",buildingName);
-            auto volumeSubmesh = createSubmesh(_mesh=mesh,_range=markedelements(mesh,buildingName),_update=0);    
+            auto volumeSubmesh = createSubmesh(_mesh=mesh,_range=markedelements(mesh,buildingName),_update=0);
             auto surfaceSubmesh = createSubmesh(_mesh=volumeSubmesh,_range=boundaryfaces(volumeSubmesh),_update=0);
             BVHTree<MeshType::nDim> bvhBuilding;
             bvhBuilding.buildPrimitivesInfo(surfaceSubmesh);
             bvhBuilding.buildRootTree();
 
             M_bvh_tree_vector.insert(std::make_pair( buildingName , bvhBuilding ));
-            M_submeshes.insert(std::make_pair( buildingName , surfaceSubmesh ));            
-         
+            M_submeshes.insert(std::make_pair( buildingName , surfaceSubmesh ));
+
         }
-        
+
         // Define the discretization of the azimuth and altitude vectors
         fixAzimuthAltitudeDiscretization(intervalsAzimuth, intervalsAltitude);
 
-        // Seed the random number generators to choose azimuth and altitude 
-        std::random_device rd;  
-        std::random_device rd2; 
-        std::mt19937 gen(rd()); 
-        std::mt19937 gen2(rd2()); 
+        // Seed the random number generators to choose azimuth and altitude
+        std::random_device rd;
+        std::random_device rd2;
+        std::mt19937 gen(rd());
+        std::mt19937 gen2(rd2());
         gen.seed(std::chrono::high_resolution_clock::now()
                             .time_since_epoch()
-                            .count()); 
+                            .count());
         gen2.seed(std::chrono::high_resolution_clock::now()
                             .time_since_epoch()
                             .count());
 
         M_gen=gen;
-        M_gen2=gen2;   
+        M_gen2=gen2;
     }
 
     // Subdivide the azimuth angles [0,360]° and altitude angles [0,90]° in subsets for easier computation of the shading masks
@@ -63,21 +63,21 @@ public:
         M_azimuthAngles.resize(M_azimuthSize);
         for(int i=0; i<intervalsAzimuth; i++)
         {
-            M_azimuthAngles[i] = i * deltaAzimuth+1e-6;            
-        }        
+            M_azimuthAngles[i] = i * deltaAzimuth+1e-6;
+        }
 
         value_type deltaAltitude = 0.5 * M_PI /intervalsAltitude;
         M_altitudeAngles.resize(M_altitudeSize);
         for(int i=0; i<intervalsAltitude; i++)
         {
-            M_altitudeAngles[i] = i * deltaAltitude;        
-        } 
-                  
+            M_altitudeAngles[i] = i * deltaAltitude;
+        }
+
     }
 
     // Choose a random pair of indices in the discretized azimuth and altitude vectors
     void getRandomDirectionSM(std::vector<double> &random_direction, std::mt19937 & M_gen, std::mt19937 & M_gen2, int& index_azimuth, int& index_altitude)
-    {    
+    {
         std::uniform_int_distribution<int> dist_azimuth(0,M_azimuthSize-1);
         std::uniform_int_distribution<int> dist_altitude(0,M_altitudeSize-1);
 
@@ -88,7 +88,7 @@ public:
             index_azimuth = dist_azimuth(M_gen);
             index_altitude = dist_altitude(M_gen2);
             double phi = -( M_azimuthAngles[index_azimuth] ) + M_PI*0.5 ; // recover spherical coordinate from azimuth angle
-            double theta = M_PI*0.5 - M_altitudeAngles[index_altitude]; // recover spherical coordinate from altitude 
+            double theta = M_PI*0.5 - M_altitudeAngles[index_altitude]; // recover spherical coordinate from altitude
 
             random_direction[0]=math::sin(theta)*math::cos(phi);
             random_direction[1]=math::sin(theta)*math::sin(phi);
@@ -98,16 +98,16 @@ public:
         else
         {
             throw std::logic_error( "Wrong dimension " + std::to_string(random_direction.size()) + " for the random direction" );
-        }    
+        }
 
-    }   
+    }
 
     Eigen::VectorXd get_random_point(matrix_node_type const& element_points)
-    {            
+    {
         int dimension;
 
         dimension = column(element_points, 0).size();
-        
+
         if(dimension==3)
         {
             // Choose points in a parallelogram, uniformly
@@ -116,14 +116,14 @@ public:
             {
                 p1(i)=column(element_points, 0)[i];
                 p2(i)=column(element_points, 1)[i];
-                p3(i)=column(element_points, 2)[i];                
+                p3(i)=column(element_points, 2)[i];
             }
             v = p2-p1;
             u = p3-p1;
             while(true)
             {
-                unsigned seed2 = std::chrono::high_resolution_clock::now().time_since_epoch().count();             
-                unsigned seed3 = std::chrono::high_resolution_clock::now().time_since_epoch().count();             
+                unsigned seed2 = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+                unsigned seed3 = std::chrono::high_resolution_clock::now().time_since_epoch().count();
                 std::default_random_engine generator3(seed2),generator4(seed3);
                 std::uniform_real_distribution<double> xi1(0,1),xi2(0,1);
                 double s = xi1(generator3);
@@ -131,8 +131,8 @@ public:
                 // If the point is on the left of the diagonal, keep it, else take the symmetric one
                 bool in_triangle = (s + t <= 1);
                 if(in_triangle)
-                    p = p1 + s * u + t * v;  
-                else 
+                    p = p1 + s * u + t * v;
+                else
                     p= p1 + (1 - s) * u + (1 - t) * v;
 
                 if (isOnSurface(p,p1,p2,p3))
@@ -141,7 +141,7 @@ public:
                 {
                     throw std::logic_error("Point not on triangle, but it must be");
                     return p1;
-                }   
+                }
             }
         }
         else
@@ -161,7 +161,7 @@ public:
     // Compute the sum of the areas of three subtriangles
     double elementArea(Eigen::VectorXd const& point,Eigen::VectorXd const& el_p1,Eigen::VectorXd const& el_p2,Eigen::VectorXd const& el_p3)
     {
-        double area = 0.;            
+        double area = 0.;
         if(point.size()==3)
         {
             Eigen::Vector3d point_3d,el_p1_3d,el_p2_3d,el_p3_3d;
@@ -173,7 +173,7 @@ public:
             auto v1 = (point_3d-el_p1_3d).cross(point_3d-el_p2_3d);
             auto v2 = (point_3d-el_p2_3d).cross(point_3d-el_p3_3d);
             auto v3 = (point_3d-el_p3_3d).cross(point_3d-el_p1_3d);
-            area = math::sqrt(v1.dot(v1))/2. + math::sqrt(v2.dot(v2))/2. + math::sqrt(v3.dot(v3))/2. ;            
+            area = math::sqrt(v1.dot(v1))/2. + math::sqrt(v2.dot(v2))/2. + math::sqrt(v3.dot(v3))/2. ;
             return area;
         }
         else
@@ -189,14 +189,14 @@ public:
     bool isOnSurface(Eigen::VectorXd const &point,Eigen::VectorXd const &el_p1,Eigen::VectorXd const &el_p2,Eigen::VectorXd const &el_p3)
     {
         auto c = (el_p1+el_p2+el_p3)/3.;
-        auto elem_area = elementArea(c, el_p1,el_p2,el_p3); 
-        auto area = elementArea(point, el_p1,el_p2,el_p3);             
+        auto elem_area = elementArea(c, el_p1,el_p2,el_p3);
+        auto area = elementArea(point, el_p1,el_p2,el_p3);
         if (math::abs(area-elem_area)<1e-5)
             return true;
         else
             return false;
     }
-    
+
     // Compute shading masks for the buildings in the json file
     void computeMasks()
     {
@@ -210,11 +210,11 @@ public:
     void computeMasksOneBuilding(std::string building_name)//, BVHTree<MeshType::nDim> bvh_tree)
     {
         int dim = M_submeshes[building_name]->realDimension();
-        std::vector<double> random_direction(dim);  
+        std::vector<double> random_direction(dim);
         int n_rays = j_["Rays"]["Number"];
 
         std::cout << "Submeshes markers" << M_submeshes[building_name]->markerNames() << std::endl;
-        
+
         // Loop over the markers of the building
         Eigen::MatrixXd SM_table_marker(M_azimuthSize,M_altitudeSize);
         Eigen::MatrixXd Angle_table_marker(M_azimuthSize,M_altitudeSize);
@@ -223,12 +223,12 @@ public:
         for(auto  [marker,marker_id] : M_submeshes[building_name]->markerNames())
         {
 
-            SM_table_marker.setZero();            
+            SM_table_marker.setZero();
             Angle_table_marker.setZero();
             auto ray_submesh = createSubmesh(_mesh=M_submeshes[building_name],_range=markedelements(M_submeshes[building_name],marker));
-            
+
             // Launch Nrays from each triangle of each marker
-            for(auto const &el : ray_submesh->elements() ) // from each element of the submesh, launch M_Nrays randomly oriented            
+            for(auto const &el : ray_submesh->elements() ) // from each element of the submesh, launch M_Nrays randomly oriented
             {
 
                         Eigen::MatrixXd SM_table(M_azimuthSize,M_altitudeSize);
@@ -236,19 +236,19 @@ public:
 
                         Eigen::MatrixXd Angle_table(M_azimuthSize,M_altitudeSize);
                         Angle_table.setZero();
-                        
+
                         std::vector<int> indices_altitude(n_rays);
                         std::vector<int> indices_azimuth(n_rays);
                         std::vector<BVHRay> DeviceRays(n_rays);
                         std::vector<int> inward_rays(n_rays, 0);
                         int index_altitude, index_azimuth;
                         for(int i=0;i<n_rays;i++)
-                        {              
+                        {
 
                             // Construct the ray emitting from a random point of the element
                             auto random_origin = get_random_point(el.second.vertices());
-                                        
-                            Eigen::VectorXd rand_dir(dim); 
+
+                            Eigen::VectorXd rand_dir(dim);
                             Eigen::VectorXd p1(dim),p2(dim),p3(dim),origin(3);
                             bool inward_ray=false;
                             if(dim==3)
@@ -257,22 +257,22 @@ public:
                                 {
                                     p1(i)=column(el.second.vertices(), 0)[i];
                                     p2(i)=column(el.second.vertices(), 1)[i];
-                                    p3(i)=column(el.second.vertices(), 2)[i];                        
+                                    p3(i)=column(el.second.vertices(), 2)[i];
                                     origin(i) = random_origin[i];
-                                }                               
+                                }
                                 auto element_normal = ((p3-p1).head<3>()).cross((p2-p1).head<3>());
-                                element_normal.normalize();                                     
+                                element_normal.normalize();
 
                                 // Choose the direction randomly among the latitude and azimuth
-                                getRandomDirectionSM(random_direction,M_gen,M_gen2,index_azimuth,index_altitude);                            
+                                getRandomDirectionSM(random_direction,M_gen,M_gen2,index_azimuth,index_altitude);
                                 for(int i=0;i<dim;i++)
                                 {
                                     rand_dir(i) = random_direction[i];
-                                }             
+                                }
                                 if(rand_dir.dot(element_normal)>=0)
                                 {
                                     inward_rays[i]=1; // true
-                                }      
+                                }
                             }
 
                             BVHRay ray(origin,rand_dir);
@@ -284,7 +284,7 @@ public:
                         }
 
                         int maxintersection_ray = 10 ; // defines the size of the resulting vectors from the GPU,
-                        int buildingnumber = M_bvh_tree_vector.size(); // they are of fixed size 
+                        int buildingnumber = M_bvh_tree_vector.size(); // they are of fixed size
                         int MaxIntersections = n_rays * maxintersection_ray;
 
                         std::vector<std::vector<int>> results(buildingnumber, std::vector<int>(MaxIntersections, -1));
@@ -293,7 +293,7 @@ public:
                         // Compute the intersection of the rays with each building's bvh tree
                         for(auto& [building_name,bvh_building_tree] : M_bvh_tree_vector)
                         {
-                            results[index] = GPUraySearchWrapper(DeviceRays, &bvh_building_tree); 
+                            results[index] = GPUraySearchWrapper(DeviceRays, &bvh_building_tree);
                             index++;
                         }
 
@@ -327,39 +327,39 @@ public:
                         SM_table_marker += SM_table;
                         Angle_table_marker += Angle_table;
             }
-            // Divide the shading mask by the corresponding value of the angle table            
-            // If an angle combination has not been selected, suppose there is no shadow            
-            auto shadingMatrix = SM_table_marker.array().binaryExpr( Angle_table_marker.array() , [](auto x, auto y) { return y==0 ? 0 : x/y; }); 
+            // Divide the shading mask by the corresponding value of the angle table
+            // If an angle combination has not been selected, suppose there is no shadow
+            auto shadingMatrix = SM_table_marker.array().binaryExpr( Angle_table_marker.array() , [](auto x, auto y) { return y==0 ? 0 : x/y; });
 
             // Shading mask value 0 means that the surface is not shadowed, value 1 it is fully shadowed
-            // Save the shading mask table to a csv file 
+            // Save the shading mask table to a csv file
             saveShadingMask(building_name,marker,shadingMatrix.matrix());
         }
     }
 
-    // Save the shading mask table to a CSV file 
+    // Save the shading mask table to a CSV file
     void saveShadingMask(std::string building_name, std::string marker_name, const Eigen::Ref<const Eigen::MatrixXd>& M)
     {
         int i_long=0;
         int j_alt=0;
-        
+
         Eigen::MatrixXd matrix_sm(M_azimuthSize,M_altitudeSize);
-        
+
         // Save the matrix into a CSV file, inside the shadingMasks subfolder of the results folder
-        std::ofstream matrix_file;        
+        std::ofstream matrix_file;
         std::string shadingMaskFolder = (boost::filesystem::path(Environment::appRepository())/("shadingMasks")).string();
         if (!boost::filesystem::exists(shadingMaskFolder))
             boost::filesystem::create_directory(shadingMaskFolder);
-        
+
         std::string matrix_filename = shadingMaskFolder+"/SM_Matrix_"+building_name+"_"+marker_name+".csv";
         matrix_file.open(matrix_filename,std::ios_base::out);
         for(int i=0; i<M_azimuthSize; i++)
         {
             for(int j=0; j<M_altitudeSize-1; j++)
-            {                
+            {
                 matrix_file << M(i,j) << ",";
-            }              
-            matrix_file << M(i,M_altitudeSize-1) << "\n";     
+            }
+            matrix_file << M(i,M_altitudeSize-1) << "\n";
         }
         matrix_file.close();
     }
@@ -377,9 +377,9 @@ public:
 
     nl::json j_;
 
-    std::random_device M_rd; 
-    std::random_device M_rd2; 
-    std::mt19937 M_gen; 
-    std::mt19937 M_gen2; 
+    std::random_device M_rd;
+    std::random_device M_rd2;
+    std::mt19937 M_gen;
+    std::mt19937 M_gen2;
 };
 } // namespace Feel
