@@ -252,7 +252,7 @@ MathJax.Hub.Config({
 </div>
 </div>
 <div class="paragraph">
-<p>Ray tracing stands as a pivotal computational technique in the realm of realistic light simulation and graphics, especially when high levels of accuracy and detail are essential. In the specific context of computing shading masks, the Perez all weather sky model, and the calculation of view factors, ray tracing is invaluable. It facilitates the tracing of rays from a viewpoint into the scene, allowing for the accurate representation of how light interacts with various surfaces. This is particularly significant when working with diverse atmospheric conditions and intricate urban or architectural structures. Moreover, when integrated with the Monte Carlo technique, ray tracing becomes an even more potent tool. The Monte Carlo method, which relies on repeated random sampling to obtain numerical results, paired with ray tracing, enables precise integration over complex domains and distributions. This combination not only enhances the reliability of computations but also expands the scope of scenarios and phenomena that can be realistically modeled and studied. (previous image found in the link::https://feelpp.github.io/ktirio/ktirio/1.0.0/models/heat/radiative-heat-transfer/montecarlo[feelpp documentation])</p>
+<p>Ray tracing stands as a pivotal computational technique in the realm of realistic light simulation and graphics, especially when high levels of accuracy and detail are essential. In the specific context of computing shading masks, the Perez all weather sky model, and the calculation of view factors, ray tracing is invaluable. It facilitates the tracing of rays from a viewpoint into the scene, allowing for the accurate representation of how light interacts with various surfaces. This is particularly significant when working with diverse atmospheric conditions and intricate urban or architectural structures. Moreover, when integrated with the Monte Carlo technique, ray tracing becomes an even more potent tool. The Monte Carlo method, which relies on repeated random sampling to obtain numerical results, paired with ray tracing, enables precise integration over complex domains and distributions. This combination not only enhances the reliability of computations but also expands the scope of scenarios and phenomena that can be realistically modeled and studied. (previous image found in the <a href="https://feelpp.github.io/ktirio/ktirio/1.0.0/models/heat/radiative-heat-transfer/montecarlo">feelpp documentation</a>)</p>
 </div>
 </div>
 </div>
@@ -309,7 +309,7 @@ MathJax.Hub.Config({
 </div>
 </div>
 <div class="paragraph">
-<p>Further references can be found in the link::https://feelpp.github.io/ktirio/ktirio/1.0.0/models/heat/radiative-heat-transfer/montecarlo[feelpp documentation] and at <a href="#RNG Quality Benchmark and influence on the Monte Carlo Integration">[RNG Quality Benchmark and influence on the Monte Carlo Integration]</a>.</p>
+<p>Further references can be found in the <a href="https://feelpp.github.io/ktirio/ktirio/1.0.0/models/heat/radiative-heat-transfer/montecarlo">feelpp documentation</a> and at <a href="#RNG Quality Benchmark and influence on the Monte Carlo Integration">[RNG Quality Benchmark and influence on the Monte Carlo Integration]</a>.</p>
 </div>
 </div>
 </div>
@@ -517,7 +517,7 @@ After execution of the example, available when executing the command <code>./bui
 </div>
 <div class="paragraph">
 <p>Due to the poorly implemented method for computing the timezone difference, some of the results can be slightly off, namely the hours used to compute the suns position in the sky (by a maximum of one hour, two hours if the location is in France, especially offshore during winter/summer times).
-The results can be shown as illuminance matrices (lux) as well as irradiance matrices (W/m2), depending on the user&#8217;s needs. The irradiance is computed from the illuminance, possible since the sun is the only light source in the sky model, by multiplying the illuminance by 0.0083, which is the conversion factor between illuminance and irradiance used by scientists (according to link::https://www.researchgate.net/post/Howto_convert_solar_intensity_in_LUX_to_watt_per_meter_square_for_sunlight#:~:text=The%20LUX%20meter%20is%20used,of%20the%20incident%20solar%20radiation.&amp;text=multiply%20lux%20to%200.0079%20which%20give%20you%20value%20of%20w%2Fm2.[researchgate]). The conversion factor is computed as follows:</p>
+The results can be shown as illuminance matrices (lux) as well as irradiance matrices (W/m2), depending on the user&#8217;s needs. The irradiance is computed from the illuminance, possible since the sun is the only light source in the sky model, by multiplying the illuminance by 0.0083, which is the conversion factor between illuminance and irradiance used by scientists (according to <a href="https://www.researchgate.net/post/Howto_convert_solar_intensity_in_LUX_to_watt_per_meter_square_for_sunlight#:~:text=The%20LUX%20meter%20is%20used,of%20the%20incident%20solar%20radiation.&amp;text=multiply%20lux%20to%200.0079%20which%20give%20you%20value%20of%20w%2Fm2.">researchgate</a>). The conversion factor is computed as follows:</p>
 </div>
 <div class="paragraph">
 <p>The general equation for illuminance:</p>
