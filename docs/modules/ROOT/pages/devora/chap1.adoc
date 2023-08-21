@@ -96,4 +96,25 @@ Where z is the zenith angle of the sky element, Z is the zenith angle of the sun
 
 Lastly, the Perez model was combined with a shading mask to account for the effect of obstacles blocking the sunlight. The calculation of the shading table involved an element-wise matrix multiplication operation, which required careful handling due to the large size of the matrices involved and the specific organization of data within them. Another key challenge we faced was the interpolation of matrices of different sizes, allowing us to integrate data from different sources, with different spatial resolutions, into our computations. This feature was particularly useful in the case of the shading masks, which are generated using a separate algorithm, and thus may have different spatial resolutions than the ones Perez model. But this algorithm couldn't be used when parts of the shading matrices were totaly in the shadow, because the interpolation algorithm would interpolate the values of the shadowed parts with values of the unshadowed parts, which resulted in slightly wrong shading mask when the dimensions of both matrices were mismatched. This problem was solved by using a different interpolation algorithm that only interpolated the values of the unshadowed parts of the shading mask, for example by defining the boundaries of the shadowed parts, either by directly looking up for zeros in the shading mask table, or by using techniques such as the Sobel operator, able to detect changes in intensity in the matrix, thus defining the edges.
 
-== View Factors
+After execution of the example, available when executing the command `./build/default/src/feelpp_ss_example_ShadingMasks --config-file src/cases/exampleShadingMask/exampleShadingMask.cfg` followed by `python src/visualization/shadingMask_skyModel_visualization.py --dir_path <PATH_TO_SHADING_MASKS_RESULT_DIRECTORY>` in order to be able to visualize the overlay of the shading mask and the sky model. When executing with the example file, we obtain the following results when considering the meteorological data of the 2020-07-22 in Strasbourg, France, when considering the Top of the building named BAT1:
+
+image::skyModelsBat2Top.png[]
+
+The unobstructed view from this location is perfect to verify the accuracy of the Perez model, namely the sun's hourly positions defined thanks to the Solar Position Algorithm, `spa.c`, developped by Afshin Michael Andreas(Metrology Laboratory, Solar Radiation Research Laboratory, National Renewable Energy Laboratory). Not only does it enable one to verify the correctness of the fetched data (meteorological data), but it also allows one to verify the correctness of matrix product, even for different sized matrices, as well as an appropriate correlation between the elements of the shading mask, the sky model and the resulting circular mask.
+
+Finally, we'll consider the same example, but this time, we'll consider the top of the first building, Bat1, which lies in the shadow of the second building, Bat2. The resulting shading mask is the following:
+
+image::skyModelsBat1Top.png[]
+
+Seeing the output, namely the cast shadow of the second building on the first one, we can assume that the the unshadowed regions of the mask are showing the Perez sky model directly, and that the interpolation algorithm is working as intended, with slight discrepancies at the boundaries of the shadowed regions, which is to be expected due to the nature of the used spline interpolation algorithm. Below is the building's geometry:
+
+image::2BuildingsMesh.png[]
+
+
+In order to verify our results, we compared our results with the ones obtained by Andrew Marsh available link::https://drajmarsh.bitbucket.io/cie-sky.html[here]. We tested a case in New York, USA, on the 3rd of March 2020, at 8:00 AM, 10:00 AM, 12:00 PM, 2:00 PM and 4:00 PM. The results are the following:
+
+image::skyModelsNY.png[]
+
+Seeing both ranges of results, we can assume that our implementation is correct, as the results are identical, with a difference of 3-4 W/m^2 due to the fact that the Perez model is an approximation of the sky's luminance distribution and that Andrew Marsh's implementation is using the CIE standard sky model, and a different interpolation algorithm. One should overlook the legend in Andrew Marsh's implementation, as the values are expressed in W/m^2, and not in cd/m^2, as the legend suggests, and when the legend shows W/m^2, it should be understood as the normalization of the irradiance to the maximum irradiance of the sun at the chosen hours. 
+
+Due to the poorly implemented method for computing the timezone difference, some of the results can be slightly off, namely the hours used to compute the suns position in the sky (by a maximum of one hour, two hours if the location is in France, especially offshore during winter/summer times).
