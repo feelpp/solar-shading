@@ -1,9 +1,10 @@
 name: solar-shading
-title: Feel++ Template Project
+title: Feel++ Solar Shading
 version: ~
 start_page: index.adoc
-nav:
-- modules/ROOT/nav.adoc
+asciidoc:
+  attributes:
+    project_name: Solar Shading
 ext:
   collector:
     - run:
@@ -12,3 +13,6 @@ ext:
         dir: jupyter/
         files: '**/*.ipynb'
         base: modules/ROOT/attachments/
+nav:
+- modules/ROOT/nav.adoc
+

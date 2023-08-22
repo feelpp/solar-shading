@@ -2,7 +2,7 @@
 :cpp: C++
 :project: solar-shading 
 
-= {feelpp} Project Template
+= {feelpp} Solar Shading Project
 Christophe Prud'homme <https://github.com/prudhomm[@prudhomm]>
 v2: 
 
@@ -18,13 +18,6 @@ This repository provides a basic starting point for a {feelpp} application inclu
 
 The documentation for solar-shading is available at link:https://feelpp.github.io/solar-shading[here] and you can build on it for your project by enabling the link:https://docs.github.com/en/pages[github pages] for your repository.
 
-== Renaming the project
-
-By default the project is named  `solar-shading` if you cloned the repository `feelpp/solar-shading`.
-However if you used the previous repository as a template, then the project is renamed using the name of the repository using the script `rename.sh` at the initialization of the repository.
-If the name does not suit you, you can change it again using the script `rename.sh` and providing the new name as argument.
-
-WARNING: the script `rename.sh` will rename the project however some url might be set properly if you rename the project yourself. You need to check the following files: `docs/site.yml` and `docs/package.json` and fix the urls after the rename process is done.
 
 == Updating the {project} version
 
