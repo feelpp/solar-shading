@@ -1,8 +1,11 @@
-#include "shading_mask.hpp"
 #include <iostream>
+
+#include <shading_mask.hpp>
 #include <feel/feelcore/ptreetools.hpp>
 #include <feel/feelcore/utility.hpp>
 #include <feel/feelcore/json.hpp>
+//#include <feel/feelcore/environment.hpp>
+#include <feel/feelfilters/loadmesh.hpp>
 
 using namespace Feel;
 
@@ -13,7 +16,7 @@ int main(int argc, char **argv)
 
     po::options_description shadingoptions( "Shading mask options" );
     shadingoptions.add_options()
-        ( "json-filename", po::value<std::string>()->default_value(""), "json file containing the buildings names" )        
+        ( "json-filename", po::value<std::string>()->default_value(""), "json file containing the buildings names" )
         ;
 
     Feel::Environment env( _argc=argc,
@@ -22,9 +25,9 @@ int main(int argc, char **argv)
                            );
 
     // Load the json and recover the building names
-    auto jsonfile = removeComments( readFromFile( Environment::expand( soption("json-filename" ) ) ) );  
+    auto jsonfile = removeComments( readFromFile( Environment::expand( soption("json-filename" ) ) ) );
     std::istringstream astr( jsonfile );
-    json json_buildings = json::parse( astr ); 
+    json json_buildings = json::parse( astr );
 
     // Load the mesh
     auto mesh = loadMesh( _mesh = new mesh_t );

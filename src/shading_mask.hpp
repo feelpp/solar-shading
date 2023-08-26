@@ -1,7 +1,5 @@
 #include <future>
 #include <feel/feelmesh/bvh.hpp>
-//#include <feel/feelcore/environment.hpp>
-#include <feel/feelfilters/loadmesh.hpp>
 
 namespace Feel {
 
