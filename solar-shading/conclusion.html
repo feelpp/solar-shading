@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Quickstart Guide :: Solar Shading</title>
-    <link rel="canonical" href="https://feelpp.github.io/solar-shading/solar-shading/quickstart.html">
+    <title>Untitled :: Solar Shading</title>
+    <link rel="canonical" href="https://feelpp.github.io/solar-shading/solar-shading/conclusion.html">
     <meta name="generator" content="Antora 3.1.4">
     <link rel="stylesheet" href="../_/css/site.css">
 <link rel="icon" href="../_/img/favicon.ico" type="image/x-icon">
@@ -95,8 +95,7 @@ MathJax.Hub.Config({
   </head>
   <body class="article">
 <header class="header">
-    <nav class="navbar navbar-expand-sm bg-dark navbar-dark navbar-template-project"
-        style="border-top: 4px solid #9E9E9E">
+    <nav class="navbar navbar-expand-sm bg-dark navbar-dark navbar-template-project" style="border-top: 4px solid #9E9E9E">
         <div class="navbar-brand">
             <div class="navbar-item feelpp-logo">
                 <a href="https://feelpp.github.io/solar-shading">Solar Shading</a>
@@ -113,26 +112,23 @@ MathJax.Hub.Config({
                 <div class="navbar-item">
                     <a href="https://docs.feelpp.org/">Documentation Reference</a>
                 </div>
-                <div class="navbar-item has-dropdown is-hoverable download-item">
-                    <div class="navbar-item"><a href="https://docs.feelpp.org/user/latest/install/index.html"
-                            class="download-btn">Get Feel++</a></div>
-                </div>
                 <div class="navbar-item">
-                    <a class="navbar-brand" href="https://www.cemosis.fr">
-                        <img class="cemosis-logo" src="../_/img/cemosis-logo.svg" alt="Cemosis logo" />
+                    <a class="navbar-brand"  href="https://www.cemosis.fr">
+                        <img class="cemosis-logo"  src="../_/img/cemosis-logo.svg" alt="Cemosis logo"/>
                     </a>
                 </div>
             </div>
         </div>
     </nav>
-</header><div class="body">
+</header>
+<div class="body">
 <a href="#" class="menu-expand-toggle"></a>
 <div class="nav-container" data-component="solar-shading" data-version="">
   <aside class="nav">
     <div class="panels">
 <div class="nav-panel-menu is-active" data-panel="menu">
   <nav class="nav-menu">
-    <h3 class="title"><a href="index.html">Feel++ Solar Shading</a></h3>
+    <h3 class="title"><a href="index.html">Feel++ Template Project</a></h3>
 <ul class="nav-list">
   <li class="nav-item" data-depth="0">
     <button class="nav-item-toggle"></button>
@@ -164,16 +160,22 @@ MathJax.Hub.Config({
   </li>
   <li class="nav-item" data-depth="1">
     <button class="nav-item-toggle"></button>
-    <a class="nav-link" href="devora/introduction.html">Report Ariel De Vora</a>
+    <a class="nav-link" href="report.html">Report Ariel De Vora</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="devora/chap1.html">Shading Masks</a>
+    <a class="nav-link" href="introduction.html">Introduction</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="devora/chap2.html">Bounding Volume Hierarchy</a>
+    <a class="nav-link" href="chap1.html">Chapter 1</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="devora/chap3.html">Benchmarking and Performance Measurement</a>
+    <a class="nav-link" href="chap2.html">Chapter 2</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="chap3.html">Chapter 3</a>
+  </li>
+  <li class="nav-item is-current-page" data-depth="2">
+    <a class="nav-link" href="conclusion.html">Conclusion</a>
   </li>
 </ul>
   </li>
@@ -184,12 +186,12 @@ MathJax.Hub.Config({
 </div>
 <div class="nav-panel-explore" data-panel="explore">
   <div class="context">
-    <span class="title">Feel++ Solar Shading</span>
+    <span class="title">Feel++ Template Project</span>
     <span class="version"></span>
   </div>
   <ul class="components">
       <li class="component is-current">
-        <a class="title" href="index.html">Feel++ Solar Shading</a>
+        <a class="title" href="index.html">Feel++ Template Project</a>
       </li>
   </ul>
 </div>
@@ -202,13 +204,15 @@ MathJax.Hub.Config({
     <a href="index.html" class="home-link"></a>
   <nav class="breadcrumbs" aria-label="breadcrumbs">
   <ul>
-    <li><a href="index.html">Feel++ Solar Shading</a></li>
-    <li><a href="quickstart.html">Quickstart Guide</a></li>
+    <li><a href="index.html">Feel++ Template Project</a></li>
+    <li><a href="index.html">Introduction</a></li>
+    <li><a href="report.html">Report Ariel De Vora</a></li>
+    <li><a href="conclusion.html">Conclusion</a></li>
   </ul>
 </nav>
 
   
-    <div class="edit-this-page"><a href="https://github.com/feelpp/solar-shading/edit/feature/support_new_bvh_api/docs/modules/ROOT/pages/quickstart.adoc">Edit this Page</a></div>
+    <div class="edit-this-page"><a href="https://github.com/feelpp/solar-shading/edit/8-prepare-solar-shading-computation-for-large-meshes/docs/modules/ROOT/pages/conclusion.adoc">Edit this Page</a></div>
   
   <div class="page-downloads">
   <span class="label">Download as</span>
@@ -228,143 +232,7 @@ MathJax.Hub.Config({
   <div class="toc-menu"></div>
 </aside>
 <article class="doc">
-<h1 class="page">Quickstart Guide</h1>
-<div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
-<p>To get started with compiling and using Feel++ Solar Shading, you can either</p>
-</div>
-<div class="ulist checklist">
-<ul class="checklist">
-<li>
-<p><i class="fa fa-check-square-o"></i> install <a href="https://docs.feelpp.org/user/latest/install/index.html">Feel++ Debian or Ubuntu packages</a> if you use such systems or</p>
-</li>
-<li>
-<p><i class="fa fa-check-square-o"></i> use DevContainers in Visual Studio Code as described below.</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>To get started with viewing and creating documentation, checkout the project <a href="antora.html" class="xref page">Antora</a> page.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_using_devcontainers_in_visual_studio_code"><a class="anchor" href="#_using_devcontainers_in_visual_studio_code"></a>1. Using DevContainers in Visual Studio Code</h2>
-<div class="sectionbody">
-<div class="admonitionblock important">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-important" title="Important"></i>
-</td>
-<td class="content">
-<div class="paragraph">
-<p>Please ensure that you have <a href="https://code.visualstudio.com/">Visual Studio Code</a> and <a href="https://docs.docker.com/engine/install/">Docker</a> installed before proceeding.</p>
-</div>
-</td>
-</tr>
-</table>
-</div>
-<div class="sect2">
-<h3 id="_getting_started"><a class="anchor" href="#_getting_started"></a>1.1. Getting Started</h3>
-<div class="paragraph">
-<p>To start using DevContainers in Visual Studio Code, follow these steps:</p>
-</div>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p>Open your project in Visual Studio Code.</p>
-</li>
-<li>
-<p>A <code>devcontainer.json</code> file in the root of your project in <code>.devcontainer</code> directory</p>
-</li>
-<li>
-<p>A configuration similar to the following one is available:</p>
-</li>
-</ol>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
-	"name": "Feel++ Dev Jammy",
-	"image": "ghcr.io/feelpp/feelpp-dev:jammy",
-	"extensions": [
-		"ms-vscode.cpptools",
-		"ms-vscode.cmake-tools",
-		"josetr.cmake-language-support-vscode",
-		"asciidoctor.asciidoctor-vscode",
-		"ms-python.python",
-		"ms-toolsai.jupyter"
-	]
-}</code></pre>
-</div>
-</div>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p>Customize the configuration based on your project requirements. In the example above, the configuration sets the name of the Dev Container as "Feel++ Dev Jammy" and specifies the Docker image to use as "ghcr.io/feelpp/feelpp-dev:jammy". Additionally, it includes a list of extensions to install inside the Dev Container.</p>
-</li>
-</ol>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_opening_in_devcontainer"><a class="anchor" href="#_opening_in_devcontainer"></a>1.2. Opening in DevContainer</h3>
-<div class="paragraph">
-<p>To open your project using the DevContainer, follow these steps:</p>
-</div>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p>Open the Command Palette in Visual Studio Code by pressing <code>Ctrl+Shift+P</code> (or <code>Cmd+Shift+P</code> on macOS).</p>
-</li>
-<li>
-<p>Search for and select "Remote-Containers: Reopen in Container".</p>
-</li>
-<li>
-<p>Visual Studio Code will build the Docker image specified in the <code>devcontainer.json</code> file and open a new window inside the Dev Container.</p>
-</li>
-<li>
-<p>Once the Dev Container is loaded, you can start working on your project within the containerized environment.</p>
-</li>
-</ol>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_benefits_of_using_devcontainers"><a class="anchor" href="#_benefits_of_using_devcontainers"></a>1.3. Benefits of Using DevContainers</h3>
-<div class="paragraph">
-<p>Using DevContainers in Visual Studio Code offers several benefits:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>Consistent Development Environment</strong>: DevContainers provide a consistent and reproducible development environment across different machines, ensuring that everyone works in the same environment.</p>
-</li>
-<li>
-<p><strong>Isolation and Dependency Management</strong>: DevContainers isolate your project dependencies from your local machine, reducing conflicts and simplifying dependency management.</p>
-</li>
-<li>
-<p><strong>Easy Extension Installation</strong>: DevContainers automatically install the specified extensions, making it easy to set up the required tools and configurations for your project.</p>
-</li>
-</ul>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-<div class="paragraph">
-<p>Make sure your Docker daemon is running and accessible from the terminal to use DevContainers in Visual Studio Code.</p>
-</div>
-</td>
-</tr>
-</table>
-</div>
-</div>
-</div>
-</div>
+
 </article>
   </div>
 </main>
