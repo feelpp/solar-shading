@@ -29,11 +29,12 @@ def extractMSHmarkers(input_file):
 
         
 
+if __name__ == '__main__':
 
-parser = argparse.ArgumentParser()
-parser.add_argument("--mesh_file_path", type=Path, help='Insert the name of the mesh file from which surface and volume markers need to be extracted')
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--mesh_file_path", type=Path, help='Insert the name of the mesh file from which surface and volume markers need to be extracted')
 
-p = parser.parse_args()
+    p = parser.parse_args()
 
-if( p.mesh_file_path  and p.mesh_file_path.exists() ):
-    extractMSHmarkers(p.mesh_file_path)
+    if( p.mesh_file_path  and p.mesh_file_path.exists() ):
+        extractMSHmarkers(p.mesh_file_path)
