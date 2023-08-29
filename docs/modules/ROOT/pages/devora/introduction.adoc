@@ -1,0 +1,111 @@
+= Shading Masks computation for solar radiation
+include::partials$bib.adoc[]
+:toc: macro
+
+- - -
+
+image::logos.png[align="center",width="100%"]
+++++
+<br>
+<center>
+<H1>
+	University of Strasbourg <br>
+    Master 1 CSMI<br>
+    2022-2023<br>
+</H1>
+</center>
+++++
+
+++++
+<br>
+<center>
+<H1>
+    Supervisors: Luca Berti, Christophe Prud'homme <br>
+</H1>
+</center>
+<br>
+++++
+
+- - -
+
+<<<
+
+toc::[]
+
+== Introduction
+
+=== Context
+
+=== Objectives
+
+During my two-month internship, under the guidance of Luca Berti, I was entrusted with the task of computing solar shading masks, weather models, and benchmarking various random number generators. This significant project originates from a broader national agenda aimed at reducing energy consumption by 10% by 2024. As the building sector stands as the primary energy consumer in France, accounting for 23% of the nation's greenhouse gas emissions according to the Ministry of Energy Transition (link:https://www.ecologie.gouv.fr/construction-et-performance-environnementale-du-batiment[see here]), the implications of our project are vast. Consequently, our objective is to perform computations at the city level, involving the modeling of thousands of households and repetitively iterating computations over them.
+
+Our mission aligns seamlessly with the government's energy conservation plan, aiming to significantly reduce greenhouse gas emissions. This initiative underscores the essential role of companies like ILoomi, renowned for offering personalized energy guidance to homeowners in the Hauts-de-France region using questionnaires.
+
+A noteworthy mention must be made of HiDALGO2, an EU Horizon-funded initiative encompassing 8 partners across 7 nations. As a European Centre of Excellence, HiDALGO2 is poised to address global challenges, primarily focusing on environmental issues using computational fluid dynamics, high-performance data analytics, and AI. The project's aspirations encompass extending the capabilities of global scientific applications, aiming to offer in-depth and large-scale analyses of environmental threats. Specifically, HiDALGO2 zeroes in on five environmental use cases: enhancing urban air quality, boosting energy efficiency of buildings, optimizing renewable energy sources, combating wildfires, and refining meteo-hydrological forecasting.
+
+My work can be separated into two quasi-independent parts:
+
+**OPTIMIZATION:**
+
+- Code Vectorization using Eigen library
+- Use suitable RNG's for random number generation
+- Ray-tracing parallelization using OpenMP 
+- Choose a suitable storage strategy for the BVH structure (possibly already choose a good one for NVIDIA's OptiX Ray Tracing API)
+- Benchmarking for speed and quality purposes
+
+**IMPLEMENTATION:**
+
+- Solar radiation (heat transfer) code integration
+- View factors computation
+- Retrieve meteorological data for given longitude and latitude using open-meteo.com
+- Rewrite the whole code to be used in the OptiX API enabling strong Ray-Tracing capabilities
+
+=== Tools
+
+Seeing the scale of this project, numerous tools will have to be used, ranging from benchmarking simple methods to understanding all the underlyings of compilation flags and optimized data structures for BVH representation of complex and large scenes.
+
+For the benchmarks, libraries such as Googletest and Reframe will be used to perform quality benchmarks on our distributions (speed and quality) and on our BVH construction algorithms such as the traversing ones.
+
+For the strict optimization of the code, especially loops and Random Number Generators, hardware-specific and goal-targeted compilation flags will have to be used, described in their respective section <<Different Flags>>.
+
+To accelerate the entire process and enable fast computations at city scale, the utilization of GPUs plays a crucial role. GPUs (Graphics Processing Units) are highly parallel processors capable of performing large-scale calculations simultaneously. By harnessing the immense computational power of GPUs, complex and demanding tasks can be accelerated, leading to significant improvements in performance. Their capabilities will be harnessed through the use of CUDA, and will further be accelerated using the OptiX Ray Tracing API disposing of optimized intersection tests, ray generation, and more.
+
+Furthermore, the project can benefit from automation, allowing repetitive tasks to be executed on the Gaya cluster or the atlas node, composed of two NVIDIA K80 GPGPU cards. This automation streamlines the process and maximizes efficiency, enabling rapid iterations and scalability.
+
+During the two-month period, the project also aims to leverage GitHub for maintaining project integrity. This involves utilizing integrated submodules for benchmarking different distributions and effectively managing packages of significant sizes, such as Intel's oneAPI MKL, EigenRand or Xoshiro libraries. Additionally, the project aims to enhance skills in using hardware-optimized SIMD (Single Instruction, Multiple Data) techniques, further optimizing performance and computational efficiency.
+
+==== Parallelization on GPU
+
+The parallelization process on GPUs is a crucial part of this project, but many different architectures exist and hence many different approaches to parallelization are possible. These can be implement in various ways, but different APIs also imply different capabilities and constraints. So depending on the available hardware, different approaches will be used. Below are listed the different APIs that will be used in this project, their advantages and drawbacks, and how they will be used.
+
+==== NVIDIA OptiX 
+
+OptiX is a ray tracing framework developed by NVIDIA. It provides a higher-level programming model specifically designed for ray tracing applications, abstracting away many of the complexities of this technique and providing a simplified interface for developing applications. It handles tasks such as BVH construction, ray traversal, and intersection testing, allowing developers to focus more on the application logic rather than low-level implementation details.
+
+OptiX provides features like programmable shaders (ray generation, closest hit, any hit, miss), support for complex geometry, GPU instancing and built-in acceleration structures. It also integrates with other GPU-accelerated libraries and APIs, such as CUDA and OpenGL, enabling efficient data exchange between different GPU-accelerated tasks.
+
+- BVH Construction: OptiX provides built-in acceleration structure construction algorithms, such as bounding volume hierarchy (BVH) construction. These algorithms are highly optimized and take advantage of the underlying GPU architecture to accelerate the construction process.
+- Ray Traversal: OptiX optimizes the ray traversal process by using advanced techniques like GPU-specific optimizations, speculative and  stackless traversal. These techniques minimize memory accesses and thread divergence, improving performance during the traversal phase.
+- Intersection Testing: OptiX allows developers to write custom intersection testing programs using programmable shaders. This flexibility enables the implementation of efficient intersection tests tailored to the specific geometry and shading requirements of the application. More generally, the intersection tests can be performed using the built-in method, leveraging the SIMT unit by performing a speculative traversal, where the next state is estimated using probabilities.
+
+In addition to performance optimizations, OptiX also provides parallelization capabilities at several levels : over the GPUs and over the threads, each handling the generation and traversal of one ray, just like it was done in the self-implemented CUDA version. OptiX automatically parallelizes the ray tracing workloads across multiple GPU threads. Each thread processes a different ray, allowing for high levels of parallelism. This parallelization is handled by the OptiX runtime, abstracting away the complexities of parallel programming on the GPU.
+
+OptiX provides a flexible memory management system that allows developers to efficiently manage memory usage during BVH construction and traversal. It provides options to control the memory allocation strategy, such as specifying the maximum amount of memory to be used for the BVH construction, allowing the user to optimize memory consumption based on the available one, which also works when working with GPU clusters.
+
+NVIDIA GPUs use a SIMT (Single Instruction, Multiple Thread) execution model. The SIMT model is similar to SIMD (Single Instruction, Multiple Data) in that it allows executing the same instruction on multiple data elements in parallel. However, SIMT provides more flexibility by allowing threads to follow different execution paths based on conditional statements or data dependencies.
+
+In SIMT, threads are organized into groups called warps, where each warp consists of multiple threads executing the same instructions. The warp is the basic unit of execution in NVIDIA GPUs, and all threads within a warp execute in lockstep. Each thread within a warp operates on its own data, and the SIMD-like execution happens at the warp level.
+
+While all threads within a warp execute the same instruction, they may diverge based on conditional statements. In such cases, the GPU dynamically partitions the warp into smaller groups, known as active warps, to handle divergent execution paths efficiently (conditional statements should be avoided inside warps). This allows the GPU to hide latency and maximize parallelism by executing other warps while some warps are waiting for conditional branches or memory operations.
+
+Overall, the SIMT execution model in NVIDIA GPUs provides a balance between SIMD-style parallelism and thread-level flexibility, enabling efficient execution of parallel workloads across thousands of threads. 
+
+When coding with the OptiX API, access is granted to optimized methods using speculative traversal methods on the warps, meaning that instead of incrementing the states linearly during traversal, the API will estimate the next state to transfer to, using speculative probabilities in order to optimize the number of threads that can be treated in parallel.
+
+==== CUDA
+
+CUDA is a parallel computing platform and programming model developed by NVIDIA. It allows developers to write high-performance GPU-accelerated code using the CUDA programming language. CUDA provides low-level access to GPU hardware and is suitable for a wide range of general-purpose GPU computing tasks beyond ray tracing.
+
+With CUDA, we have fine-grained control over the GPU and can leverage its parallel processing capabilities for various applications, such as scientific simulations, image and video processing, machine learning, and more.
+CUDA allows we to optimize code at a low level and provides flexibility to customize algorithms and data structures based on specific requirements.

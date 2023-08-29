@@ -22,8 +22,17 @@
 #
 #
 
-feelpp_add_application(example_shading_masks_surface_mesh SRCS example_shading_masks.cpp DEFS FEELPP_TOP_DIM=2 LINK_LIBRARIES Feelpp::feelpp TESTS NO_MPI_TEST INSTALL)
-feelpp_add_application(example_shading_masks_volume_mesh SRCS example_shading_masks.cpp DEFS FEELPP_TOP_DIM=3 LINK_LIBRARIES Feelpp::feelpp TESTS NO_MPI_TEST INSTALL)
+
+set(SOLARSHADING_TARGET_NAME feelpp_solarshading)
+add_library(${SOLARSHADING_TARGET_NAME} INTERFACE)
+target_include_directories(${SOLARSHADING_TARGET_NAME} INTERFACE
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+  $<INSTALL_INTERFACE:include>
+  )
+target_link_libraries(${SOLARSHADING_TARGET_NAME} INTERFACE Feelpp::feelpp)
+
+feelpp_add_application(example_shading_masks_surface_mesh SRCS example_shading_masks.cpp DEFS FEELPP_TOP_DIM=2 LINK_LIBRARIES ${SOLARSHADING_TARGET_NAME} TESTS NO_MPI_TEST INSTALL)
+feelpp_add_application(example_shading_masks_volume_mesh SRCS example_shading_masks.cpp DEFS FEELPP_TOP_DIM=3 LINK_LIBRARIES ${SOLARSHADING_TARGET_NAME} TESTS NO_MPI_TEST INSTALL)
 
 
 feelpp_add_testcase(cases)
