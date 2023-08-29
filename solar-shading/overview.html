@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Chapter 3 - Becnhmarking and Performance Measurement :: Solar Shading</title>
-    <link rel="canonical" href="https://feelpp.github.io/solar-shading/solar-shading/chap3.html">
+    <title>Overview of Feel++ Solar Shading :: Solar Shading</title>
+    <link rel="canonical" href="https://feelpp.github.io/solar-shading/solar-shading/overview.html">
     <meta name="generator" content="Antora 3.1.4">
     <link rel="stylesheet" href="../_/css/site.css">
 <link rel="icon" href="../_/img/favicon.ico" type="image/x-icon">
@@ -95,7 +95,8 @@ MathJax.Hub.Config({
   </head>
   <body class="article">
 <header class="header">
-    <nav class="navbar navbar-expand-sm bg-dark navbar-dark navbar-template-project" style="border-top: 4px solid #9E9E9E">
+    <nav class="navbar navbar-expand-sm bg-dark navbar-dark navbar-template-project"
+        style="border-top: 4px solid #9E9E9E">
         <div class="navbar-brand">
             <div class="navbar-item feelpp-logo">
                 <a href="https://feelpp.github.io/solar-shading">Solar Shading</a>
@@ -112,23 +113,26 @@ MathJax.Hub.Config({
                 <div class="navbar-item">
                     <a href="https://docs.feelpp.org/">Documentation Reference</a>
                 </div>
+                <div class="navbar-item has-dropdown is-hoverable download-item">
+                    <div class="navbar-item"><a href="https://docs.feelpp.org/user/latest/install/index.html"
+                            class="download-btn">Get Feel++</a></div>
+                </div>
                 <div class="navbar-item">
-                    <a class="navbar-brand"  href="https://www.cemosis.fr">
-                        <img class="cemosis-logo"  src="../_/img/cemosis-logo.svg" alt="Cemosis logo"/>
+                    <a class="navbar-brand" href="https://www.cemosis.fr">
+                        <img class="cemosis-logo" src="../_/img/cemosis-logo.svg" alt="Cemosis logo" />
                     </a>
                 </div>
             </div>
         </div>
     </nav>
-</header>
-<div class="body">
+</header><div class="body">
 <a href="#" class="menu-expand-toggle"></a>
 <div class="nav-container" data-component="solar-shading" data-version="">
   <aside class="nav">
     <div class="panels">
 <div class="nav-panel-menu is-active" data-panel="menu">
   <nav class="nav-menu">
-    <h3 class="title"><a href="index.html">Feel++ Template Project</a></h3>
+    <h3 class="title"><a href="index.html">Feel++ Solar Shading</a></h3>
 <ul class="nav-list">
   <li class="nav-item" data-depth="0">
     <button class="nav-item-toggle"></button>
@@ -160,22 +164,16 @@ MathJax.Hub.Config({
   </li>
   <li class="nav-item" data-depth="1">
     <button class="nav-item-toggle"></button>
-    <a class="nav-link" href="report.html">Report Ariel De Vora</a>
+    <a class="nav-link" href="devora/introduction.html">Report Ariel De Vora</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="introduction.html">Introduction</a>
+    <a class="nav-link" href="devora/chap1.html">Shading Masks</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="chap1.html">Chapter 1</a>
+    <a class="nav-link" href="devora/chap2.html">Bounding Volume Hierarchy</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="chap2.html">Chapter 2</a>
-  </li>
-  <li class="nav-item is-current-page" data-depth="2">
-    <a class="nav-link" href="chap3.html">Chapter 3</a>
-  </li>
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="conclusion.html">Conclusion</a>
+    <a class="nav-link" href="devora/chap3.html">Benchmarking and Performance Measurement</a>
   </li>
 </ul>
   </li>
@@ -186,12 +184,12 @@ MathJax.Hub.Config({
 </div>
 <div class="nav-panel-explore" data-panel="explore">
   <div class="context">
-    <span class="title">Feel++ Template Project</span>
+    <span class="title">Feel++ Solar Shading</span>
     <span class="version"></span>
   </div>
   <ul class="components">
       <li class="component is-current">
-        <a class="title" href="index.html">Feel++ Template Project</a>
+        <a class="title" href="index.html">Feel++ Solar Shading</a>
       </li>
   </ul>
 </div>
@@ -204,15 +202,13 @@ MathJax.Hub.Config({
     <a href="index.html" class="home-link"></a>
   <nav class="breadcrumbs" aria-label="breadcrumbs">
   <ul>
-    <li><a href="index.html">Feel++ Template Project</a></li>
-    <li><a href="index.html">Introduction</a></li>
-    <li><a href="report.html">Report Ariel De Vora</a></li>
-    <li><a href="chap3.html">Chapter 3</a></li>
+    <li><a href="index.html">Feel++ Solar Shading</a></li>
+    <li><a href="overview.html">Overview of Feel++ Solar Shading</a></li>
   </ul>
 </nav>
 
   
-    <div class="edit-this-page"><a href="https://github.com/feelpp/solar-shading/edit/8-prepare-solar-shading-computation-for-large-meshes/docs/modules/ROOT/pages/chap3.adoc">Edit this Page</a></div>
+    <div class="edit-this-page"><a href="https://github.com/feelpp/solar-shading/edit/8-prepare-solar-shading-computation-for-large-meshes/docs/modules/ROOT/pages/overview.adoc">Edit this Page</a></div>
   
   <div class="page-downloads">
   <span class="label">Download as</span>
@@ -232,122 +228,101 @@ MathJax.Hub.Config({
   <div class="toc-menu"></div>
 </aside>
 <article class="doc">
-<h1 class="page">Chapter 3 - Becnhmarking and Performance Measurement</h1>
+<h1 class="page">Overview of Feel++ Solar Shading</h1>
 <div class="sect1">
-<h2 id="_shell_bash_scripting_and_automation"><a class="anchor" href="#_shell_bash_scripting_and_automation"></a>1. Shell / Bash Scripting and Automation</h2>
-<div class="sectionbody">
-
-</div>
-</div>
-<div class="sect1">
-<h2 id="_reframe_benchmarking"><a class="anchor" href="#_reframe_benchmarking"></a>2. Reframe Benchmarking</h2>
-<div class="sectionbody">
-<div class="sect2">
-<h3 id="_definition"><a class="anchor" href="#_definition"></a>2.1. Definition</h3>
-
-</div>
-<div class="sect2">
-<h3 id="_utility"><a class="anchor" href="#_utility"></a>2.2. Utility</h3>
-
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_explicit_benchmarking"><a class="anchor" href="#_explicit_benchmarking"></a>3. Explicit Benchmarking</h2>
-<div class="sectionbody">
-
-</div>
-</div>
-<div class="sect1">
-<h2 id="_random_number_generators"><a class="anchor" href="#_random_number_generators"></a>4. Random Number Generators</h2>
+<h2 id="_organisation"><a class="anchor" href="#_organisation"></a>1. Organisation</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>When dealing with solar shading masks computation, it&#8217;s strongly recommended to use the Monte-Carlo technic, namely during the ray-tracing part of the algorithm enabling one to backtrace the paths to find shaded locations due to the environment. But this comes at a cost, since it&#8217;s mathematically accurate only when tracing multiple rays in random directions, being the foundation of this method.</p>
+<p>The directory structure of the project is as follows:</p>
 </div>
-<div class="paragraph">
-<p>Since this project is at district or even city scale, the use of a fast Random Number Generators (RNG) is necessary. Despite numerous benchmarks already been done, we decided to compare some of the fastest open-source libraries, all heavily relying on Vectorization, multi-threading or multicore processing, and performance-targeted compiling flags (such as <code>-03</code> to <code>-0fast</code>). Since Intel processors have specific instructions and extensions (such as Streaming SIMD Extensions, SSE2) and Advanced Vector Extensions (AVX), the MKL advanced Mathematics library naturally benefits of efficient vectorized operations.</p>
-</div>
-<div class="sect2">
-<h3 id="_rng_speed_benchmark"><a class="anchor" href="#_rng_speed_benchmark"></a>4.1. RNG Speed Benchmark</h3>
-<div class="paragraph">
-<p>We have to adopt rigorous coding methods, proving and explaining our reasoning behind every choice made during the internship. In order to settle on a specific method, benchmarks have to be performed.</p>
-</div>
-<div class="sect3">
-<h4 id="_available_methods"><a class="anchor" href="#_available_methods"></a>4.1.1. Available Methods</h4>
-<div class="paragraph">
-<p>As said, numerous methods are open-source and available to use, built upon different fundamentals. The Xoshiro-Cpp is a lightweight, high-performance random number generator known for its speed and low memory consumption. The Mersenne Twister, on the other hand, is widely used for its long period and good statistical properties. std::random provides a standardized interface for random number generation in C++, offering various generators including Mersenne Twister. Eigen::Rand is a random number generator headers library strongly relying on Eigen&#8217;s vectorization capabilities, useful for generating random matrices in numerical computations. Intel MKL offers high-performance, vectorized random number generation routines optimized for scientific and numerical computing while <code>pcg-cpp</code> is a Permuted Congruential Generator implementation balancing speed and randomness for simulations and gaming.</p>
-</div>
-<div class="paragraph">
-<p>Below you can see a first execution time comparison, using the <code>std::chrono</code> library to measure the time taken by each method to generate 1000000 random numbers. The code was compiled using different usual flags, such as <code>-O3</code>, <code>-Ofast</code>, <code>-O2</code> and <code>-O1</code>.</p>
-</div>
-<div class="imageblock">
+<div class="listingblock">
 <div class="content">
-<img src="_images/colorcompare.png" alt="Barplot comparing execution time][600">
+<pre>.
+├── docs
+│   ├── antora
+│   └── modules
+└── src
+    └── cases
+
+5 directories</pre>
 </div>
-</div>
-<div class="paragraph">
-<p>We can observe that all of the presented methods, except for Eigen&#8217;s one, are outperforming the standard library.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_different_flags"><a class="anchor" href="#_different_flags"></a>4.1.2. Different Flags</h4>
-<div class="paragraph">
-<p>Since Intel&#8217;s oneAPI MKL library is by far the highest speed RNG, we benchmarked it using more specific flags, such as <code>march=native</code> in order to enable all the processor&#8217;s extensions, and switching between <code>sequential</code> and <code>threaded</code> modes. The results are shown below:</p>
-</div>
-<div class="imageblock">
-<div class="content">
-<img src="_images/intel.png" alt="intel" width="600">
-</div>
-</div>
-<div class="paragraph">
-<p>And below the second speed test done on Gaia, a system composeed of 192 AMD EPYC 7552 48-Core Processors. During this second benchmark, we cycled through most of the different compilation flags combinations, and the results are shown below:</p>
-</div>
-<div class="imageblock">
-<div class="content">
-<img src="_images/AMDspeed.png" alt="600">
-</div>
-</div>
-<div class="paragraph">
-<p><a href="https://caiorss.github.io/C-Cpp-Notes/compiler-flags-options.html">Here</a> is a website describing the use-cases of each compilation flag and what they do.</p>
-</div>
-<div class="paragraph">
-<p>The <code>-Ofast</code> and <code>-O3</code> flags do the following work for the user:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>Loop unrolling: This optimization involves repeating the body of a loop multiple times, which reduces loop overhead and enables better parallelism.</p>
+<p>The <code>docs</code> directory contains the documentation of the project and uses antora to generate the documentation.</p>
 </li>
 <li>
-<p>Code redundancy elimination: The compiler detects portions of code that are needlessly repeated and replaces them with reused references, reducing the amount of executed code.</p>
-</li>
-<li>
-<p>Vectorization: Loops are transformed to use SIMD (Single Instruction, Multiple Data) instructions to perform simultaneous operations on multiple data elements. This effectively exploits the parallel computing capabilities of modern processors.</p>
-</li>
-<li>
-<p>Loop fusion: Independent loops are merged into a single loop, reducing overhead and improving performance by reducing the number of iterations.</p>
-</li>
-<li>
-<p>Function inlining: Function calls are replaced with the body of the function itself, avoiding the overhead of function calls.
-Unused variable elimination: Variables that are not used in the code are detected and removed, reducing memory consumption.</p>
-</li>
-<li>
-<p>Arithmetic operation optimization: The compiler can perform mathematical transformations to simplify expressions and reduce the number of necessary operations.</p>
+<p>The <code>src</code> directory contains initially some C++ and Python Feel++ source code of the project to help you get started.</p>
 </li>
 </ul>
 </div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Feel++ is a C++ library for the numerical simulation of partial differential equations. It is designed to be easy to use and to extend.
+{feelpp }is a free software distributed under the terms of the GNU General Public License version 3.
+The documentation is available <a href="https://docs.feelpp.org">&gt; here</a>.</p>
+</div>
+</td>
+</tr>
+</table>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_rng_quality_benchmark"><a class="anchor" href="#_rng_quality_benchmark"></a>4.2. RNG Quality Benchmark</h3>
-
 </div>
-<div class="sect2">
-<h3 id="_summary"><a class="anchor" href="#_summary"></a>4.3. Summary</h3>
-<div class="sect3">
-<h4 id="_integrals_precision"><a class="anchor" href="#_integrals_precision"></a>4.3.1. Integral&#8217;s precision</h4>
-
+<div class="sect1">
+<h2 id="_how_to_build_the_project"><a class="anchor" href="#_how_to_build_the_project"></a>2. How to build the project</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You need first to follow the <a href="quickstart.html" class="xref page">quickstart</a> to get the Feel++ environment.
+The installation procedure uses <a href="cmake.html" class="xref page">Cmake</a> for the C++ programs and create a bundle of this project.
+The steps are as follows:</p>
 </div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ cmake --preset default <i class="conum" data-value="1"></i><b>(1)</b>
+$ cmake --build --preset default <i class="conum" data-value="2"></i><b>(2)</b>
+$ cmake --build --preset default -t install <i class="conum" data-value="3"></i><b>(3)</b>
+$ ctest --preset default <i class="conum" data-value="4"></i><b>(4)</b>
+$ cmake --build --preset default -t package <i class="conum" data-value="5"></i><b>(5)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Configure the project</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Build the project</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Install the project</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Run the tests</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Package the project</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_how_to_start_documenting_your_work"><a class="anchor" href="#_how_to_start_documenting_your_work"></a>3. How to start documenting your work</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The documentation is written in Asciidoc and uses Antora to generate the documentation. Please check the project <a href="antora.html" class="xref page">Antora</a> page to get started.</p>
 </div>
 </div>
 </div>
