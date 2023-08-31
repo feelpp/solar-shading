@@ -1,5 +1,5 @@
 {
     "Nrays":1000,
     "Nthreads":4,
-    "Buildings":["Bat2","Bat1"]
+    "Buildings":{"list":["Bat2","Bat1"]}
 }
