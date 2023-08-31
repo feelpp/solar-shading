@@ -1,0 +1,1 @@
+feelpp_ss_example_shading_masks_volume_mesh-1 --config-file ${CMAKE_CURRENT_SOURCE_DIR}/cases/example_shading_mask/example_shading_mask.cfg
