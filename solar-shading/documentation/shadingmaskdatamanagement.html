@@ -295,9 +295,9 @@ from shading_mask_visualization import plotShadingMask
 plotShadingMask(sm_csv_name)
 
 # Show the shading mask in the notebook
-from IPython.display import Image
+from IPython.display import Image,display
 current_folder = os.getcwd()
-Image(filename=current_folder+'/Shading_maskSM.png')</code></pre>
+display(Image(filename=current_folder+'/Shading_maskSM.png'))</code></pre>
 </div>
 </div>
 <div class="listingblock">
