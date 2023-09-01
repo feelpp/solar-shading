@@ -21,9 +21,22 @@ One can visualise shading masks on a circular diagram: the angular coordinate re
 ----
 import sys
 import os
-current_folder = os.getcwd()
-sys.path.insert(1,"../src/visualization/")
+import git
+
+# Extract the root of the git repository
+repo = git.Repo('.', search_parent_directories=True)
+repo_root = repo.working_tree_dir
+
+# Collect the example CSV file 
+example_csv_path = repo_root + "/src/visualization/example_csvfile.csv"
+
+# Print the shading mask to a file
+sys.path.insert(0,repo_root + "/src/visualization/")
 from shading_mask_visualization import plotShadingMask
-example_csv_path = current_folder + "/example_csvfile.csv"
 plotShadingMask(example_csv_path)
+
+# Show the shading mask in the notebook
+from IPython.display import Image
+current_folder = os.getcwd()
+Image(filename=current_folder+'/Shading_maskexample_csvfile.png') 
 ----
