@@ -224,7 +224,7 @@ MathJax.Hub.Config({
 </nav>
 
   
-    <div class="edit-this-page"><a href="https://github.com/feelpp/solar-shading/edit/master/docs/modules/ROOT/pages/documentation/dataformat.adoc">Edit this Page</a></div>
+    <div class="edit-this-page"><a href="https://github.com/feelpp/solar-shading/edit/26-fix-documentation-with-jupyter-notebook-generation/docs/modules/ROOT/pages/documentation/dataformat.adoc">Edit this Page</a></div>
   
   <div class="page-downloads">
   <span class="label">Download as</span>
@@ -273,11 +273,24 @@ MathJax.Hub.Config({
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">import sys
 import os
-current_folder = os.getcwd()
-sys.path.insert(1,"../src/visualization/")
+import git
+
+# Extract the root of the git repository
+repo = git.Repo('.', search_parent_directories=True)
+repo_root = repo.working_tree_dir
+
+# Collect the example CSV file
+example_csv_path = repo_root + "/src/visualization/example_csvfile.csv"
+
+# Print the shading mask to a file
+sys.path.insert(0,repo_root + "/src/visualization/")
 from shading_mask_visualization import plotShadingMask
-example_csv_path = current_folder + "/example_csvfile.csv"
-plotShadingMask(example_csv_path)</code></pre>
+plotShadingMask(example_csv_path)
+
+# Show the shading mask in the notebook
+from IPython.display import Image
+current_folder = os.getcwd()
+Image(filename=current_folder+'/Shading_maskexample_csvfile.png')</code></pre>
 </div>
 </div>
 </div>
