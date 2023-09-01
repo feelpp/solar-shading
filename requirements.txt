@@ -1,0 +1,9 @@
+pyvista
+xvfbwrapper
+ipykernel
+pythreejs
+plotly
+trame-vtk
+trame
+spdlog
+gitpython
