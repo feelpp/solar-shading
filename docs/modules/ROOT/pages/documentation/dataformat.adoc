@@ -36,7 +36,7 @@ from shading_mask_visualization import plotShadingMask
 plotShadingMask(example_csv_path)
 
 # Show the shading mask in the notebook
-from IPython.display import Image
+from IPython.display import Image,display
 current_folder = os.getcwd()
-Image(filename=current_folder+'/Shading_maskexample_csvfile.png') 
+display(Image(filename=current_folder+'/Shading_maskexample_csvfile.png'))
 ----
