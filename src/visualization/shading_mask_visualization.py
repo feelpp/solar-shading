@@ -7,7 +7,7 @@ from pathlib import Path
 import argparse
 import os
 
-def plotShadingMask(csv_filename):
+def plotShadingMask(csv_filename,save=True):
 
     fig = plt.figure()
     # The CSV file must contain a comma-separated matrix of size
@@ -44,10 +44,12 @@ def plotShadingMask(csv_filename):
     plt.rgrids([i*10 for i in range(0,10)])
     ax1.set_rlim(bottom=90, top=0)
 
-    
-    plt.savefig('Shading_mask'+Path(csv_filename).stem+'.png')
+    if save:
+        plt.savefig('Shading_mask'+Path(csv_filename).stem+'.png')
+        plt.close()
+    else:
+        plt.show()
 
-    plt.close()
 
 def plotShadingMaskDir(directory_path):
     for root, dirs, files in os.walk(directory_path):
