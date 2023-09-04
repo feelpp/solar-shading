@@ -7,3 +7,6 @@ trame-vtk
 trame
 spdlog
 gitpython
+requests
+os
+sys
