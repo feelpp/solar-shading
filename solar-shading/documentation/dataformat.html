@@ -285,12 +285,7 @@ example_csv_path = repo_root + "/src/visualization/example_csvfile.csv"
 # Print the shading mask to a file
 sys.path.insert(0,repo_root + "/src/visualization/")
 from shading_mask_visualization import plotShadingMask
-plotShadingMask(example_csv_path)
-
-# Show the shading mask in the notebook
-from IPython.display import Image,display
-current_folder = os.getcwd()
-display(Image(filename=current_folder+'/Shading_maskexample_csvfile.png'))</code></pre>
+plotShadingMask(example_csv_path,save=False)</code></pre>
 </div>
 </div>
 </div>
