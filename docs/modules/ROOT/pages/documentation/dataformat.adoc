@@ -20,8 +20,6 @@ One can visualise shading masks on a circular diagram: the angular coordinate re
 .Visualize a shading mask using Python
 [%dynamic%raw,python]
 ----
-import sys
-import os
 import git
 
 # Extract the root of the git repository
