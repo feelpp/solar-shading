@@ -2,6 +2,7 @@
 :page-jupyter: true
 :jupyter-language-name: python
 :jupyter-language-version: 3.8
+:page-plotly: true
 
 
 

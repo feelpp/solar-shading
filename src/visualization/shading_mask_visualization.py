@@ -78,9 +78,11 @@ def plotShadingMask(csv_filename,save=True):
                     angularaxis=dict(tickvals=np.arange(0, 360, 15),
                                     direction='clockwise'),
                     radialaxis=dict(angle=60,
-                                    tickvals=[]),
+                                    tickvals=[],
+                                    autorange="reversed"),
                     bargap=0
-                )
+                ),
+                
             )
         fig.show()
 
