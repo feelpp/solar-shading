@@ -14,6 +14,8 @@
 <script src="../../_/js/vendor/tabs-block-behavior.js"></script>
 
 
+  <script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2" charset="utf-8"></script>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7" charset="utf-8"></script>
 
 <script type="text/x-mathjax-config">
 MathJax.Hub.Config({
@@ -292,12 +294,7 @@ with open(sm_csv_name,'wb') as f:
 # Print the shading mask to a file
 sys.path.insert(1,repo_root+"/src/visualization/")
 from shading_mask_visualization import plotShadingMask
-plotShadingMask(sm_csv_name)
-
-# Show the shading mask in the notebook
-from IPython.display import Image,display
-current_folder = os.getcwd()
-display(Image(filename=current_folder+'/Shading_maskSM.png'))</code></pre>
+plotShadingMask(sm_csv_name,save=False)</code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -323,13 +320,7 @@ sys.path.insert(1,repo_root+"/src/visualization/")
 from shading_mask_visualization import plotShadingMask
 for csv_name in sm_csv_names:
     print(csv_name)
-    plotShadingMask(csv_name)
-
-# Show the shading masks in the notebook
-from IPython.display import Image,display
-current_folder = os.getcwd()
-display(Image(filename=current_folder+'/Shading_maskSM_Matrix_building_84336273_building_84336273_face_0.png'))
-display(Image(filename=current_folder+'/Shading_maskSM_Matrix_building_84336273_building_84336273_face_1.png'))</code></pre>
+    plotShadingMask(csv_name,save=False)</code></pre>
 </div>
 </div>
 </div>
