@@ -21,6 +21,7 @@ One can visualise shading masks on a circular diagram: the angular coordinate re
 [%dynamic%raw,python]
 ----
 import git
+import sys
 
 # Extract the root of the git repository
 repo = git.Repo('.', search_parent_directories=True)

@@ -8,3 +8,4 @@ trame
 spdlog
 gitpython
 requests
+sys
