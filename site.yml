@@ -20,6 +20,7 @@ antora:
 asciidoc:
   extensions:
     - docs/asciidoc/extensions/dynamic-notebook.js
+    - docs/asciidoc/extensions/plotly.js
   attributes:
     project_name: Feel++ Solar Shading
     dynamic-blocks@: ''
@@ -37,3 +38,4 @@ asciidoc:
     cpp: C++
     python: Python
     vtkjs: VTK.js
+    plotly: Plot.ly
