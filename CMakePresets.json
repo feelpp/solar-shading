@@ -25,6 +25,25 @@
             }
         },
         {
+            "name": "dbg",
+            "displayName": "Debug Config",
+            "description": "Debug build using Makefile generator",
+            "generator": "Unix Makefiles",
+            "binaryDir": "${sourceDir}/build/dbg",
+            "cacheVariables": {
+                "CMAKE_CXX_COMPILER": "clang++",
+                "CMAKE_BUILD_TYPE": "Debug"
+            },
+            "environment": {
+                "MY_ENVIRONMENT_VARIABLE": "Test"
+            },
+            "vendor": {
+                "example.com/ExampleIDE/1.0": {
+                    "autoFormat": true
+                }
+            }
+        },
+        {
             "name": "install-local",
             "inherits": "default",
             "displayName": "Build and Install system",
