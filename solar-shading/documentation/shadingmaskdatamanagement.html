@@ -334,9 +334,12 @@ sm_csv_names = fpp.download( "girder:{file:[64f0b0d1b0e9570499e20ff0,64f0b0d1b0e
 # Print the shading masks to a file
 sys.path.insert(1,repo_root+"/src/visualization/")
 from shading_mask_visualization import plotShadingMask
+figs=[]
 for csv_name in sm_csv_names:
     print(csv_name)
-    fig=plotShadingMask(csv_name,save=False)
+    figs.append(plotShadingMask(csv_name,save=False))
+
+for fig in figs:
     fig.show()</code></pre>
 </div>
 </div>
@@ -345,7 +348,7 @@ for csv_name in sm_csv_names:
 <div class="content">
 ---------------------------------------------------------------------------
 ModuleNotFoundError                       Traceback (most recent call last)
-File <ipython-input-1-6e5b7b0e1766>:3
+File <ipython-input-1-ef10b6b90e28>:3
       1 import sys
       2 import os
 ----> 3 import git
