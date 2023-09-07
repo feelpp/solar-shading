@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Shading mask :: Solar Shading</title>
-    <link rel="canonical" href="https://feelpp.github.io/solar-shading/solar-shading/documentation/shadingmask.html">
+    <title>Retrieving shading mask data from data management platforms :: Solar Shading</title>
+    <link rel="canonical" href="https://feelpp.github.io/solar-shading/solar-shading/data/management.html">
     <meta name="generator" content="Antora 3.1.4">
     <link rel="stylesheet" href="../../_/css/site.css">
 <link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon">
@@ -14,6 +14,8 @@
 <script src="../../_/js/vendor/tabs-block-behavior.js"></script>
 
 
+  <script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2" charset="utf-8"></script>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7" charset="utf-8"></script>
 
 <script type="text/x-mathjax-config">
 MathJax.Hub.Config({
@@ -138,14 +140,14 @@ MathJax.Hub.Config({
     <button class="nav-item-toggle"></button>
     <a class="nav-link" href="../index.html">Documentation</a>
 <ul class="nav-list">
-  <li class="nav-item is-current-page" data-depth="1">
+  <li class="nav-item" data-depth="1">
     <a class="nav-link" href="shadingmask.html">Theory and implementation of shading masks</a>
   </li>
   <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="dataformat.html">Data format and visualisation</a>
+    <a class="nav-link" href="format.html">Data format and visualisation</a>
   </li>
-  <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="shadingmaskdatamanagement.html">Data retrieval from management platforms</a>
+  <li class="nav-item is-current-page" data-depth="1">
+    <a class="nav-link" href="management.html">Data retrieval from management platforms</a>
   </li>
 </ul>
   </li>
@@ -170,27 +172,6 @@ MathJax.Hub.Config({
   </li>
   <li class="nav-item" data-depth="1">
     <a class="nav-link" href="../jupyter.html">Jupyter Notebook</a>
-  </li>
-</ul>
-  </li>
-  <li class="nav-item" data-depth="0">
-    <button class="nav-item-toggle"></button>
-    <span class="nav-text">Internships</span>
-<ul class="nav-list">
-  <li class="nav-item" data-depth="1">
-    <button class="nav-item-toggle"></button>
-    <a class="nav-link" href="../devora/introduction.html">Report Ariel De Vora</a>
-<ul class="nav-list">
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="../devora/chap1.html">Shading Masks</a>
-  </li>
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="../devora/chap2.html">Bounding Volume Hierarchy</a>
-  </li>
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="../devora/chap3.html">Benchmarking and Performance Measurement</a>
-  </li>
-</ul>
   </li>
 </ul>
   </li>
@@ -219,12 +200,12 @@ MathJax.Hub.Config({
   <ul>
     <li><a href="../index.html">Feel++ Solar Shading</a></li>
     <li><a href="../index.html">Documentation</a></li>
-    <li><a href="shadingmask.html">Theory and implementation of shading masks</a></li>
+    <li><a href="management.html">Data retrieval from management platforms</a></li>
   </ul>
 </nav>
 
   
-    <div class="edit-this-page"><a href="https://github.com/feelpp/solar-shading/edit/master/docs/modules/ROOT/pages/documentation/shadingmask.adoc">Edit this Page</a></div>
+    <div class="edit-this-page"><a href="https://github.com/feelpp/solar-shading/edit/master/docs/modules/ROOT/pages/data/management.adoc">Edit this Page</a></div>
   
   <div class="page-downloads">
   <span class="label">Download as</span>
@@ -235,6 +216,12 @@ MathJax.Hub.Config({
         <img class="pdf-file-icon icon" src="../../_/img/pdf.svg"/> .pdf
       </a>
     </li>
+      <li>
+        <a href="../_attachments/data/management.ipynb"
+           title="Download Jupyter Notebook" data-toggle="tooltip" data-placement="left" class="jupyter-download">
+          <img class="jupyter-file-icon icon" src="../../_/img/jupyter-logo.svg"/> .ipynb
+        </a>
+      </li>
   </ul>
 </div>
 </div>
@@ -244,36 +231,112 @@ MathJax.Hub.Config({
   <div class="toc-menu"></div>
 </aside>
 <article class="doc">
-<h1 class="page">Shading mask</h1>
+<h1 class="page">Retrieving shading mask data from data management platforms</h1>
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>Shading masks are synthetic diagrams that represent the incident radiation on a given surface for all possible altitudes and azimuth angles of the incoming rays. They are normally represented using a circular diagram where:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>the azimuth coordinate runs on the circumference;</p>
-</li>
-<li>
-<p>the altitude coordinate runs from the circumference to the center of the circle;</p>
-</li>
-<li>
-<p>white and light grey regions indicate none to little shading from the surroundings (buildings, trees, etc) for that specific interval of azimuth and altitude angles;</p>
-</li>
-<li>
-<p>dark grey and black regions indicate heavy to complete coverage from the surroundings (buildings, trees, etc) for that specific interval of azimuth and altitude angles.</p>
-</li>
-</ul>
+<p>In this page, you will find some examples on how to download shading mask data from different data management platforms.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_implementation"><a class="anchor" href="#_implementation"></a>1. Implementation</h2>
+<h2 id="_girder"><a class="anchor" href="#_girder"></a>1. Girder</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Given a meshed geometry, a Bounding Volume Hierarchy is constructed to partition the scene. Then, for each surface of interest, raytracing is used to build a shading mask matrix of size \(N_{Az} \times N_{Alt}\), where \(N_{Az}\) and \(N_{Alt}\) are determined by the discretization of the azimuth and altitude coordinates.</p>
+<p><a href="https://girder.readthedocs.io">Girder</a> is a data management platform developed by Kitware.</p>
 </div>
+<div class="paragraph">
+<p>Data can be uploaded or downloaded from Girder using different services: REST API, the web interface, the Girder CLI, the Python Client or JavaScript libraries.</p>
+</div>
+<div class="paragraph">
+<p>In the Feel++ library, the tool <a href="https://docs.feelpp.org/user/latest/using/tools/remotedata.html">feelpp_remotedata</a> has been developed to download file/folders iteratively from Girder. A <a href="https://docs.feelpp.org/user/latest/python/pyfeelpp/core.html">Python interface</a> has also been provided for this tool.</p>
+</div>
+<div class="listingblock">
+<div class="title">Download a shading mask from Girder using the requests module</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">import sys
+import os
+import git
+
+# Extract the root of the git repository
+repo = git.Repo('.', search_parent_directories=True)
+repo_root = repo.working_tree_dir
+
+# Collect the CSV file from Girder
+import requests
+girder_path = "https://girder.math.unistra.fr/api/v1/item/64f0b0d1b0e9570499e20fef/download"
+sm_csv_name = 'SM.csv'
+r=requests.get(girder_path)
+with open(sm_csv_name,'wb') as f:
+    f.write(r.content)
+
+# Print the shading mask to a file
+sys.path.insert(1,repo_root+"/src/visualization/")
+from shading_mask_visualization import plotShadingMask
+fig=plotShadingMask(sm_csv_name,save=False)
+fig.show()</code></pre>
+</div>
+</div>
+<details>
+<summary class="title">Results</summary>
+<div class="content">
+---------------------------------------------------------------------------
+ModuleNotFoundError                       Traceback (most recent call last)
+<ipython-input-1-3969f0de79b0> in <module>
+      1 import sys
+      2 import os
+----> 3 import git
+      4
+      5 # Extract the root of the git repository
+
+ModuleNotFoundError: No module named 'git'
+</div>
+</details>
+<div class="listingblock">
+<div class="title">Download a shading mask from Girder using the feelpp_remotedata tool</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">import sys
+import os
+import git
+
+# Extract the root of the git repository
+repo = git.Repo('.', search_parent_directories=True)
+repo_root = repo.working_tree_dir
+
+# Collect the CSV file from Girder using the Feel++ remotedata app and the file ids
+import feelpp as fpp
+app = fpp.Environment(["myapp"],config=fpp.localRepository(""))
+sm_csv_names = fpp.download( "girder:{file:[64f0b0d1b0e9570499e20ff0,64f0b0d1b0e9570499e20ff3]}", worldComm=app.worldCommPtr())
+# It is possible to download an entire folder in zip format
+# sm_csv_zipped_folder = fpp.download( "girder:{folder:64f0aafdb0e9570499e1eaad}", worldComm=app.worldCommPtr())
+
+# Print the shading masks to a file
+sys.path.insert(1,repo_root+"/src/visualization/")
+from shading_mask_visualization import plotShadingMask
+figs=[]
+for csv_name in sm_csv_names:
+    print(csv_name)
+    figs.append(plotShadingMask(csv_name,save=False))
+
+for fig in figs:
+    fig.show()</code></pre>
+</div>
+</div>
+<details>
+<summary class="title">Results</summary>
+<div class="content">
+---------------------------------------------------------------------------
+ModuleNotFoundError                       Traceback (most recent call last)
+<ipython-input-1-ef10b6b90e28> in <module>
+      1 import sys
+      2 import os
+----> 3 import git
+      4
+      5 # Extract the root of the git repository
+
+ModuleNotFoundError: No module named 'git'
+</div>
+</details>
 </div>
 </div>
 </article>
