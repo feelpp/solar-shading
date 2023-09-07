@@ -135,41 +135,51 @@ MathJax.Hub.Config({
     <h3 class="title"><a href="index.html">Feel++ Solar Shading</a></h3>
 <ul class="nav-list">
   <li class="nav-item" data-depth="0">
-    <button class="nav-item-toggle"></button>
-    <a class="nav-link" href="index.html">Documentation</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="data/shadingmask.html">Theory and implementation of shading masks</a>
-  </li>
-  <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="data/format.html">Data format and visualisation</a>
-  </li>
-  <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="data/management.html">Data retrieval from management platforms</a>
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="index.html">Shading Masks</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="shadingmask.html">Theory and Implementation</a>
   </li>
 </ul>
   </li>
-  <li class="nav-item" data-depth="0">
+  <li class="nav-item" data-depth="1">
     <button class="nav-item-toggle"></button>
-    <span class="nav-text">Solar Shading environment</span>
+    <span class="nav-text">Data</span>
 <ul class="nav-list">
-  <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="cmake.html">cmake environment</a>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="data/format.html">Data format and visualisation</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="data/management.html">Data Management</a>
+  </li>
+</ul>
   </li>
   <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="antora.html">antora environment</a>
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Environment</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#cmake.adoc">cmake environment</a>
   </li>
-  <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="vscode.html">vscode integration</a>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#antora.adoc">antora environment</a>
   </li>
-  <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="githubactions.html">Github Actions</a>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#vscode.adoc">vscode integration</a>
   </li>
-  <li class="nav-item" data-depth="1">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#githubactions.adoc">Github Actions</a>
+  </li>
+  <li class="nav-item" data-depth="2">
     <a class="nav-link" href="rename.html">Renaming the project</a>
   </li>
-  <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="jupyter.html">Jupyter Notebook</a>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#jupyter.adoc">Jupyter Notebook</a>
+  </li>
+</ul>
   </li>
 </ul>
   </li>
@@ -227,7 +237,7 @@ MathJax.Hub.Config({
 <h2 id="_organisation"><a class="anchor" href="#_organisation"></a>1. Organisation</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>The directory structure of the project is as follows:</p>
+<p>The directory structure of the project is currently as follows:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -236,7 +246,11 @@ MathJax.Hub.Config({
 │   ├── antora
 │   └── modules
 └── src
-    └── cases
+    ├── cases
+    │   ├── 19_buildings_strasbourg
+    │   └── example_shading_mask
+    ├── preprocessing
+    └── visualization
 
 5 directories</pre>
 </div>
@@ -274,7 +288,7 @@ The documentation is available <a href="https://docs.feelpp.org">&gt; here</a>.<
 <div class="sectionbody">
 <div class="paragraph">
 <p>You need first to follow the <a href="quickstart.html" class="xref page">quickstart</a> to get the Feel++ environment.
-The installation procedure uses <a href="cmake.html" class="xref page">Cmake</a> for the C++ programs and create a bundle of this project.
+The installation procedure uses <a href="env/cmake.html" class="xref page">Cmake</a> for the C++ programs and create a bundle of this project.
 The steps are as follows:</p>
 </div>
 <div class="listingblock">
@@ -316,7 +330,7 @@ $ cmake --build --preset default -t package <i class="conum" data-value="5"></i>
 <h2 id="_how_to_start_documenting_your_work"><a class="anchor" href="#_how_to_start_documenting_your_work"></a>3. How to start documenting your work</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>The documentation is written in Asciidoc and uses Antora to generate the documentation. Please check the project <a href="antora.html" class="xref page">Antora</a> page to get started.</p>
+<p>The documentation is written in Asciidoc and uses Antora to generate the documentation. Please check the project <a href="env/antora.html" class="xref page">Antora</a> page to get started.</p>
 </div>
 </div>
 </div>

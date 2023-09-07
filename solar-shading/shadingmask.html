@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Using VSCode :: Solar Shading</title>
-    <link rel="canonical" href="https://feelpp.github.io/solar-shading/solar-shading/vscode.html">
+    <title>Shading mask :: Solar Shading</title>
+    <link rel="canonical" href="https://feelpp.github.io/solar-shading/solar-shading/shadingmask.html">
     <meta name="generator" content="Antora 3.1.4">
     <link rel="stylesheet" href="../_/css/site.css">
 <link rel="icon" href="../_/img/favicon.ico" type="image/x-icon">
@@ -135,41 +135,51 @@ MathJax.Hub.Config({
     <h3 class="title"><a href="index.html">Feel++ Solar Shading</a></h3>
 <ul class="nav-list">
   <li class="nav-item" data-depth="0">
-    <button class="nav-item-toggle"></button>
-    <a class="nav-link" href="index.html">Documentation</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="data/shadingmask.html">Theory and implementation of shading masks</a>
-  </li>
-  <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="data/format.html">Data format and visualisation</a>
-  </li>
-  <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="data/management.html">Data retrieval from management platforms</a>
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="index.html">Shading Masks</a>
+<ul class="nav-list">
+  <li class="nav-item is-current-page" data-depth="2">
+    <a class="nav-link" href="shadingmask.html">Theory and Implementation</a>
   </li>
 </ul>
   </li>
-  <li class="nav-item" data-depth="0">
+  <li class="nav-item" data-depth="1">
     <button class="nav-item-toggle"></button>
-    <span class="nav-text">Solar Shading environment</span>
+    <span class="nav-text">Data</span>
 <ul class="nav-list">
-  <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="cmake.html">cmake environment</a>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="data/format.html">Data format and visualisation</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="data/management.html">Data Management</a>
+  </li>
+</ul>
   </li>
   <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="antora.html">antora environment</a>
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Environment</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#cmake.adoc">cmake environment</a>
   </li>
-  <li class="nav-item is-current-page" data-depth="1">
-    <a class="nav-link" href="vscode.html">vscode integration</a>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#antora.adoc">antora environment</a>
   </li>
-  <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="githubactions.html">Github Actions</a>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#vscode.adoc">vscode integration</a>
   </li>
-  <li class="nav-item" data-depth="1">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#githubactions.adoc">Github Actions</a>
+  </li>
+  <li class="nav-item" data-depth="2">
     <a class="nav-link" href="rename.html">Renaming the project</a>
   </li>
-  <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="jupyter.html">Jupyter Notebook</a>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#jupyter.adoc">Jupyter Notebook</a>
+  </li>
+</ul>
   </li>
 </ul>
   </li>
@@ -197,13 +207,13 @@ MathJax.Hub.Config({
   <nav class="breadcrumbs" aria-label="breadcrumbs">
   <ul>
     <li><a href="index.html">Feel++ Solar Shading</a></li>
-    <li>Solar Shading environment</li>
-    <li><a href="vscode.html">vscode integration</a></li>
+    <li><a href="index.html">Shading Masks</a></li>
+    <li><a href="shadingmask.html">Theory and Implementation</a></li>
   </ul>
 </nav>
 
   
-    <div class="edit-this-page"><a href="https://github.com/feelpp/solar-shading/edit/master/docs/modules/ROOT/pages/vscode.adoc">Edit this Page</a></div>
+    <div class="edit-this-page"><a href="https://github.com/feelpp/solar-shading/edit/master/docs/modules/ROOT/pages/shadingmask.adoc">Edit this Page</a></div>
   
   <div class="page-downloads">
   <span class="label">Download as</span>
@@ -223,34 +233,39 @@ MathJax.Hub.Config({
   <div class="toc-menu"></div>
 </aside>
 <article class="doc">
-<h1 class="page">Using VSCode</h1>
+<h1 class="page">Shading mask</h1>
+<div id="preamble">
+<div class="sectionbody">
 <div class="paragraph">
-<p>The project is configured to integrate VSCode using Docker Container.</p>
-</div>
-<div class="paragraph">
-<p>The Docker image can be set from <code>feelpp/feelpp</code> or <code>feelpp/feelpp-toolboxes</code>, simply edit <code>.devcontainer/Dockerfile</code> and choose the image you want.</p>
-</div>
-<div class="paragraph">
-<p><code>ssh-keyscan</code> is used on <code>github.com</code> to register the public key of github in $HOME/.ssh/known_hosts and avoid having git auth issues the first time we log into the container and push/pull to/from github.</p>
-</div>
-<div class="paragraph">
-<p>The following extensions are installed in Docker:</p>
+<p>Shading masks are synthetic diagrams that represent the incident radiation on a given surface for all possible altitudes and azimuth angles of the incoming rays.
+They are normally represented using a circular diagram where:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>cpptools</p>
+<p>the azimuth coordinate runs on the circumference;</p>
 </li>
 <li>
-<p>cmaketools</p>
+<p>the altitude coordinate runs from the circumference to the center of the circle;</p>
 </li>
 <li>
-<p>cmake</p>
+<p>white and light grey regions indicate none to little shading from the surroundings (buildings, trees, etc) for that specific interval of azimuth and altitude angles;</p>
 </li>
 <li>
-<p>asciidoctor-vscode</p>
+<p>dark grey and black regions indicate heavy to complete coverage from the surroundings (buildings, trees, etc) for that specific interval of azimuth and altitude angles.</p>
 </li>
 </ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_implementation"><a class="anchor" href="#_implementation"></a>1. Implementation</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Given a meshed geometry, a Bounding Volume Hierarchy is constructed to partition the scene.
+Then, for each surface of interest, raytracing is used to build a shading mask matrix of size \(N_{Az} \times N_{Alt}\), where \(N_{Az}\) and \(N_{Alt}\) are determined by the discretization of the azimuth and altitude coordinates.</p>
+</div>
+</div>
 </div>
 </article>
   </div>
