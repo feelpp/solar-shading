@@ -84,7 +84,7 @@ def plotShadingMask(csv_filename,save=True):
                 ),
                 
             )
-        fig.show()
+        return fig
 
 
 def plotShadingMaskDir(directory_path):

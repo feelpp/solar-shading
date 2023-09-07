@@ -33,5 +33,6 @@ example_csv_path = repo_root + "/src/visualization/example_csvfile.csv"
 # Print the shading mask to a file
 sys.path.insert(0,repo_root + "/src/visualization/")
 from shading_mask_visualization import plotShadingMask
-plotShadingMask(example_csv_path,save=False)
+fig=plotShadingMask(example_csv_path,save=False)
+fig.show()
 ----

@@ -36,7 +36,8 @@ with open(sm_csv_name,'wb') as f:
 # Print the shading mask to a file
 sys.path.insert(1,repo_root+"/src/visualization/")
 from shading_mask_visualization import plotShadingMask
-plotShadingMask(sm_csv_name,save=False)
+fig=plotShadingMask(sm_csv_name,save=False)
+fig.show()
 ----
 
 .Download a shading mask from Girder using the feelpp_remotedata tool 
@@ -62,5 +63,6 @@ sys.path.insert(1,repo_root+"/src/visualization/")
 from shading_mask_visualization import plotShadingMask
 for csv_name in sm_csv_names:
     print(csv_name)
-    plotShadingMask(csv_name,save=False)
+    fig=plotShadingMask(csv_name,save=False)
+    fig.show()
 ----
