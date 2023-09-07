@@ -21,11 +21,15 @@ jobs:
       run: echo https://$GITHUB_OAUTH:@github.com > $HOME/.git-credentials
       env:
         GITHUB_OAUTH: ${{ secrets.CR_PAT_WORKFLOW }}
-    - name: Build
+    - name: Install NPM dependencies
+      run: npm install
+    - name: Install Python dependencies
       run: |
-        npm install
-        npm run antora
-      working-directory: docs
+        python -m venv --system-site-packages .venv
+        source .venv/bin/activate
+        pip install -r requirements.txt        
+    - name: Build Antora Site
+      run: npm run antora
     - name: Deploy
       uses: JamesIves/github-pages-deploy-action@v4
       with:
