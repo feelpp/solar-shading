@@ -1,10 +1,11 @@
-.xref:index.adoc[Documentation]
+* xref:index.adoc[Shading Masks]
+** xref:shadingmask.adoc[Theory and Implementation]
 
-* xref:data/shadingmask.adoc[Theory and implementation of shading masks]
-* xref:data/format.adoc[Data format and visualisation]
-* xref:data/management.adoc[Data retrieval from management platforms]
+* Data
+** xref:data/format.adoc[Data format and visualisation]
+** xref:data/management.adoc[Data Management]
 
-.Solar Shading environment
+* Environment
 ** xref:cmake.adoc[cmake environment]
 ** xref:antora.adoc[antora environment]
 ** xref:vscode.adoc[vscode integration]
