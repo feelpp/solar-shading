@@ -18,7 +18,7 @@ The entries of the shading mask matrix correspond to the percentage of direct so
 One can visualise shading masks on a circular diagram: the angular coordinate represents the sun azimuth angle, while the radial coordinate represents the sun altitude angle.
 
 .Visualize a shading mask using Python
-[%dynamic%raw,python]
+[%dynamic%raw%open,python]
 ----
 import git
 import sys

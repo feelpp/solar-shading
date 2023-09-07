@@ -15,7 +15,7 @@ Data can be uploaded or downloaded from Girder using different services: REST AP
 In the Feel++ library, the tool https://docs.feelpp.org/user/latest/using/tools/remotedata.html[feelpp_remotedata] has been developed to download file/folders iteratively from Girder. A https://docs.feelpp.org/user/latest/python/pyfeelpp/core.html[Python interface] has also been provided for this tool.
 
 .Download a shading mask from Girder using the requests module
-[%dynamic%raw,python]
+[%dynamic%raw%open,python]
 ----
 import sys
 import os
@@ -41,7 +41,7 @@ fig.show()
 ----
 
 .Download a shading mask from Girder using the feelpp_remotedata tool 
-[%dynamic%raw,python]
+[%dynamic%raw%open,python]
 ----
 import sys
 import os
@@ -61,8 +61,11 @@ sm_csv_names = fpp.download( "girder:{file:[64f0b0d1b0e9570499e20ff0,64f0b0d1b0e
 # Print the shading masks to a file
 sys.path.insert(1,repo_root+"/src/visualization/")
 from shading_mask_visualization import plotShadingMask
+figs=[]
 for csv_name in sm_csv_names:
     print(csv_name)
-    fig=plotShadingMask(csv_name,save=False)
+    figs.append(plotShadingMask(csv_name,save=False))
+    
+for fig in figs:
     fig.show()
 ----
