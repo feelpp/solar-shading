@@ -37,6 +37,32 @@ public:
         M_Nrays = specs["Nrays"];
         M_Nthreads = specs["Nthreads"].get<int>() ;
 
+        fixAzimuthAltitudeDiscretization(intervalsAzimuth, intervalsAltitude);
+
+        std::random_device rd;
+        std::random_device rd2;
+        std::mt19937 gen(rd());
+        std::mt19937 gen2(rd2());
+        gen.seed(std::chrono::high_resolution_clock::now()
+                            .time_since_epoch()
+                            .count());
+        gen2.seed(std::chrono::high_resolution_clock::now()
+                            .time_since_epoch()
+                            .count());
+
+        M_gen=gen;
+        M_gen2=gen2;
+
+        // Create and store the directions of the M_Nrays
+        int index_azimuth, index_altitude;
+        M_raysdirections.resize(M_Nrays);
+        std::vector<double> random_direction(3);
+        for(int i=0; i<M_Nrays; i++)
+        {
+            getRandomDirectionSM(random_direction,M_gen,M_gen2,index_azimuth,index_altitude);                    
+            M_raysdirections[i] = std::make_tuple(random_direction,index_azimuth,index_altitude);
+        }
+
         // For each building, save the surface mesh and build the corresponding BVH tree for ray search
         if constexpr( MeshType::nDim==MeshType::nRealDim )
         {
@@ -115,8 +141,6 @@ public:
                     M_listFaceMarkers.push_back(faceName);
                 }
                 M_rangeFaces = markedelements(mesh,M_listFaceMarkers);
-                auto surfaceSubmesh = createSubmesh(_mesh=mesh,_range=M_rangeFaces);
-                M_submeshes.insert(std::make_pair( "toto" , surfaceSubmesh ));
                 for( auto const& face :  M_rangeFaces) // elements(surfaceSubmesh)
                 {
                     // Create a map connecting face_id element to marker name (it must contain the string "_face_")
@@ -130,26 +154,10 @@ public:
                     }                    
                 }
                 // Create a BVH containing all the faces of the buildings
-                M_bvh = boundingVolumeHierarchy( _range=M_rangeFaces );
-                // M_bvh = boundingVolumeHierarchy( _range=elements(surfaceSubmesh) );
+                M_bvh = boundingVolumeHierarchy( _range=M_rangeFaces );                
+
             }
-        }
-        fixAzimuthAltitudeDiscretization(intervalsAzimuth, intervalsAltitude);
-
-
-        std::random_device rd;
-        std::random_device rd2;
-        std::mt19937 gen(rd());
-        std::mt19937 gen2(rd2());
-        gen.seed(std::chrono::high_resolution_clock::now()
-                            .time_since_epoch()
-                            .count());
-        gen2.seed(std::chrono::high_resolution_clock::now()
-                            .time_since_epoch()
-                            .count());
-
-        M_gen=gen;
-        M_gen2=gen2;
+        }        
     }
 
     // Subdivide the azimuth angles [0,360]° and altitude angles [0,90]° in subsets for easier computation of the shading masks
@@ -199,6 +207,23 @@ public:
         }
 
     }
+
+    // Choose a random pair of indices in the discretized azimuth and altitude vectors
+    // void getRandomDirectionSM(std:vector<double> &random_direction, std::mt19937 & M_gen, std::mt19937 & M_gen2, int& index_azimuth, int& index_altitude)
+    // {
+    //     std::uniform_int_distribution<int> dist_azimuth(0,M_azimuthSize-1);
+    //     std::uniform_int_distribution<int> dist_altitude(0,M_altitudeSize-1);
+
+    //     index_azimuth = dist_azimuth(M_gen);
+    //     index_altitude = dist_altitude(M_gen2);
+    //     double phi = -( M_azimuthAngles[index_azimuth] ) + M_PI*0.5 ; // recover spherical coordinate from azimuth angle
+    //     double theta = M_PI*0.5 - M_altitudeAngles[index_altitude]; // recover spherical coordinate from altitude
+
+    //     random_direction[0]=math::sin(theta)*math::cos(phi);
+    //     random_direction[1]=math::sin(theta)*math::sin(phi);
+    //     random_direction[2]=math::cos(theta);
+
+    // }
 
     Eigen::VectorXd get_random_point(matrix_node_type const& element_points)
     {
@@ -334,24 +359,26 @@ public:
             std::vector<double> SM_tables(M_listFaceMarkers.size() * matrixSize,0);
             std::vector<double> Angle_tables(M_listFaceMarkers.size() * matrixSize,0);
 
-            int markerNumber = 0;
-
+            int markerNumber = 0;            
+            
             for(auto const &eltWrap : M_rangeFaces ) // from each element of the submesh, launch M_Nrays randomly oriented
             {
                 auto const& el = unwrap_ref( eltWrap );
 
-                auto elMarker = M_mapEntityToBuildingFace[el.id()];
+                auto elMarker = M_mapEntityToBuildingFace.at(el.id());
 
-                auto rays_from_element = [&](int n_rays_thread){
-                        
+                auto rays_from_element = [&](int n_rays_thread, int id_thread){
+
                         Eigen::VectorXd SM_vector(matrixSize);
-                        SM_vector.setZero();
-
                         Eigen::VectorXd Angle_vector(matrixSize);
+                        
+                        SM_vector.setZero();
                         Angle_vector.setZero();
 
                         int index_altitude;
                         int index_azimuth;
+
+                        int initial_index_rays = n_rays_thread * id_thread ;
                         for(int j=0;j<n_rays_thread;j++)
                         {
 
@@ -368,13 +395,16 @@ public:
                                 p2(i)=column(el.vertices(), 1)[i];
                                 p3(i)=column(el.vertices(), 2)[i];
                                 origin(i) = random_origin[i];
-                                rand_dir(i) = random_direction[i];
                             }
                             auto element_normal = ((p3-p1).head<3>()).cross((p2-p1).head<3>());
                             element_normal.normalize();
 
                             // Choose the direction randomly among the latitude and azimuth
-                            getRandomDirectionSM(random_direction,M_gen,M_gen2,index_azimuth,index_altitude);
+                            //getRandomDirectionSM(random_direction,M_gen,M_gen2,index_azimuth,index_altitude);
+                            
+                            random_direction = std::get<0>(M_raysdirections[initial_index_rays + j]);
+                            index_azimuth = std::get<1>(M_raysdirections[initial_index_rays + j]);
+                            index_altitude = std::get<2>(M_raysdirections[initial_index_rays + j]);
                             for(int i=0;i<3;i++)
                             {
                                 rand_dir(i) = random_direction[i];
@@ -430,7 +460,7 @@ public:
                 for(int t = 0; t < M_Nthreads; ++t){
 
                     // Start a new asynchronous task
-                    futures.emplace_back(std::async(std::launch::async, rays_from_element, n_rays_thread[t]));
+                    futures.emplace_back(std::async(std::launch::async, rays_from_element, n_rays_thread[t], t));
                 }
 
                 if( markerLineMap.find(elMarker) == markerLineMap.end())
@@ -494,7 +524,7 @@ public:
             for(auto const &el : ray_submesh->elements() ) // from each element of the submesh, launch M_Nrays randomly oriented
             {
 
-                    auto rays_from_element = [&,marker=marker](int n_rays_thread){
+                    auto rays_from_element = [&,marker=marker](int n_rays_thread, int id_thread ){
 
                         Eigen::MatrixXd SM_table(M_azimuthSize,M_altitudeSize);
                         SM_table.setZero();
@@ -504,7 +534,9 @@ public:
 
                         int index_altitude;
                         int index_azimuth;
-                        for(int i=0;i<n_rays_thread;i++)
+                        int initial_index_rays = n_rays_thread * id_thread ;
+
+                        for(int j=0;j<n_rays_thread;j++)
                         {
 
                             // Construct the ray emitting from a random point of the element
@@ -521,13 +553,14 @@ public:
                                     p2(i)=column(el.second.vertices(), 1)[i];
                                     p3(i)=column(el.second.vertices(), 2)[i];
                                     origin(i) = random_origin[i];
-                                    rand_dir(i) = random_direction[i];
                                 }
                                 auto element_normal = ((p3-p1).head<3>()).cross((p2-p1).head<3>());
                                 element_normal.normalize();
 
                                 // Choose the direction randomly among the latitude and azimuth
-                                getRandomDirectionSM(random_direction,M_gen,M_gen2,index_azimuth,index_altitude);
+                                random_direction = std::get<0>(M_raysdirections[initial_index_rays + j]);
+                                index_azimuth = std::get<1>(M_raysdirections[initial_index_rays + j]);
+                                index_altitude = std::get<2>(M_raysdirections[initial_index_rays + j]);                              
                                 for(int i=0;i<dim;i++)
                                 {
                                     rand_dir(i) = random_direction[i];
@@ -586,7 +619,7 @@ public:
                 for(int t = 0; t < M_Nthreads; ++t){
 
                     // Start a new asynchronous task
-                    futures.emplace_back(std::async(std::launch::async, rays_from_element, n_rays_thread[t]));
+                    futures.emplace_back(std::async(std::launch::async, rays_from_element, n_rays_thread[t],t));
                 }
 
                 for( auto& f : futures){
@@ -650,6 +683,8 @@ public:
     std::vector<std::string> M_listFaceMarkers;
 
     Eigen::VectorXd M_azimuthAngles, M_altitudeAngles;
+
+    std::vector< std::tuple< std::vector<double> /* random direction */,int /* index azimuth */, int /* index altitude */ > > M_raysdirections;
 
     int M_azimuthSize;
     int M_altitudeSize;
