@@ -9,7 +9,7 @@ class ShadingMask
 {
     using mesh_type = MeshType;
     typedef typename MeshType::ptrtype mesh_ptrtype;
-    
+
     using tr_mesh_type = typename std::conditional<MeshType::nDim==MeshType::nRealDim,
                                                 typename MeshType::trace_mesh_type,
                                                 typename MeshType::type >::type ;
@@ -42,39 +42,39 @@ public:
         {
 
             if( specs["/Buildings"_json_pointer].contains("list") ) // the list of volume markers is provided
-            {            
+            {
                 auto markersVolume = specs["Buildings"]["list"].get<std::vector<std::string>>();
                 for(std::string buildingName : markersVolume)
                 {
                     std::cout << fmt::format("{}\n",buildingName);
-                    auto volumeSubmesh = createSubmesh(_mesh=mesh,_range=markedelements(mesh,buildingName));    
+                    auto volumeSubmesh = createSubmesh(_mesh=mesh,_range=markedelements(mesh,buildingName));
                     auto surfaceSubmesh = createSubmesh(_mesh=volumeSubmesh,_range=boundaryfaces(volumeSubmesh));
-                    
+
                     auto bvhBuilding = boundingVolumeHierarchy(_range=elements(surfaceSubmesh));
                     M_bvh_tree_vector.insert(std::make_pair( buildingName , std::move(bvhBuilding) ));
 
-                    M_submeshes.insert(std::make_pair( buildingName , surfaceSubmesh ));            
-                    
+                    M_submeshes.insert(std::make_pair( buildingName , surfaceSubmesh ));
+
                 }
             }
             else if( specs["/Buildings"_json_pointer].contains("fileVolumes")) // a csv containing the volume markers is provided
             {
                 std::string buildingName;
                 // open the file
-                                
+
                 std::ifstream fileVolumes(Environment::expand(specs["Buildings"]["fileVolumes"].get<std::string>()));
-                
+
                 // read, line by line, the building marker
                 while ( getline(fileVolumes,buildingName) )
                 {
                     std::cout << fmt::format("{}\n",buildingName);
-                    auto volumeSubmesh = createSubmesh(_mesh=mesh,_range=markedelements(mesh,buildingName));    
+                    auto volumeSubmesh = createSubmesh(_mesh=mesh,_range=markedelements(mesh,buildingName));
                     auto surfaceSubmesh = createSubmesh(_mesh=volumeSubmesh,_range=boundaryfaces(volumeSubmesh));
                     auto bvhBuilding = boundingVolumeHierarchy(_range=elements(surfaceSubmesh));
                     M_bvh_tree_vector.insert(std::make_pair( buildingName , std::move(bvhBuilding) ));
-                    
-                    M_submeshes.insert(std::make_pair( buildingName , surfaceSubmesh ));            
-                    
+
+                    M_submeshes.insert(std::make_pair( buildingName , surfaceSubmesh ));
+
                 }
 
             }
@@ -92,17 +92,17 @@ public:
                     std::cout << fmt::format("{}\n",buildingName);
                     auto surfaceSubmesh = createSubmesh(_mesh=mesh,_range=markedelements(mesh,buildingName));
                     auto listMarkers = surfaceSubmesh->markerNames();
-                    // Delete the marker associated to the building 
+                    // Delete the marker associated to the building
                     // to Keep only face markers
                     auto it = listMarkers.find(buildingName);
                     listMarkers.erase(it);
                     surfaceSubmesh->setMarkerNames(listMarkers);
-                    
+
                     auto bvhBuilding = boundingVolumeHierarchy(_range=elements(surfaceSubmesh));
                     M_bvh_tree_vector.insert(std::make_pair( buildingName , std::move(bvhBuilding) ));
 
-                    M_submeshes.insert(std::make_pair( buildingName , surfaceSubmesh ));            
-                    
+                    M_submeshes.insert(std::make_pair( buildingName , surfaceSubmesh ));
+
                 }
             }
             else if( specs["/Buildings"_json_pointer].contains("fileFaces") ) // a csv containing the face markers is provided
@@ -288,8 +288,8 @@ public:
     {
         auto c = (el_p1+el_p2+el_p3)/3.;
 
-        auto elem_area = elementArea(c, el_p1,el_p2,el_p3); 
-        auto area = elementArea(point, el_p1,el_p2,el_p3);             
+        auto elem_area = elementArea(c, el_p1,el_p2,el_p3);
+        auto area = elementArea(point, el_p1,el_p2,el_p3);
         if (math::abs(area-elem_area)/area<1e-5)
             return true;
         else
@@ -300,7 +300,7 @@ public:
     void computeMasks()
     {
         if( j_["/Buildings"_json_pointer].contains("list") ) // the list of volume markers is provided
-        {  
+        {
             auto markersVolume = j_["Buildings"]["list"].get<std::vector<std::string>>();
             for(std::string building_name : markersVolume)
             {
@@ -316,7 +316,7 @@ public:
         {
             std::string building_name;
             std::ifstream fileSurfaces(Environment::expand(j_["Buildings"]["fileSurfaces"].get<std::string>()));
-            
+
             // read, line by line, the building marker
             while ( getline(fileSurfaces,building_name) )
             {
@@ -487,9 +487,9 @@ public:
         {
 
             SM_table_marker.setZero();
-            Angle_table_marker.setZero();            
+            Angle_table_marker.setZero();
             auto ray_submesh = createSubmesh(_mesh=M_submeshes[building_name],_range=markedelements(M_submeshes[building_name],marker));
-            
+
             // Launch Nrays from each triangle of each marker
             for(auto const &el : ray_submesh->elements() ) // from each element of the submesh, launch M_Nrays randomly oriented
             {

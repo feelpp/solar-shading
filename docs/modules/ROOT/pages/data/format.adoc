@@ -1,0 +1,38 @@
+= Data format and visualisation
+:page-jupyter: true
+:jupyter-language-name: python
+:jupyter-language-version: 3.8
+:page-plotly: true
+
+
+
+== Data format
+
+Solar masks are currently stored in CSV files as dense matrices of dimensions stem:[N_{Az} \times N_{Alt}], where stem:[N_{Az}] and stem:[N_{Alt}] correspond to the number of intervals discretising the azimuth and altitude angular coordinates.  
+
+The entries of the shading mask matrix correspond to the percentage of direct solar radiation that is blocked by the environment surrounding the object. Their values belong to the interval stem:[[0,1\]], where the extrema correspond, respectively, to absence of occlusion and to complete occlusion.
+
+
+== Visualisation
+
+One can visualise shading masks on a circular diagram: the angular coordinate represents the sun azimuth angle, while the radial coordinate represents the sun altitude angle.
+
+.Visualize a shading mask using Python
+[%dynamic%raw%open,python]
+----
+import git
+import sys
+
+# Extract the root of the git repository
+repo = git.Repo('.', search_parent_directories=True)
+repo_root = repo.working_tree_dir
+
+# Collect the example CSV file 
+example_csv_path = repo_root + "/src/visualization/example_csvfile.csv"
+
+# Print the shading mask to a file
+sys.path.insert(0,repo_root + "/src/visualization/")
+from shading_mask_visualization import plotShadingMask
+fig=plotShadingMask(example_csv_path,save=False)
+fig.show()
+----

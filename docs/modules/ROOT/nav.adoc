@@ -1,12 +1,14 @@
-.xref:index.adoc[Introduction]
-* Solar Shading environment
+* xref:index.adoc[Shading Masks]
+** xref:shadingmask.adoc[Theory and Implementation]
+
+* Data
+** xref:data/format.adoc[Data format and visualisation]
+** xref:data/management.adoc[Data Management]
+
+* Environment
 ** xref:cmake.adoc[cmake environment]
 ** xref:antora.adoc[antora environment]
 ** xref:vscode.adoc[vscode integration]
 ** xref:githubactions.adoc[Github Actions]
 ** xref:rename.adoc[Renaming the project]
 ** xref:jupyter.adoc[Jupyter Notebook]
-* xref:devora/introduction.adoc[Report Ariel De Vora]
-** xref:devora/chap1.adoc[Shading Masks]
-** xref:devora/chap2.adoc[Bounding Volume Hierarchy]
-** xref:devora/chap3.adoc[Benchmarking and Performance Measurement]

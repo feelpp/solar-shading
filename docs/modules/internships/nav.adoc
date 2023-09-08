@@ -1,0 +1,5 @@
+.Internships
+* xref:devora/introduction.adoc[Report Ariel De Vora]
+** xref:devora/chap1.adoc[Shading Masks]
+** xref:devora/chap2.adoc[Bounding Volume Hierarchy]
+** xref:devora/chap3.adoc[Benchmarking and Performance Measurement]
