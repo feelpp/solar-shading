@@ -1,20 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-        <meta charset="utf-8">
+  <head>
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Feel++ Solar Shading :: Solar Shading</title>
-    <link rel="canonical" href="https://feelpp.github.io/solar-shading/solar-shading/index.html">
+    <title>Retrieving shading mask data from data management platforms :: Solar Shading</title>
+    <link rel="canonical" href="https://feelpp.github.io/solar-shading/solar-shading/data/management.html">
     <meta name="generator" content="Antora 3.1.4">
-    <link rel="stylesheet" href="../_/css/site.css">
-<link rel="icon" href="../_/img/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="../../_/css/site.css">
+<link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon">
 <script>!function(l,p){if(l.protocol!==p&&l.host=="docs.antora.org"){l.protocol=p}else if(/\.gitlab\.io$/.test(l.host)){l.replace(p+"//docs.antora.org"+l.pathname.substr(l.pathname.indexOf("/",1))+l.search+l.hash)}}(location,"https:")</script>
 
-<script src="../_/js/vendor/tabs-block-extension.js"></script>
-<script src="../_/js/vendor/tabs-block-behavior.js"></script>
+<script src="../../_/js/vendor/tabs-block-extension.js"></script>
+<script src="../../_/js/vendor/tabs-block-behavior.js"></script>
 
 
+  <script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2" charset="utf-8"></script>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7" charset="utf-8"></script>
 
 <script type="text/x-mathjax-config">
 MathJax.Hub.Config({
@@ -91,12 +92,11 @@ MathJax.Hub.Config({
 
 <!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0/katex.min.css" integrity="sha384-TEMocfGvRuD1rIAacqrknm5BQZ7W7uWitoih+jMNFXQIbNl16bO8OZmylH/Vi/Ei" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0/katex.min.js" integrity="sha384-jmxIlussZWB7qCuB+PgKG1uLjjxbVVIayPJwi6cG6Zb4YKq0JIw+OMnkkEC7kYCq" crossorigin="anonymous"></script>-->
-<script>var uiRootPath = '../_'</script>
+<script>var uiRootPath = '../../_'</script>
 
-</head>
-
-<body class="article docs-home">
-    <header class="header">
+  </head>
+  <body class="article">
+<header class="header">
     <nav class="navbar navbar-expand-sm bg-dark navbar-dark navbar-template-project"
         style="border-top: 4px solid #9E9E9E">
         <div class="navbar-brand">
@@ -121,30 +121,29 @@ MathJax.Hub.Config({
                 </div>
                 <div class="navbar-item">
                     <a class="navbar-brand" href="https://www.cemosis.fr">
-                        <img class="cemosis-logo" src="../_/img/cemosis-logo.svg" alt="Cemosis logo" />
+                        <img class="cemosis-logo" src="../../_/img/cemosis-logo.svg" alt="Cemosis logo" />
                     </a>
                 </div>
             </div>
         </div>
     </nav>
-</header>
-    <div class="body">
-        <a href="#" class="menu-expand-toggle"></a>
+</header><div class="body">
+<a href="#" class="menu-expand-toggle"></a>
 <div class="nav-container" data-component="solar-shading" data-version="">
   <aside class="nav">
     <div class="panels">
 <div class="nav-panel-menu is-active" data-panel="menu">
   <nav class="nav-menu">
-    <h3 class="title"><a href="index.html">Feel++ Solar Shading</a></h3>
+    <h3 class="title"><a href="../index.html">Feel++ Solar Shading</a></h3>
 <ul class="nav-list">
   <li class="nav-item" data-depth="0">
 <ul class="nav-list">
-  <li class="nav-item is-current-page" data-depth="1">
+  <li class="nav-item" data-depth="1">
     <button class="nav-item-toggle"></button>
-    <a class="nav-link" href="index.html">Shading Masks</a>
+    <a class="nav-link" href="../index.html">Shading Masks</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="shadingmask.html">Theory and Implementation</a>
+    <a class="nav-link" href="../shadingmask.html">Theory and Implementation</a>
   </li>
 </ul>
   </li>
@@ -153,10 +152,10 @@ MathJax.Hub.Config({
     <span class="nav-text">Data</span>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="data/format.html">Data format and visualisation</a>
+    <a class="nav-link" href="format.html">Data format and visualisation</a>
   </li>
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="data/management.html">Data Management</a>
+  <li class="nav-item is-current-page" data-depth="2">
+    <a class="nav-link" href="management.html">Data Management</a>
   </li>
 </ul>
   </li>
@@ -177,7 +176,7 @@ MathJax.Hub.Config({
     <a class="nav-link" href="#githubactions.adoc">Github Actions</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="rename.html">Renaming the project</a>
+    <a class="nav-link" href="../rename.html">Renaming the project</a>
   </li>
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="#jupyter.adoc">Jupyter Notebook</a>
@@ -196,112 +195,180 @@ MathJax.Hub.Config({
   </div>
   <ul class="components">
       <li class="component is-current">
-        <a class="title" href="index.html">Feel++ Solar Shading</a>
+        <a class="title" href="../index.html">Feel++ Solar Shading</a>
       </li>
   </ul>
 </div>
     </div>
   </aside>
 </div>
-        <main class="article">
-            <div class="toolbar" role="navigation">
-                <div class="toolbar-wrapper">
-                    <button class="nav-toggle"></button>
-                </div>
-            </div>
+<main class="article">
+<div class="toolbar" role="navigation">
+  <button class="nav-toggle"></button>
+    <a href="../index.html" class="home-link"></a>
+  <nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="../index.html">Feel++ Solar Shading</a></li>
+    <li>Data</li>
+    <li><a href="management.html">Data Management</a></li>
+  </ul>
+</nav>
 
-            <div class="content">
-                <article class="doc">
-<h1 class="page">Feel++ Solar Shading</h1>
-<div class="paragraph lead">
-<p>This is the Feel++ solar shading project to compute solar masks and view factors using Feel++.</p>
+  
+    <div class="edit-this-page"><a href="https://github.com/feelpp/solar-shading/edit/23-refactoring-of-solar-shading-algorithm/docs/modules/ROOT/pages/data/management.adoc">Edit this Page</a></div>
+  
+  <div class="page-downloads">
+  <span class="label">Download as</span>
+  <ul class="download-options">
+    <li>
+      <a onclick="print(this)" href="#" data-toggle="tooltip" data-placement="left" title="Print to PDF"
+         class="pdf-download">
+        <img class="pdf-file-icon icon" src="../../_/img/pdf.svg"/> .pdf
+      </a>
+    </li>
+      <li>
+        <a href="../_attachments/data/management.ipynb"
+           title="Download Jupyter Notebook" data-toggle="tooltip" data-placement="left" class="jupyter-download">
+          <img class="jupyter-file-icon icon" src="../../_/img/jupyter-logo.svg"/> .ipynb
+        </a>
+      </li>
+  </ul>
 </div>
-<div class="sidebarblock examp">
-<div class="content">
-<div class="title">Coding with Feel++ in C++ or Python</div>
+</div>
+
+  <div class="content">
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+<article class="doc">
+<h1 class="page">Retrieving shading mask data from data management platforms</h1>
+<div id="preamble">
+<div class="sectionbody">
 <div class="paragraph">
-<p><a href="overview.html" class="xref page">Feel++ C++ and Python</a> codes are available to help you get started with using and coding with Feel++.</p>
+<p>In this page, you will find some examples on how to download shading mask data from different data management platforms.</p>
 </div>
 </div>
 </div>
-<div class="sidebarblock examp">
-<div class="content">
-<div class="title">Documenting your work with Asciidoc and Antora</div>
+<div class="sect1">
+<h2 id="_girder"><a class="anchor" href="#_girder"></a>1. Girder</h2>
+<div class="sectionbody">
 <div class="paragraph">
-<p>The documentation is written using the <a href="https://docs.asciidoctor.org">Asciidoc plain text format</a> and <a href="https://docs.antora.org">Antora</a> to produce the documentation website. Checkout <a href="env/antora.html" class="xref page">this page</a>, it is here to help you get started with creating documentation.</p>
+<p><a href="https://girder.readthedocs.io">Girder</a> is a data management platform developed by Kitware.</p>
 </div>
+<div class="paragraph">
+<p>Data can be uploaded or downloaded from Girder using different services: REST API, the web interface, the Girder CLI, the Python Client or JavaScript libraries.</p>
+</div>
+<div class="paragraph">
+<p>In the Feel++ library, the tool <a href="https://docs.feelpp.org/user/latest/using/tools/remotedata.html">feelpp_remotedata</a> has been developed to download file/folders iteratively from Girder. A <a href="https://docs.feelpp.org/user/latest/python/pyfeelpp/core.html">Python interface</a> has also been provided for this tool.</p>
+</div>
+<div class="listingblock">
+<div class="title">Download a shading mask from Girder using the requests module</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">import sys
+import os
+import git
+
+# Extract the root of the git repository
+repo = git.Repo('.', search_parent_directories=True)
+repo_root = repo.working_tree_dir
+
+# Collect the CSV file from Girder
+import requests
+girder_path = "https://girder.math.unistra.fr/api/v1/item/64f0b0d1b0e9570499e20fef/download"
+sm_csv_name = 'SM.csv'
+r=requests.get(girder_path)
+with open(sm_csv_name,'wb') as f:
+    f.write(r.content)
+
+# Print the shading mask to a file
+sys.path.insert(1,repo_root+"/src/visualization/")
+from shading_mask_visualization import plotShadingMask
+fig=plotShadingMask(sm_csv_name,save=False)
+fig.show()</code></pre>
+</div>
+</div>
+<details>
+<summary class="title">Results</summary>
+<div class="content">
+---------------------------------------------------------------------------
+ModuleNotFoundError                       Traceback (most recent call last)
+<ipython-input-1-3969f0de79b0> in <module>
+      1 import sys
+      2 import os
+----> 3 import git
+      4
+      5 # Extract the root of the git repository
+
+ModuleNotFoundError: No module named 'git'
+</div>
+</details>
+<div class="listingblock">
+<div class="title">Download a shading mask from Girder using the feelpp_remotedata tool</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">import sys
+import os
+import git
+
+# Extract the root of the git repository
+repo = git.Repo('.', search_parent_directories=True)
+repo_root = repo.working_tree_dir
+
+# Collect the CSV file from Girder using the Feel++ remotedata app and the file ids
+import feelpp as fpp
+app = fpp.Environment(["myapp"],config=fpp.localRepository(""))
+sm_csv_names = fpp.download( "girder:{file:[64f0b0d1b0e9570499e20ff0,64f0b0d1b0e9570499e20ff3]}", worldComm=app.worldCommPtr())
+# It is possible to download an entire folder in zip format
+# sm_csv_zipped_folder = fpp.download( "girder:{folder:64f0aafdb0e9570499e1eaad}", worldComm=app.worldCommPtr())
+
+# Print the shading masks to a file
+sys.path.insert(1,repo_root+"/src/visualization/")
+from shading_mask_visualization import plotShadingMask
+figs=[]
+for csv_name in sm_csv_names:
+    print(csv_name)
+    figs.append(plotShadingMask(csv_name,save=False))
+
+for fig in figs:
+    fig.show()</code></pre>
+</div>
+</div>
+<details>
+<summary class="title">Results</summary>
+<div class="content">
+---------------------------------------------------------------------------
+ModuleNotFoundError                       Traceback (most recent call last)
+<ipython-input-1-ef10b6b90e28> in <module>
+      1 import sys
+      2 import os
+----> 3 import git
+      4
+      5 # Extract the root of the git repository
+
+ModuleNotFoundError: No module named 'git'
+</div>
+</details>
 </div>
 </div>
 </article>
-            </div>
-
-            <div class="content">
-                <article class="doc">
-                    <div class="actions">
-                        <a href="quickstart.html" class="button primary">Quickstart</a>
-                        <a href="overview.html" class="button secondary">Overview</a>
-                        <a href="https://join.slack.com/t/feelpp/shared_invite/zt-2qe0q9hw-4pVbhohCXUE6Po9Ma8dbiQ" class="button join-chat">Join Community</a>
-                    </div>
-                </article>
-            </div>
-
-            <div class="content">
-                <article class="doc">
-                    <h2>Recommended Resources</h2>
-                    <div class="books">
-                        <div class="book-cover">
-  <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 200 262.222">
-    <a href="https://docs.feelpp.org">
-      <linearGradient gradientUnits="userSpaceOnUse" x1="99.501" y1="2090.696" x2="99.501" y2="2352.807"
-                      id="gradient-feelpp-docs"
-                      gradientTransform="matrix(0.795741, 0.605637, -0.762818, 1.000426, 1715.531158, -2151.904888)">
-        <stop offset="0" style="stop-color: magenta;"/>
-        <stop offset="1" style="stop-color: rgba(0, 0, 0, 1)"/>
-      </linearGradient>
-      <path fill-rule="evenodd" stroke="#000" stroke-width=".111"
-            d="M 0 0 L 199.889 0 L 199.889 262.111 L 0 262.111 L 0 0 Z" style="fill: url(#gradient-feelpp-docs);">
-        <title>background</title>
-      </path>
-      <use href="../_/img/book_cover_simple.svg#book" width="200" height="262.222" x="0" y="0"/>
-      <text x="95" y="92" style="font-size: 14px;
-    text-anchor: middle;
-    font-family: 'DejaVu Sans', serif;
-    font-weight: 800;
-    text-align: start;
-    letter-spacing: 0;
-    word-spacing: 0;
-    fill: white;
-    font-style: italic;">
-        Documentation
-      </text>
-    </a>
-  </svg>
+  </div>
+</main>
 </div>
-                    </div>
-                </article>
-            </div>
-
-
-        </main>
-
-    </div>
-
-    <footer class="footer" style="border-top: 2px solid #e9e9e9; background-color: #fafafa; padding-bottom: 2em; padding-top: 2em;">
+<footer class="footer" style="border-top: 2px solid #e9e9e9; background-color: #fafafa; padding-bottom: 2em; padding-top: 2em;">
     <div class="container" style="display: flex; flex-direction: column; align-items: center; gap: 0.5em;">
         <div>
             <a href="https://www.cemosis.fr">
-                <img src="../_/img/cemosis-logo.svg" alt="Cemosis logo" height="50">
+                <img src="../../_/img/cemosis-logo.svg" alt="Cemosis logo" height="50">
             </a>
         </div>
         <span style="font-size: 0.8rem; color: #9e9e9e">© 2023 <a href="https://www.cemosis.fr" style="text-decoration: underline;">Cemosis</a>, Université de Strasbourg</span>
     </div>
 </footer>
-<script id="site-script" src="../_/js/site.js" data-ui-root-path="../_"></script>
+<script id="site-script" src="../../_/js/site.js" data-ui-root-path="../../_"></script>
 
 
-<script async src="../_/js/vendor/fontawesome-icon-defs.js"></script>
-<script async src="../_/js/vendor/fontawesome.js"></script>
-<script async src="../_/js/vendor/highlight.js"></script>
+<script async src="../../_/js/vendor/fontawesome-icon-defs.js"></script>
+<script async src="../../_/js/vendor/fontawesome.js"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
 
 
 <script type="text/javascript">
@@ -320,6 +387,5 @@ function toggleFullScreen() {
    }
 }
 </script>
-</body>
-
+  </body>
 </html>
