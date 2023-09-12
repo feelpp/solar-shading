@@ -1,5 +1,10 @@
 {
     "Nrays":1000,
-    "Nthreads":4,
+    "Multithread":
+    {
+        "Nthreads":4,
+        "type":"rays" // markers,rays
+    },
+    "SaveMasks":true,
     "Buildings":{"list":["Bat2","Bat1"]}
 }
