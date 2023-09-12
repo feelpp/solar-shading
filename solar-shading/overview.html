@@ -135,51 +135,41 @@ MathJax.Hub.Config({
     <h3 class="title"><a href="index.html">Feel++ Solar Shading</a></h3>
 <ul class="nav-list">
   <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="index.html">Documentation</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="1">
-    <button class="nav-item-toggle"></button>
-    <a class="nav-link" href="index.html">Shading Masks</a>
-<ul class="nav-list">
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="shadingmask.html">Theory and Implementation</a>
+    <a class="nav-link" href="documentation/shadingmask.html">Theory and implementation of shading masks</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="documentation/dataformat.html">Data format and visualisation</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="documentation/shadingmaskdatamanagement.html">Data retrieval from management platforms</a>
   </li>
 </ul>
   </li>
-  <li class="nav-item" data-depth="1">
+  <li class="nav-item" data-depth="0">
     <button class="nav-item-toggle"></button>
-    <span class="nav-text">Data</span>
+    <span class="nav-text">Solar Shading environment</span>
 <ul class="nav-list">
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="data/format.html">Data format and visualisation</a>
-  </li>
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="data/management.html">Data Management</a>
-  </li>
-</ul>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="cmake.html">cmake environment</a>
   </li>
   <li class="nav-item" data-depth="1">
-    <button class="nav-item-toggle"></button>
-    <span class="nav-text">Environment</span>
-<ul class="nav-list">
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="env/cmake.html">cmake environment</a>
+    <a class="nav-link" href="antora.html">antora environment</a>
   </li>
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="env/antora.html">antora environment</a>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="vscode.html">vscode integration</a>
   </li>
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="env/vscode.html">vscode integration</a>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="githubactions.html">Github Actions</a>
   </li>
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="env/githubactions.html">Github Actions</a>
-  </li>
-  <li class="nav-item" data-depth="2">
+  <li class="nav-item" data-depth="1">
     <a class="nav-link" href="rename.html">Renaming the project</a>
   </li>
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="env/jupyter.html">Jupyter Notebook</a>
-  </li>
-</ul>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="jupyter.html">Jupyter Notebook</a>
   </li>
 </ul>
   </li>
@@ -189,16 +179,16 @@ MathJax.Hub.Config({
 <ul class="nav-list">
   <li class="nav-item" data-depth="1">
     <button class="nav-item-toggle"></button>
-    <a class="nav-link" href="internships/devora/introduction.html">Report Ariel De Vora</a>
+    <a class="nav-link" href="devora/introduction.html">Report Ariel De Vora</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="internships/devora/chap1.html">Shading Masks</a>
+    <a class="nav-link" href="devora/chap1.html">Shading Masks</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="internships/devora/chap2.html">Bounding Volume Hierarchy</a>
+    <a class="nav-link" href="devora/chap2.html">Bounding Volume Hierarchy</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="internships/devora/chap3.html">Benchmarking and Performance Measurement</a>
+    <a class="nav-link" href="devora/chap3.html">Benchmarking and Performance Measurement</a>
   </li>
 </ul>
   </li>
@@ -233,7 +223,7 @@ MathJax.Hub.Config({
 </nav>
 
   
-    <div class="edit-this-page"><a href="https://github.com/feelpp/solar-shading/edit/31-fix-doc-as-internship-links-are-broken/docs/modules/ROOT/pages/overview.adoc">Edit this Page</a></div>
+    <div class="edit-this-page"><a href="https://github.com/feelpp/solar-shading/edit/29-add-python-wrapper-for-shading-mask-computation/docs/modules/ROOT/pages/overview.adoc">Edit this Page</a></div>
   
   <div class="page-downloads">
   <span class="label">Download as</span>
@@ -258,7 +248,7 @@ MathJax.Hub.Config({
 <h2 id="_organisation"><a class="anchor" href="#_organisation"></a>1. Organisation</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>The directory structure of the project is currently as follows:</p>
+<p>The directory structure of the project is as follows:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -267,11 +257,7 @@ MathJax.Hub.Config({
 │   ├── antora
 │   └── modules
 └── src
-    ├── cases
-    │   ├── 19_buildings_strasbourg
-    │   └── example_shading_mask
-    ├── preprocessing
-    └── visualization
+    └── cases
 
 5 directories</pre>
 </div>
@@ -309,7 +295,7 @@ The documentation is available <a href="https://docs.feelpp.org">&gt; here</a>.<
 <div class="sectionbody">
 <div class="paragraph">
 <p>You need first to follow the <a href="quickstart.html" class="xref page">quickstart</a> to get the Feel++ environment.
-The installation procedure uses <a href="env/cmake.html" class="xref page">Cmake</a> for the C++ programs and create a bundle of this project.
+The installation procedure uses <a href="cmake.html" class="xref page">Cmake</a> for the C++ programs and create a bundle of this project.
 The steps are as follows:</p>
 </div>
 <div class="listingblock">
@@ -351,7 +337,7 @@ $ cmake --build --preset default -t package <i class="conum" data-value="5"></i>
 <h2 id="_how_to_start_documenting_your_work"><a class="anchor" href="#_how_to_start_documenting_your_work"></a>3. How to start documenting your work</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>The documentation is written in Asciidoc and uses Antora to generate the documentation. Please check the project <a href="env/antora.html" class="xref page">Antora</a> page to get started.</p>
+<p>The documentation is written in Asciidoc and uses Antora to generate the documentation. Please check the project <a href="antora.html" class="xref page">Antora</a> page to get started.</p>
 </div>
 </div>
 </div>

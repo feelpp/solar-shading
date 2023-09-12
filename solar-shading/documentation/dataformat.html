@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Data format and visualisation :: Solar Shading</title>
-    <link rel="canonical" href="https://feelpp.github.io/solar-shading/solar-shading/data/format.html">
+    <link rel="canonical" href="https://feelpp.github.io/solar-shading/solar-shading/documentation/dataformat.html">
     <meta name="generator" content="Antora 3.1.4">
     <link rel="stylesheet" href="../../_/css/site.css">
 <link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon">
@@ -14,8 +14,6 @@
 <script src="../../_/js/vendor/tabs-block-behavior.js"></script>
 
 
-  <script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2" charset="utf-8"></script>
-  <script src="https://cdn.jsdelivr.net/npm/d3@7" charset="utf-8"></script>
 
 <script type="text/x-mathjax-config">
 MathJax.Hub.Config({
@@ -137,51 +135,41 @@ MathJax.Hub.Config({
     <h3 class="title"><a href="../index.html">Feel++ Solar Shading</a></h3>
 <ul class="nav-list">
   <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../index.html">Documentation</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="1">
-    <button class="nav-item-toggle"></button>
-    <a class="nav-link" href="../index.html">Shading Masks</a>
-<ul class="nav-list">
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="../shadingmask.html">Theory and Implementation</a>
+    <a class="nav-link" href="shadingmask.html">Theory and implementation of shading masks</a>
+  </li>
+  <li class="nav-item is-current-page" data-depth="1">
+    <a class="nav-link" href="dataformat.html">Data format and visualisation</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="shadingmaskdatamanagement.html">Data retrieval from management platforms</a>
   </li>
 </ul>
   </li>
-  <li class="nav-item" data-depth="1">
+  <li class="nav-item" data-depth="0">
     <button class="nav-item-toggle"></button>
-    <span class="nav-text">Data</span>
+    <span class="nav-text">Solar Shading environment</span>
 <ul class="nav-list">
-  <li class="nav-item is-current-page" data-depth="2">
-    <a class="nav-link" href="format.html">Data format and visualisation</a>
-  </li>
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="management.html">Data Management</a>
-  </li>
-</ul>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../cmake.html">cmake environment</a>
   </li>
   <li class="nav-item" data-depth="1">
-    <button class="nav-item-toggle"></button>
-    <span class="nav-text">Environment</span>
-<ul class="nav-list">
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="../env/cmake.html">cmake environment</a>
+    <a class="nav-link" href="../antora.html">antora environment</a>
   </li>
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="../env/antora.html">antora environment</a>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../vscode.html">vscode integration</a>
   </li>
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="../env/vscode.html">vscode integration</a>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../githubactions.html">Github Actions</a>
   </li>
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="../env/githubactions.html">Github Actions</a>
-  </li>
-  <li class="nav-item" data-depth="2">
+  <li class="nav-item" data-depth="1">
     <a class="nav-link" href="../rename.html">Renaming the project</a>
   </li>
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="../env/jupyter.html">Jupyter Notebook</a>
-  </li>
-</ul>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../jupyter.html">Jupyter Notebook</a>
   </li>
 </ul>
   </li>
@@ -191,16 +179,16 @@ MathJax.Hub.Config({
 <ul class="nav-list">
   <li class="nav-item" data-depth="1">
     <button class="nav-item-toggle"></button>
-    <a class="nav-link" href="../internships/devora/introduction.html">Report Ariel De Vora</a>
+    <a class="nav-link" href="../devora/introduction.html">Report Ariel De Vora</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="../internships/devora/chap1.html">Shading Masks</a>
+    <a class="nav-link" href="../devora/chap1.html">Shading Masks</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="../internships/devora/chap2.html">Bounding Volume Hierarchy</a>
+    <a class="nav-link" href="../devora/chap2.html">Bounding Volume Hierarchy</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="../internships/devora/chap3.html">Benchmarking and Performance Measurement</a>
+    <a class="nav-link" href="../devora/chap3.html">Benchmarking and Performance Measurement</a>
   </li>
 </ul>
   </li>
@@ -230,13 +218,13 @@ MathJax.Hub.Config({
   <nav class="breadcrumbs" aria-label="breadcrumbs">
   <ul>
     <li><a href="../index.html">Feel++ Solar Shading</a></li>
-    <li>Data</li>
-    <li><a href="format.html">Data format and visualisation</a></li>
+    <li><a href="../index.html">Documentation</a></li>
+    <li><a href="dataformat.html">Data format and visualisation</a></li>
   </ul>
 </nav>
 
   
-    <div class="edit-this-page"><a href="https://github.com/feelpp/solar-shading/edit/31-fix-doc-as-internship-links-are-broken/docs/modules/ROOT/pages/data/format.adoc">Edit this Page</a></div>
+    <div class="edit-this-page"><a href="https://github.com/feelpp/solar-shading/edit/29-add-python-wrapper-for-shading-mask-computation/docs/modules/ROOT/pages/documentation/dataformat.adoc">Edit this Page</a></div>
   
   <div class="page-downloads">
   <span class="label">Download as</span>
@@ -248,7 +236,7 @@ MathJax.Hub.Config({
       </a>
     </li>
       <li>
-        <a href="../_attachments/data/format.ipynb"
+        <a href="../_attachments/documentation/dataformat.ipynb"
            title="Download Jupyter Notebook" data-toggle="tooltip" data-placement="left" class="jupyter-download">
           <img class="jupyter-file-icon icon" src="../../_/img/jupyter-logo.svg"/> .ipynb
         </a>
@@ -283,38 +271,15 @@ MathJax.Hub.Config({
 <div class="listingblock">
 <div class="title">Visualize a shading mask using Python</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">import git
-import sys
-
-# Extract the root of the git repository
-repo = git.Repo('.', search_parent_directories=True)
-repo_root = repo.working_tree_dir
-
-# Collect the example CSV file
-example_csv_path = repo_root + "/src/visualization/example_csvfile.csv"
-
-# Print the shading mask to a file
-sys.path.insert(0,repo_root + "/src/visualization/")
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">import sys
+import os
+current_folder = os.getcwd()
+sys.path.insert(1,"../src/visualization/")
 from shading_mask_visualization import plotShadingMask
-fig=plotShadingMask(example_csv_path,save=False)
-fig.show()</code></pre>
+example_csv_path = current_folder + "/example_csvfile.csv"
+plotShadingMask(example_csv_path)</code></pre>
 </div>
 </div>
-<details>
-<summary class="title">Results</summary>
-<div class="content">
----------------------------------------------------------------------------
-ModuleNotFoundError                       Traceback (most recent call last)
-<ipython-input-1-e73183b19783> in <module>
-----> 1 import git
-      2 import sys
-      3
-      4 # Extract the root of the git repository
-      5 repo = git.Repo('.', search_parent_directories=True)
-
-ModuleNotFoundError: No module named 'git'
-</div>
-</details>
 </div>
 </div>
 </article>
