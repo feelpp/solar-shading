@@ -15,4 +15,5 @@ ext:
         base: modules/ROOT/attachments/
 nav:
 - modules/ROOT/nav.adoc
+- modules/internships/nav.adoc
 

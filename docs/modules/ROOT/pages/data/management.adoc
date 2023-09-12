@@ -63,7 +63,6 @@ sys.path.insert(1,repo_root+"/src/visualization/")
 from shading_mask_visualization import plotShadingMask
 figs=[]
 for csv_name in sm_csv_names:
-    print(csv_name)
     figs.append(plotShadingMask(csv_name,save=False))
     
 for fig in figs:

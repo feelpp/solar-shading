@@ -1,33 +1,22 @@
-= Bibliography
+== Bibliography
 
-== Articles
 
-[[perez-1993-luminance]]
-* Perez, Seals, and Michalsky. "All Weather Model for Sky Luminance Distribution." Solar Energy, Vol. 50, No. 3, 1993, pp. 235-245. Pergamon Press Ltd.
+- [[perez-1993-luminance]] Perez, Seals, and Michalsky. "All Weather Model for Sky Luminance Distribution." Solar Energy, Vol. 50, No. 3, 1993, pp. 235-245. Pergamon Press Ltd.
 
-[[perez-1993-geostatistical]]
-* R. Perez, R. Seals, P. Ineichen, and J. Michalsky. "Geostatistical properties and modeling of random cloud patterns for real skies", Solar Energy, Vol. 51, No. 1, 1993, pp. 7-18. Pergamon Press Ltd.
+- [[perez-1993-geostatistical]] R. Perez, R. Seals, P. Ineichen, and J. Michalsky. "Geostatistical properties and modeling of random cloud patterns for real skies", Solar Energy, Vol. 51, No. 1, 1993, pp. 7-18. Pergamon Press Ltd.
 
-[[survey-BVHs-for-ray-tracing]]
-* Daniel Meister, Shinji Ogaki, Carsten Benthin, Michael J. Doyle, Michael Guthe and Jirí Bittner. "A Survey on Bounding Volume Hierarchies for Ray Tracing." Eurographics 2021, Vol. 40, No. 2, DOI: 10.1111/cgf.142662
+- [[survey-BVHs-for-ray-tracing]] Daniel Meister, Shinji Ogaki, Carsten Benthin, Michael J. Doyle, Michael Guthe and Jirí Bittner. "A Survey on Bounding Volume Hierarchies for Ray Tracing." Eurographics 2021, Vol. 40, No. 2, DOI: 10.1111/cgf.142662
 
-[[efficient-stackless-bvh-traversal]]
-* Michal Hapala, Tomas Davidovic, Ingo Wald, Vlastimir Havran and Philipp Slusallek. "Efficient Stack-less BVH Traversal for Ray Tracing", Intel Corp.
+- [[efficient-stackless-bvh-traversal]] Michal Hapala, Tomas Davidovic, Ingo Wald, Vlastimir Havran and Philipp Slusallek. "Efficient Stack-less BVH Traversal for Ray Tracing", Intel Corp.
 
-[[real-time-collision-detection]]
-* Christer Ericson. "Real-Time Collision Detection", Morgan Kaufmann Publishers, 2005, Sony Computer Entertainment America.
+- [[real-time-collision-detection]] Christer Ericson. "Real-Time Collision Detection", Morgan Kaufmann Publishers, 2005, Sony Computer Entertainment America.
 
-[[marsh-shading-masks]]
-* Andrew Marsh. "The Application of Shading Masks in Building Simulation", International Building Performance Simulation Association (IBPSA), No. 9, 2005, Montreal, Canada.
+- [[marsh-shading-masks]] Andrew Marsh. "The Application of Shading Masks in Building Simulation", International Building Performance Simulation Association (IBPSA), No. 9, 2005, Montreal, Canada.
 
-[[marsh-webapp]]
-* Andrew Marsh. "Interactive WebApp for Dynamic OverShadowing",  link::https://drajmarsh.bitbucket.io/cie-sky.html[his website], University of Sydney, 2006.
+- [[marsh-webapp]] Andrew Marsh. "Interactive WebApp for Dynamic OverShadowing",  link::https://drajmarsh.bitbucket.io/cie-sky.html[his website], University of Sydney, 2006.
 
-[[zenith-luminance]]
-* M. Karayel, M. Navvab, E. Ne'eman, and S. Selkowitz. "Zenith Luminance and Sky Luminance Distributions for Daylighting Calculations", Energy and Buildings, Vol. 6, Energy Efficient Buildings Program, Lawrence Berkeley Laboratory, University of California, Berkeley, CA 94720 (U.S.A.)
+- [[zenith-luminance]] M. Karayel, M. Navvab, E. Ne'eman, and S. Selkowitz. "Zenith Luminance and Sky Luminance Distributions for Daylighting Calculations", Energy and Buildings, Vol. 6, Energy Efficient Buildings Program, Lawrence Berkeley Laboratory, University of California, Berkeley, CA 94720 (U.S.A.)
 
-[[stanford-lecture-optix]]
-* Stanford University lecture on OptiX ray tracing, link::https://www.youtube.com/watch?v=KH3hS0LBq80[YouTube], used for the speculative traversal.
+- [[stanford-lecture-optix]] Stanford University lecture on OptiX ray tracing, link::https://www.youtube.com/watch?v=KH3hS0LBq80[YouTube], used for the speculative traversal.
 
-[[freiburg-lecture-bvh]]
-* University of Freiburg lecture on Bounding Volume Hierarchy, link::https://www.youtube.com/watch?v=wktOtEDeu6Y&t=622s[YouTube], used for understanding the basics of BVs and BVHs, and images.
+- [[freiburg-lecture-bvh]] University of Freiburg lecture on Bounding Volume Hierarchy, link::https://www.youtube.com/watch?v=wktOtEDeu6Y&t=622s[YouTube], used for understanding the basics of BVs and BVHs, and images.
