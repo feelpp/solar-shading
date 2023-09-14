@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-        <meta charset="utf-8">
+      <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Feel++ Solar Shading :: Solar Shading</title>
     <link rel="canonical" href="https://feelpp.github.io/solar-shading/solar-shading/index.html">
@@ -94,9 +93,8 @@ MathJax.Hub.Config({
 <script>var uiRootPath = '../_'</script>
 
 </head>
-
 <body class="article docs-home">
-    <header class="header">
+<header class="header">
     <nav class="navbar navbar-expand-sm bg-dark navbar-dark navbar-template-project"
         style="border-top: 4px solid #9E9E9E">
         <div class="navbar-brand">
@@ -128,8 +126,8 @@ MathJax.Hub.Config({
         </div>
     </nav>
 </header>
-    <div class="body">
-        <a href="#" class="menu-expand-toggle"></a>
+<div class="body">
+  <a href="#" class="menu-expand-toggle"></a>
 <div class="nav-container" data-component="solar-shading" data-version="">
   <aside class="nav">
     <div class="panels">
@@ -137,61 +135,50 @@ MathJax.Hub.Config({
   <nav class="nav-menu">
     <h3 class="title"><a href="index.html">Feel++ Solar Shading</a></h3>
 <ul class="nav-list">
-  <li class="nav-item is-current-page" data-depth="0">
-    <button class="nav-item-toggle"></button>
-    <a class="nav-link" href="index.html">Documentation</a>
+  <li class="nav-item" data-depth="0">
 <ul class="nav-list">
-  <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="documentation/shadingmask.html">Theory and implementation of shading masks</a>
-  </li>
-  <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="documentation/dataformat.html">Data format and visualisation</a>
-  </li>
-  <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="documentation/shadingmaskdatamanagement.html">Data retrieval from management platforms</a>
+  <li class="nav-item is-current-page" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="index.html">Shading Masks</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="shadingmask.html">Theory and Implementation</a>
   </li>
 </ul>
   </li>
-  <li class="nav-item" data-depth="0">
+  <li class="nav-item" data-depth="1">
     <button class="nav-item-toggle"></button>
-    <span class="nav-text">Solar Shading environment</span>
+    <span class="nav-text">Data</span>
 <ul class="nav-list">
-  <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="cmake.html">cmake environment</a>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="data/format.html">Data format and visualisation</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="data/management.html">Data Management</a>
+  </li>
+</ul>
   </li>
   <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="antora.html">antora environment</a>
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Environment</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#cmake.adoc">cmake environment</a>
   </li>
-  <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="vscode.html">vscode integration</a>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#antora.adoc">antora environment</a>
   </li>
-  <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="githubactions.html">Github Actions</a>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#vscode.adoc">vscode integration</a>
   </li>
-  <li class="nav-item" data-depth="1">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#githubactions.adoc">Github Actions</a>
+  </li>
+  <li class="nav-item" data-depth="2">
     <a class="nav-link" href="rename.html">Renaming the project</a>
   </li>
-  <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="jupyter.html">Jupyter Notebook</a>
-  </li>
-</ul>
-  </li>
-  <li class="nav-item" data-depth="0">
-    <button class="nav-item-toggle"></button>
-    <span class="nav-text">Internships</span>
-<ul class="nav-list">
-  <li class="nav-item" data-depth="1">
-    <button class="nav-item-toggle"></button>
-    <a class="nav-link" href="devora/introduction.html">Report Ariel De Vora</a>
-<ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="devora/chap1.html">Shading Masks</a>
-  </li>
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="devora/chap2.html">Bounding Volume Hierarchy</a>
-  </li>
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="devora/chap3.html">Benchmarking and Performance Measurement</a>
+    <a class="nav-link" href="#jupyter.adoc">Jupyter Notebook</a>
   </li>
 </ul>
   </li>
@@ -214,15 +201,15 @@ MathJax.Hub.Config({
     </div>
   </aside>
 </div>
-        <main class="article">
-            <div class="toolbar" role="navigation">
-                <div class="toolbar-wrapper">
-                    <button class="nav-toggle"></button>
-                </div>
-            </div>
+  <main class="article">
+    <div class="toolbar" role="navigation">
+      <div class="toolbar-wrapper">
+        <button class="nav-toggle"></button>
+      </div>
+    </div>
 
-            <div class="content">
-                <article class="doc">
+    <div class="content">
+      <article class="doc">
 <h1 class="page">Feel++ Solar Shading</h1>
 <div class="paragraph lead">
 <p>This is the Feel++ solar shading project to compute solar masks and view factors using Feel++.</p>
@@ -239,34 +226,32 @@ MathJax.Hub.Config({
 <div class="content">
 <div class="title">Documenting your work with Asciidoc and Antora</div>
 <div class="paragraph">
-<p>The documentation is written using the <a href="https://docs.asciidoctor.org">Asciidoc plain text format</a> and <a href="https://docs.antora.org">Antora</a> to produce the documentation website. Checkout <a href="antora.html" class="xref page">this page</a>, it is here to help you get started with creating documentation.</p>
+<p>The documentation is written using the <a href="https://docs.asciidoctor.org">Asciidoc plain text format</a> and <a href="https://docs.antora.org">Antora</a> to produce the documentation website. Checkout <a href="env/antora.html" class="xref page">this page</a>, it is here to help you get started with creating documentation.</p>
 </div>
 </div>
 </div>
 </article>
-            </div>
+    </div>
 
-            <div class="content">
-                <article class="doc">
-                    <div class="actions">
-                        <a href="quickstart.html" class="button primary">Quickstart</a>
-                        <a href="overview.html" class="button secondary">Overview</a>
-                        <a href="https://join.slack.com/t/feelpp/shared_invite/zt-2qe0q9hw-4pVbhohCXUE6Po9Ma8dbiQ" class="button join-chat">Join Community</a>
-                    </div>
-                </article>
-            </div>
+    <div class="content">
+      <article class="doc">
+        <div class="actions">
+          <a href="https://join.slack.com/t/feelpp/shared_invite/zt-2qe0q9hw-4pVbhohCXUE6Po9Ma8dbiQ" class="button join-chat">Join Community</a>
+        </div>
+      </article>
+    </div>
 
-            <div class="content">
-                <article class="doc">
-                    <h2>Recommended Resources</h2>
-                    <div class="books">
-                        <div class="book-cover">
+    <div class="content">
+      <article class="doc">
+        <h2>Recommended Resources</h2>
+        <div class="books">
+            <div class="book-cover">
   <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 200 262.222">
     <a href="https://docs.feelpp.org">
       <linearGradient gradientUnits="userSpaceOnUse" x1="99.501" y1="2090.696" x2="99.501" y2="2352.807"
                       id="gradient-feelpp-docs"
                       gradientTransform="matrix(0.795741, 0.605637, -0.762818, 1.000426, 1715.531158, -2151.904888)">
-        <stop offset="0" style="stop-color: magenta;"/>
+        <stop offset="0" style="stop-color: #a6024f;"/>
         <stop offset="1" style="stop-color: rgba(0, 0, 0, 1)"/>
       </linearGradient>
       <path fill-rule="evenodd" stroke="#000" stroke-width=".111"
@@ -288,16 +273,42 @@ MathJax.Hub.Config({
     </a>
   </svg>
 </div>
-                    </div>
-                </article>
-            </div>
-
-
-        </main>
-
+            <div class="book-cover">
+  <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 200 262.222">
+    <a href="https://docs.feelpp.org">
+      <linearGradient gradientUnits="userSpaceOnUse" x1="99.501" y1="2090.696" x2="99.501" y2="2352.807"
+                      id="gradient-feelpp-docs"
+                      gradientTransform="matrix(0.795741, 0.605637, -0.762818, 1.000426, 1715.531158, -2151.904888)">
+        <stop offset="0" style="stop-color: #220391;"/>
+        <stop offset="1" style="stop-color: rgba(0, 0, 0, 1)"/>
+      </linearGradient>
+      <path fill-rule="evenodd" stroke="#000" stroke-width=".111"
+            d="M 0 0 L 199.889 0 L 199.889 262.111 L 0 262.111 L 0 0 Z" style="fill: url(#gradient-feelpp-docs);">
+        <title>background</title>
+      </path>
+      <use href="../_/img/book_cover_simple.svg#book" width="200" height="262.222" x="0" y="0"/>
+      <text x="95" y="92" style="font-size: 14px;
+    text-anchor: middle;
+    font-family: 'DejaVu Sans', serif;
+    font-weight: 800;
+    text-align: start;
+    letter-spacing: 0;
+    word-spacing: 0;
+    fill: white;
+    font-style: italic;">
+        Antora UI
+      </text>
+    </a>
+  </svg>
+</div>
+        </div>
+      </article>
     </div>
 
-    <footer class="footer" style="border-top: 2px solid #e9e9e9; background-color: #fafafa; padding-bottom: 2em; padding-top: 2em;">
+  </main>
+</div>
+
+<footer class="footer" style="border-top: 2px solid #e9e9e9; background-color: #fafafa; padding-bottom: 2em; padding-top: 2em;">
     <div class="container" style="display: flex; flex-direction: column; align-items: center; gap: 0.5em;">
         <div>
             <a href="https://www.cemosis.fr">
@@ -332,5 +343,4 @@ function toggleFullScreen() {
 }
 </script>
 </body>
-
 </html>

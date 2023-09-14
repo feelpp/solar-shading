@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Retrieving shading mask data from data management platforms :: Solar Shading</title>
-    <link rel="canonical" href="https://feelpp.github.io/solar-shading/solar-shading/documentation/shadingmaskdatamanagement.html">
+    <title>Cmake environment :: Solar Shading</title>
+    <link rel="canonical" href="https://feelpp.github.io/solar-shading/solar-shading/env/cmake.html">
     <meta name="generator" content="Antora 3.1.4">
     <link rel="stylesheet" href="../../_/css/site.css">
 <link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon">
@@ -135,60 +135,49 @@ MathJax.Hub.Config({
     <h3 class="title"><a href="../index.html">Feel++ Solar Shading</a></h3>
 <ul class="nav-list">
   <li class="nav-item" data-depth="0">
-    <button class="nav-item-toggle"></button>
-    <a class="nav-link" href="../index.html">Documentation</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="shadingmask.html">Theory and implementation of shading masks</a>
-  </li>
-  <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="dataformat.html">Data format and visualisation</a>
-  </li>
-  <li class="nav-item is-current-page" data-depth="1">
-    <a class="nav-link" href="shadingmaskdatamanagement.html">Data retrieval from management platforms</a>
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../index.html">Shading Masks</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../shadingmask.html">Theory and Implementation</a>
   </li>
 </ul>
   </li>
-  <li class="nav-item" data-depth="0">
+  <li class="nav-item" data-depth="1">
     <button class="nav-item-toggle"></button>
-    <span class="nav-text">Solar Shading environment</span>
+    <span class="nav-text">Data</span>
 <ul class="nav-list">
-  <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="../cmake.html">cmake environment</a>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../data/format.html">Data format and visualisation</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../data/management.html">Data Management</a>
+  </li>
+</ul>
   </li>
   <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="../antora.html">antora environment</a>
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Environment</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#cmake.adoc">cmake environment</a>
   </li>
-  <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="../vscode.html">vscode integration</a>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#antora.adoc">antora environment</a>
   </li>
-  <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="../githubactions.html">Github Actions</a>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#vscode.adoc">vscode integration</a>
   </li>
-  <li class="nav-item" data-depth="1">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#githubactions.adoc">Github Actions</a>
+  </li>
+  <li class="nav-item" data-depth="2">
     <a class="nav-link" href="../rename.html">Renaming the project</a>
   </li>
-  <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="../jupyter.html">Jupyter Notebook</a>
-  </li>
-</ul>
-  </li>
-  <li class="nav-item" data-depth="0">
-    <button class="nav-item-toggle"></button>
-    <span class="nav-text">Internships</span>
-<ul class="nav-list">
-  <li class="nav-item" data-depth="1">
-    <button class="nav-item-toggle"></button>
-    <a class="nav-link" href="../devora/introduction.html">Report Ariel De Vora</a>
-<ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="../devora/chap1.html">Shading Masks</a>
-  </li>
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="../devora/chap2.html">Bounding Volume Hierarchy</a>
-  </li>
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="../devora/chap3.html">Benchmarking and Performance Measurement</a>
+    <a class="nav-link" href="#jupyter.adoc">Jupyter Notebook</a>
   </li>
 </ul>
   </li>
@@ -218,13 +207,12 @@ MathJax.Hub.Config({
   <nav class="breadcrumbs" aria-label="breadcrumbs">
   <ul>
     <li><a href="../index.html">Feel++ Solar Shading</a></li>
-    <li><a href="../index.html">Documentation</a></li>
-    <li><a href="shadingmaskdatamanagement.html">Data retrieval from management platforms</a></li>
+    <li><a href="cmake.html">Cmake environment</a></li>
   </ul>
 </nav>
 
   
-    <div class="edit-this-page"><a href="https://github.com/feelpp/solar-shading/edit/29-add-python-wrapper-for-shading-mask-computation/docs/modules/ROOT/pages/documentation/shadingmaskdatamanagement.adoc">Edit this Page</a></div>
+    <div class="edit-this-page"><a href="https://github.com/feelpp/solar-shading/edit/29-add-python-wrapper-for-shading-mask-computation/docs/modules/ROOT/pages/env/cmake.adoc">Edit this Page</a></div>
   
   <div class="page-downloads">
   <span class="label">Download as</span>
@@ -235,12 +223,6 @@ MathJax.Hub.Config({
         <img class="pdf-file-icon icon" src="../../_/img/pdf.svg"/> .pdf
       </a>
     </li>
-      <li>
-        <a href="../_attachments/documentation/shadingmaskdatamanagement.ipynb"
-           title="Download Jupyter Notebook" data-toggle="tooltip" data-placement="left" class="jupyter-download">
-          <img class="jupyter-file-icon icon" src="../../_/img/jupyter-logo.svg"/> .ipynb
-        </a>
-      </li>
   </ul>
 </div>
 </div>
@@ -250,47 +232,79 @@ MathJax.Hub.Config({
   <div class="toc-menu"></div>
 </aside>
 <article class="doc">
-<h1 class="page">Retrieving shading mask data from data management platforms</h1>
+<h1 class="page">Cmake environment</h1>
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>In this page, you will find some examples on how to download shading mask data from different data management platforms.</p>
+<p>The CMakeLists.txt is setup with Feel++.
+A sample Feel++ application is available in <code>src</code>.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_girder"><a class="anchor" href="#_girder"></a>1. Girder</h2>
+<h2 id="_building"><a class="anchor" href="#_building"></a>1. Building</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p><a href="https://girder.readthedocs.io">Girder</a> is a data management platform developed by Kitware.</p>
-</div>
-<div class="paragraph">
-<p>Data can be uploaded or downloaded from Girder using different services: REST API, the web interface, the Girder CLI, the Python Client or JavaScript libraries.</p>
-</div>
-<div class="paragraph">
-<p>In the Feel++ library, the tool <a href="https://docs.feelpp.org/user/latest/using/tools/remotedata.html">feelpp_remotedata</a> has been developed to download file/folders iteratively from Girder. A <a href="https://docs.feelpp.org/user/latest/python/pyfeelpp/core.html">Python interface</a> has also been provided for this tool.</p>
+<p>The CMakeLists.txt is configured to build the application in <code>src</code>.
+The following commands can be used to build the application:</p>
 </div>
 <div class="listingblock">
-<div class="title">Download a shading mask from Girder using the requests module</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">sys.path.insert(1,"../src/visualization/")
-from shading_mask_visualization import plotShadingMask
-import requests
-girder_path = "https://girder.math.unistra.fr/api/v1/item/64f0b0d1b0e9570499e20fef/download"
-sm_csv_name = 'SM.csv'
-r=requests.get(girder_path)
-with open(sm_csv_name,'wb') as f:
-    f.write(r.content)
-plotShadingMask(example_csv_path)</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"> $ cmake --preset default <i class="conum" data-value="1"></i><b>(1)</b>
+ $ cmake --build --preset default <i class="conum" data-value="2"></i><b>(2)</b>
+ $ cmake --build --preset default -t install <i class="conum" data-value="3"></i><b>(3)</b></code></pre>
 </div>
 </div>
-<div class="listingblock">
-<div class="title">Download a shading mask from Girder using the feelpp_remotedata tool</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Configure the project</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Build the project</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Install the project</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_packaging"><a class="anchor" href="#_packaging"></a>2. Packaging</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>CPack is configured and allows to generate a binary and source package.
+Use the following commands to generate the binary package:</p>
+</div>
+<div class="literalblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">import feelpp as fpp
-from shading_mask_visualization import plotShadingMask
-sm_csv_name = fpp.download( "girder:{file:64f0b0d1b0e9570499e20fef}", worldComm=app.worldCommPtr() )[0]
-plotShadingMask(sm_csv_name)</code></pre>
+<pre>$ cmake --build --preset default -t package</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Use the following commands to generate the source package:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>$ cmake --build --preset default -t package_source</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_testing"><a class="anchor" href="#_testing"></a>3. Testing</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>CTest is configured.
+Use the following command to run the tests:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>$ cmake --build --preset default -t test</pre>
 </div>
 </div>
 </div>
