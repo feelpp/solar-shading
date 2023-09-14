@@ -29,7 +29,9 @@ jobs:
         source .venv/bin/activate
         pip install -r requirements.txt        
     - name: Build Antora Site
-      run: npm run antora
+      run: |
+        source .venv/bin/activate
+        npm run antora
     - name: Deploy
       uses: JamesIves/github-pages-deploy-action@v4
       with:
