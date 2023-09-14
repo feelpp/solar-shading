@@ -2,6 +2,7 @@
 :page-jupyter: true
 :jupyter-language-name: python
 :jupyter-language-version: 3.8
+:page-plotly: true
 
 
 
@@ -17,13 +18,21 @@ The entries of the shading mask matrix correspond to the percentage of direct so
 One can visualise shading masks on a circular diagram: the angular coordinate represents the sun azimuth angle, while the radial coordinate represents the sun altitude angle.
 
 .Visualize a shading mask using Python
-[%dynamic,python]
+[%dynamic%raw%open,python]
 ----
+import git
 import sys
-import os
-current_folder = os.getcwd()
-sys.path.insert(1,"../src/visualization/")
+
+# Extract the root of the git repository
+repo = git.Repo('.', search_parent_directories=True)
+repo_root = repo.working_tree_dir
+
+# Collect the example CSV file 
+example_csv_path = repo_root + "/src/visualization/example_csvfile.csv"
+
+# Print the shading mask to a file
+sys.path.insert(0,repo_root + "/src/visualization/")
 from shading_mask_visualization import plotShadingMask
-example_csv_path = current_folder + "/example_csvfile.csv"
-plotShadingMask(example_csv_path)
+fig=plotShadingMask(example_csv_path,save=False)
+fig.show()
 ----

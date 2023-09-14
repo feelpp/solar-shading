@@ -41,18 +41,18 @@ A **Bounding Volume** is a single simple volume encapsulating one or several obj
 ****
 
 []
-image::BoundingVolumes.png[]
+image:ROOT::BoundingVolumes.png[]
 
 ==== Axis-Aligned Bounding Boxes (AABBs)
 
 There are 3 main manners of defining such boxes. The overlap tests are straightforward: 2 AABBs only overlap if they overlap on all 3 (or 2 in 2D) axes.
 
 []
-image::AABBs.png[500]
+image:ROOT::AABBs.png[500]
 
 But these can very rapidly lead to false results when dealing with more complex shapes, specially when they are close or not aligned with the AABB's axes, since the overlapp test on the bounding box of one object can be a false-True, meaning it's possible for the second object to never be tested against rays incomming from the first object's bounding box.
 []
-image::OverlappingElements.png[]
+image:ROOT::OverlappingElements.png[]
 
 Such overlapping tests can be done using simple comparisons, as shown in the following code snippet for a `min-max` 3D representation:
 
@@ -88,7 +88,7 @@ Furthermore, the trade-off between construction time and traversal efficiency ca
 A visual definition of a BVH structure using Axis-Aligned Bounding-Boxes (from link:https://developer.nvidia.com/blog/thinking-parallel-part-ii-tree-traversal-gpu/[here])
 
 []
-image::BVH.png[]
+image:ROOT::BVH.png[]
 
 In this context, `N1` would be the bounding volume for the entire object or scene, `N2` and `N3` would be those respectively containing `N4` and `N5`, and so on, until we reach the leaves of the tree, which are directly the bounding boxes of the primitives.
 
@@ -96,7 +96,7 @@ In this context, `N1` would be the bounding volume for the entire object or scen
 
 Visual representation of the construction process of a BVH :
 []
-image::constructmet.png[width=500]
+image:ROOT::constructmet.png[width=500]
 
 Image coming from xref:partials$bib.adoc#freiburg-lecture-bvh[Freiburg Lecture on BVH video].
 
@@ -227,7 +227,7 @@ Performing the spatial splits in an optimized way is crucial to the performance 
 ****
 
 []
-image::morton.png[width=300px]
+image:ROOT::morton.png[width=300px]
 
 These can be defined thanks to various algorithms presented on
 link:https://developer.nvidia.com/blog/thinking-parallel-part-iii-tree-construction-gpu/[NVIDIA's website].
@@ -274,11 +274,11 @@ std::nth_element(&M_primitiveInfo[start_index_primitive], &M_primitiveInfo[mid],
 
 Here is an example of a construction using the median cut strategy, but on a single splitting axis:
 
-image::BVlayers.png[400]
+image:ROOT::BVlayers.png[400]
 
 And such spacial divisions can lead to a similar tree as the following:
 
-image::BVlayerstree.png[400]
+image:ROOT::BVlayerstree.png[400]
 
 We will combine this method with the <<Axis Cycling>> one, to ensure that the splitting axes are evenly distributed and can help maintain overall balance during the BVH construction.
 
@@ -340,13 +340,13 @@ array[3] = *(root->left->left);
 This way, we always know that a parent's children can be found at positions \(2i+1\) and \(2i+2\) in the array, usually inducing wasted memory unless dealing with a complete tree.
 
 []
-image::arrayrep.png[400]
+image:ROOT::arrayrep.png[400]
 
 === Preorder Traversal Order
 When preordering them in traversal order, the left child will always follow its parent, and only one link is needed to point to the right child.
 
 []
-image::preordertraversal.png[400]
+image:ROOT::preordertraversal.png[400]
 
 [source,c++]
 ----
@@ -389,7 +389,7 @@ Flattening the tree in this way allows us to store the tree in a single array, w
 When using modern architecture, execution time is mostly limited by cache issues when fetching data from memory. One possible way of adopting a cache-friendlier solution would be by merging the sets of binary tree nodes into a 'tri-node' containing the parent and its children, preventing it from needing internal links. Below we can see an example representing a complete 4-level binary tree with 14 internal links with a 2-level tri-node tree storing only 4 internal links. Even better, this representation can also be combined with other optimizing structures seen before.
 
 []
-image::cachefriendly.png[600]
+image:ROOT::cachefriendly.png[600]
 
 Flattening a tri-node tree is similar to flattening a binary tree, except that we need to store the parent's index in the array as well as the left and right child flags. The right child pointer is replaced by a flag indicating whether the parent has a right child or not, the left and parent's one are replaced in the same manner. The root node is a special case, since it has no parent, signified by a special flag. Three new structures (`GPUNode`, `GPURay` and `GPUTree`) were introduced, storing only critical information for it to be of small enough size to be copied-by-value to the GPU.
 
@@ -928,6 +928,6 @@ Another way to optimize the ray generation would be to exploit the graphics card
 
 This could be taken further, by assigning parts of a matrix to a specific block in the GPU, leveraging the constant memory and launching the frustum of rays in the respective direction defined by the block-assigned resulting matrix. This way, the rays are processed in a more coherent manner, and the GPU's constant memory is used to its full potential. Moreover, the frustum could be instantiated directly on the GPU, and the identical rays could be transformed and translated through random values, generated by the mersene twister algorithm that can be implemented on a CUDA kernel, and therefore be naturally processed in parallel. This would result in a more efficient memory transfer, since the rays shouldn't be transferred back to the CPU, but only the resulting intersected leaves.
 
-image::Nvidia-GPU-memory-structure.png[]
+image:ROOT::Nvidia-GPU-memory-structure.png[]
 
 (image found link:https://www.researchgate.net/figure/Nvidia-GPU-memory-structure_fig3_346228460[here])

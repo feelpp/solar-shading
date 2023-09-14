@@ -49,7 +49,10 @@ tramp
 results/ShadingMasks/*.png
 
 # venv files
-*venv*
-
 #feelppdb downloads
 *feelppdb*
+
+.venv/
+feelppdb/
+**/__pycache__/
+

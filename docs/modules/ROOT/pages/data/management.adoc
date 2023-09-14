@@ -1,0 +1,71 @@
+= Retrieving shading mask data from data management platforms
+:page-jupyter: true
+:jupyter-language-name: python
+:jupyter-language-version: 3.8
+:page-plotly: true
+
+In this page, you will find some examples on how to download shading mask data from different data management platforms.
+
+== Girder
+
+https://girder.readthedocs.io[Girder] is a data management platform developed by Kitware. 
+
+Data can be uploaded or downloaded from Girder using different services: REST API, the web interface, the Girder CLI, the Python Client or JavaScript libraries.
+
+In the Feel++ library, the tool https://docs.feelpp.org/user/latest/using/tools/remotedata.html[feelpp_remotedata] has been developed to download file/folders iteratively from Girder. A https://docs.feelpp.org/user/latest/python/pyfeelpp/core.html[Python interface] has also been provided for this tool.
+
+.Download a shading mask from Girder using the requests module
+[%dynamic%raw%open,python]
+----
+import sys
+import os
+import git
+
+# Extract the root of the git repository
+repo = git.Repo('.', search_parent_directories=True)
+repo_root = repo.working_tree_dir
+
+# Collect the CSV file from Girder
+import requests
+girder_path = "https://girder.math.unistra.fr/api/v1/item/64f0b0d1b0e9570499e20fef/download"
+sm_csv_name = 'SM.csv'
+r=requests.get(girder_path)
+with open(sm_csv_name,'wb') as f:
+    f.write(r.content)
+
+# Print the shading mask to a file
+sys.path.insert(1,repo_root+"/src/visualization/")
+from shading_mask_visualization import plotShadingMask
+fig=plotShadingMask(sm_csv_name,save=False)
+fig.show()
+----
+
+.Download a shading mask from Girder using the feelpp_remotedata tool 
+[%dynamic%raw%open,python]
+----
+import sys
+import os
+import git
+
+# Extract the root of the git repository
+repo = git.Repo('.', search_parent_directories=True)
+repo_root = repo.working_tree_dir
+
+# Collect the CSV file from Girder using the Feel++ remotedata app and the file ids
+import feelpp as fpp
+app = fpp.Environment(["myapp"],config=fpp.localRepository(""))
+sm_csv_names = fpp.download( "girder:{file:[64f0b0d1b0e9570499e20ff0,64f0b0d1b0e9570499e20ff3]}", worldComm=app.worldCommPtr())
+# It is possible to download an entire folder in zip format
+# sm_csv_zipped_folder = fpp.download( "girder:{folder:64f0aafdb0e9570499e1eaad}", worldComm=app.worldCommPtr())
+
+# Print the shading masks to a file
+sys.path.insert(1,repo_root+"/src/visualization/")
+from shading_mask_visualization import plotShadingMask
+figs=[]
+for csv_name in sm_csv_names:
+    print(csv_name)
+    figs.append(plotShadingMask(csv_name,save=False))
+    
+for fig in figs:
+    fig.show()
+----

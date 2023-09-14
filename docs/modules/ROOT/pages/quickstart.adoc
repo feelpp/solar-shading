@@ -5,7 +5,7 @@ To get started with compiling and using {project_name}, you can either
 - [x] install https://docs.feelpp.org/user/latest/install/index.html[{feelpp} Debian or Ubuntu packages] if you use such systems or 
 - [x] use DevContainers in Visual Studio Code as described below.
 
-To get started with viewing and creating documentation, checkout the project xref:antora.adoc[Antora] page.
+To get started with viewing and creating documentation, checkout the project xref:env/antora.adoc[Antora] page.
 
 == Using DevContainers in Visual Studio Code
 

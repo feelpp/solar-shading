@@ -2,14 +2,18 @@
 
 == Organisation
 
-The directory structure of the project is as follows:
+The directory structure of the project is currently as follows:
 ----
 .
 ├── docs
 │   ├── antora
 │   └── modules
 └── src
-    └── cases
+    ├── cases
+    │   ├── 19_buildings_strasbourg
+    │   └── example_shading_mask
+    ├── preprocessing
+    └── visualization
 
 5 directories
 ----
@@ -27,7 +31,7 @@ The documentation is available https://docs.feelpp.org[> here].
 == How to build the project
 
 You need first to follow the xref:quickstart.adoc[quickstart] to get the {feelpp} environment.
-The installation procedure uses xref:cmake.adoc[Cmake] for the {cpp} programs and create a bundle of this project.
+The installation procedure uses xref:env/cmake.adoc[Cmake] for the {cpp} programs and create a bundle of this project.
 The steps are as follows:
 
 [source,bash]
@@ -46,7 +50,7 @@ $ cmake --build --preset default -t package # <5>
 
 == How to start documenting your work
 
-The documentation is written in Asciidoc and uses Antora to generate the documentation. Please check the project xref:antora.adoc[Antora] page to get started.
+The documentation is written in Asciidoc and uses Antora to generate the documentation. Please check the project xref:env/antora.adoc[Antora] page to get started.
 
 
 
