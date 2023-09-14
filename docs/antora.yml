@@ -5,6 +5,8 @@ start_page: index.adoc
 asciidoc:
   attributes:
     project_name: Solar Shading
+  extensions:
+    - '@feelpp/asciidoctor-extensions'
 ext:
   collector:
     - run:
