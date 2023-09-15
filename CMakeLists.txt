@@ -93,4 +93,4 @@ set(CPACK_DEBIAN_ARCHITECTURE "${CMAKE_SYSTEM_PROCESSOR}")
   
 include(CPack)
 
-add_subdirectory(python)
+add_subdirectory(ktirio)

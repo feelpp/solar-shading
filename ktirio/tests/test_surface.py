@@ -1,19 +1,14 @@
-from shadingmask import *
+from ktirio.shadingmask import *
 import json
 import feelpp as fpp
 import sys
 import os
 
-# def test_Init():
-#     e = fpp.Environment(
-#         sys.argv,
-#         config=fpp.globalRepository("surfaceMask"))
-
-def test_surfaceMask(init_feelpp):
+def test_surfaceMask(init_feelpp): 
     
     fpp.Environment.changeRepository(
         directory="shading-tests/surface")
-    
+
     mesh_file_path = "../../src/cases/example_shading_mask/skin_mesh_example.geo"
     json_file_path = "../../src/cases/example_shading_mask/example_shading_mask_surface.json"
 

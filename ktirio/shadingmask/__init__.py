@@ -1,12 +1,12 @@
 try:
-    from ._shadingmask import *
+    from ktirio._shadingmask import *
 
     _smclass={
             '2-3': ShadingMask_2D3D,
             '3-3': ShadingMask_3D3D        
         }    
 except ImportError as e:
-    print('Import feelpp.toolboxes.fluid failed: Feel++ Toolbox Fluid is not available')
+    print('Import ktirio.solarshading failed, it is not available')
     pass
 
 
