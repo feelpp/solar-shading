@@ -1,5 +1,4 @@
 = Chapter 2 - Bounding Volume Hierarchy (BVH)
-include::partials$bib.adoc[]
 :toc: macro
 
 toc::[]
@@ -41,18 +40,18 @@ A **Bounding Volume** is a single simple volume encapsulating one or several obj
 ****
 
 []
-image:ROOT::BoundingVolumes.png[]
+image::ROOT:BoundingVolumes.png[]
 
 ==== Axis-Aligned Bounding Boxes (AABBs)
 
 There are 3 main manners of defining such boxes. The overlap tests are straightforward: 2 AABBs only overlap if they overlap on all 3 (or 2 in 2D) axes.
 
 []
-image:ROOT::AABBs.png[500]
+image::ROOT:AABBs.png[500]
 
 But these can very rapidly lead to false results when dealing with more complex shapes, specially when they are close or not aligned with the AABB's axes, since the overlapp test on the bounding box of one object can be a false-True, meaning it's possible for the second object to never be tested against rays incomming from the first object's bounding box.
 []
-image:ROOT::OverlappingElements.png[]
+image::ROOT:OverlappingElements.png[]
 
 Such overlapping tests can be done using simple comparisons, as shown in the following code snippet for a `min-max` 3D representation:
 
@@ -68,7 +67,7 @@ int TestAABBAABB(AABB a, AABB b)
 	return 1;
 }
 ----
-Code snippet and previous image from xref:partials$bib.adoc#real-time-collision-detection[Real-Time Collision Detection] by Christer Ericson
+Code snippet and previous image from <<real-time-collision-detection>> by Christer Ericson
 
 ==== Oriented Bounding Boxes (OBBs)
 
@@ -88,7 +87,7 @@ Furthermore, the trade-off between construction time and traversal efficiency ca
 A visual definition of a BVH structure using Axis-Aligned Bounding-Boxes (from link:https://developer.nvidia.com/blog/thinking-parallel-part-ii-tree-traversal-gpu/[here])
 
 []
-image:ROOT::BVH.png[]
+image::ROOT:BVH.png[]
 
 In this context, `N1` would be the bounding volume for the entire object or scene, `N2` and `N3` would be those respectively containing `N4` and `N5`, and so on, until we reach the leaves of the tree, which are directly the bounding boxes of the primitives.
 
@@ -96,9 +95,9 @@ In this context, `N1` would be the bounding volume for the entire object or scen
 
 Visual representation of the construction process of a BVH :
 []
-image:ROOT::constructmet.png[width=500]
+image::ROOT:constructmet.png[width=500]
 
-Image coming from xref:partials$bib.adoc#freiburg-lecture-bvh[Freiburg Lecture on BVH video].
+Image coming from <<freiburg-lecture-bvh>>.
 
 === Recursive Top-Down Construction
 
@@ -171,7 +170,7 @@ Instead of starting with all scene primitives in one cluster and recursively spl
 
 But such a method wouldn't be the best for our purpose, first of all, looking at its inefficiency in finding pairs, we observe that every time we need to merge two clusters, we have to determine which two are the closest. This operation can be computationally expensive and can result in O(n^2) time complexity if not optimized. For a large number of primitives, this can slow down the construction process considerably. Most important, such techniques suffer from a strong lack in flexibility: the algorithm involves the creation and deletion of nodes dynamically, and the management of an array of active nodes. This can lead to fragmentation and additional memory overhead, which is unacceptable due to the need of scaling up the algorithm to be performed on GPUs, where memory is very limited. The bottom-up approach generally lacks the flexibility to adapt the BVH structure based on specific traversal use-cases. For instance, in solar shading masks computations, certain areas might need more detailed BVH structures (higher resolution) than others. Bottom-up methods don't inherently allow for this granularity during construction, as opposed to the top-down approach, where the BVH structure can be adapted to our needs at each step of the construction process.
 
-Below is an example of a bottom-up construction algorithm, found in xref:partials$bib.adoc#real-time-collision-detection[Real-time Collision Detection] by Christer Ericson:
+Below is an example of a bottom-up construction algorithm, found in <<real-time-collision-detection>> by Christer Ericson:
 
 [source,c++]
 ---- 
@@ -227,7 +226,7 @@ Performing the spatial splits in an optimized way is crucial to the performance 
 ****
 
 []
-image:ROOT::morton.png[width=300px]
+image::ROOT:morton.png[width=300px]
 
 These can be defined thanks to various algorithms presented on
 link:https://developer.nvidia.com/blog/thinking-parallel-part-iii-tree-construction-gpu/[NVIDIA's website].
@@ -236,7 +235,7 @@ link:https://developer.nvidia.com/blog/thinking-parallel-part-iii-tree-construct
 === Agglomerative Clustering
 The major inconvenience when using bottom-up algorithms is that the upper nodes are poorly locally optimized and thus the research for the closest neighbor can be very costly. To prevent this, Gu et al proposed to recursively perform spatial median splits based on Morton codes until each subtree contains less than a chosen number of clusters. The clusters are merged using agglomerative clustering. Using this at all levels in the BVH, even the top level nodes' split will be locally optimized.
 
-Meister and Bittner proposed a GPU-based algorithm using k-means clustering (found in xref:partials$bib.adoc#real-time-collision-detection): scene primitives are subdivided into k clusters using k-means clustering. When done recursively, a k-ary BVH is built, which can also be converted to a binary tree by constructing intermediate levels using agglomerative clustering.
+Meister and Bittner proposed a GPU-based algorithm using k-means clustering (found in <<real-time-collision-detection>>): scene primitives are subdivided into k clusters using k-means clustering. When done recursively, a k-ary BVH is built, which can also be converted to a binary tree by constructing intermediate levels using agglomerative clustering.
 
 === Parallel locally-ordered clustering on GPU
 Introduced by Meister and Bittner, the key observation is that the distance functions have a non-decreasing property, meaning that once we found two mutually corresponding nearest neighbors, we can immediately merge their clusters since no other closer one will be found. The clusters are kept sorted along the Morton Curve, finding the nearest cluster by searching both sides of the sorted cluster array, testing a predefined number of clusters. Since it does not rely on distance matrices, it is GPU-friendly, and only a small number of iterations are needed to build the whole tree.
@@ -274,11 +273,11 @@ std::nth_element(&M_primitiveInfo[start_index_primitive], &M_primitiveInfo[mid],
 
 Here is an example of a construction using the median cut strategy, but on a single splitting axis:
 
-image:ROOT::BVlayers.png[400]
+image::ROOT:BVlayers.png[400]
 
 And such spacial divisions can lead to a similar tree as the following:
 
-image:ROOT::BVlayerstree.png[400]
+image::ROOT:BVlayerstree.png[400]
 
 We will combine this method with the <<Axis Cycling>> one, to ensure that the splitting axes are evenly distributed and can help maintain overall balance during the BVH construction.
 
@@ -286,7 +285,7 @@ We will combine this method with the <<Axis Cycling>> one, to ensure that the sp
 
 :stem: latexmath
 
-The quality of a particular BVH can be estimated in terms of the expected number of operations needed for finding the nearest intersection with a given ray. It can be estimated thanks to the recurrence equation according to xref:partials$bib.adoc#survey-BVHs-for-ray-tracing[Daniel Meister et al.]:
+The quality of a particular BVH can be estimated in terms of the expected number of operations needed for finding the nearest intersection with a given ray. It can be estimated thanks to the recurrence equation according to Daniel Meister et al. <<survey-BVHs-for-ray-tracing>>:
 
 
 [stem]
@@ -319,7 +318,7 @@ The problem of finding an optimal BVH is believed to be NP-hard. But these assum
 
 == Layout
 
-After successfully constructing the tree in an optimized way, it is important to note that both optimizing the traversal code and the tree's representation itself are very important to see an increase in performance. Two obvious ways of dealing with that are to minimize the size of the data structures involved and to rearrange the data in a more cache-friendly way to reduce time for the search of relevant information (for example, it would be better to structure the array holding the pointers in such a way to minimize the time spent during traversal). Most of the information in this part comes from the book xref:partials$bib.adoc#real-time-collision-detection by Christer Ericson (namely all images used in this section).
+After successfully constructing the tree in an optimized way, it is important to note that both optimizing the traversal code and the tree's representation itself are very important to see an increase in performance. Two obvious ways of dealing with that are to minimize the size of the data structures involved and to rearrange the data in a more cache-friendly way to reduce time for the search of relevant information (for example, it would be better to structure the array holding the pointers in such a way to minimize the time spent during traversal). Most of the information in this part comes from the book <<real-time-collision-detection>> by Christer Ericson (namely all images used in this section).
 
 === Array Representation
 Let's look at a natural way of structuring the tree by mapping its nodes in a breadth-first level-by-level manner:
@@ -340,13 +339,13 @@ array[3] = *(root->left->left);
 This way, we always know that a parent's children can be found at positions \(2i+1\) and \(2i+2\) in the array, usually inducing wasted memory unless dealing with a complete tree.
 
 []
-image:ROOT::arrayrep.png[400]
+image::ROOT:arrayrep.png[400]
 
 === Preorder Traversal Order
 When preordering them in traversal order, the left child will always follow its parent, and only one link is needed to point to the right child.
 
 []
-image:ROOT::preordertraversal.png[400]
+image::ROOT:preordertraversal.png[400]
 
 [source,c++]
 ----
@@ -389,7 +388,7 @@ Flattening the tree in this way allows us to store the tree in a single array, w
 When using modern architecture, execution time is mostly limited by cache issues when fetching data from memory. One possible way of adopting a cache-friendlier solution would be by merging the sets of binary tree nodes into a 'tri-node' containing the parent and its children, preventing it from needing internal links. Below we can see an example representing a complete 4-level binary tree with 14 internal links with a 2-level tri-node tree storing only 4 internal links. Even better, this representation can also be combined with other optimizing structures seen before.
 
 []
-image:ROOT::cachefriendly.png[600]
+image::ROOT:cachefriendly.png[600]
 
 Flattening a tri-node tree is similar to flattening a binary tree, except that we need to store the parent's index in the array as well as the left and right child flags. The right child pointer is replaced by a flag indicating whether the parent has a right child or not, the left and parent's one are replaced in the same manner. The root node is a special case, since it has no parent, signified by a special flag. Three new structures (`GPUNode`, `GPURay` and `GPUTree`) were introduced, storing only critical information for it to be of small enough size to be copied-by-value to the GPU.
 
@@ -472,7 +471,7 @@ Additionally, when working with such algorithm, one can encounter parallelisatio
 
 ==== Algorithm
 
-For a clear understanding of the stack-based approach, we can draw an analogy with a depth-first search (DFS) in graph theory, where a stack keeps track of nodes yet to be explored. Here's a basic pseudocode for the stack-based traversal (found in xref:partials$bib.adoc#real-time-collision-detection[Real Time Collision Detection]):
+For a clear understanding of the stack-based approach, we can draw an analogy with a depth-first search (DFS) in graph theory, where a stack keeps track of nodes yet to be explored. Here's a basic pseudocode for the stack-based traversal (found in <<real-time-collision-detection>>):
 
 [source, c++]
 ----
@@ -543,7 +542,7 @@ This already gives us an overlook of the deterministic automaton algorithm (pseu
 - from one of its children (case `fromChild`): the current node was already tested during the top to bottom phase, it **should not** be re-tested. The next on the list is either the current node's `farChild` or its parent
 
 []
-Algorithm Developed by the Authors (Michal Hapala, Tomas Davidovic, Ingo Wald, Vlastimil Havran and Philipp Slusallek) of the article xref:partials$bib.adoc#efficient-stackless-bvh-traversal[ Efficient Stack-less BVH Traversal for Ray Tracing] further implemented by Luca Berti in the original code of this project:
+Algorithm Developed by the Authors (Michal Hapala, Tomas Davidovic, Ingo Wald, Vlastimil Havran and Philipp Slusallek) of the article Efficient Stack-less BVH Traversal for Ray Tracing <<efficient-stackless-bvh-traversal>> further implemented by Luca Berti in the original code of this project:
 
 [source,c++]
 ----
@@ -913,7 +912,7 @@ At its core, OptiX employs advanced tools such as Bounding Volume Hierarchies an
 ==== Speculative Traversal
 
 Imagine a scenario where multiple ray paths are processed all at once, even if eventually, some might not be needed. This concept, known as speculative traversal, shines brightly in the SIMT (Single Instruction, Multiple Threads) or SIMD (Single Instruction, Multiple Data) realms. With multiple units working in tandem, all executing the same operation but on varied data:
-When a ray hits a decision point within an acceleration structure, like a node in the BVH, it doesn't just pick one way, it speculatively chooses all possible paths. This approach keeps NVIDIA GPUs, which operate on SIMT/SIMD architectures, active at all time. Different threads or lanes work on different paths concurrently, maximizing throughput. As paths are traversed, the unnecessary ones—like those not intersecting with any primitives in a BVH section—get discarded, paving the way for more essential operations (see xref:partials$bib.adoc#stanford-lecture-optix[Stanford's lecture on optix] for more details)
+When a ray hits a decision point within an acceleration structure, like a node in the BVH, it doesn't just pick one way, it speculatively chooses all possible paths. This approach keeps NVIDIA GPUs, which operate on SIMT/SIMD architectures, active at all time. Different threads or lanes work on different paths concurrently, maximizing throughput. As paths are traversed, the unnecessary ones—like those not intersecting with any primitives in a BVH section—get discarded, paving the way for more essential operations (see Stanford's lecture on optix <<stanford-lecture-optix>> for more details)
 
 This method is akin to casting a wide net, ensuring that all possible paths are explored, then discarding the unnecessary ones.
 
@@ -928,6 +927,8 @@ Another way to optimize the ray generation would be to exploit the graphics card
 
 This could be taken further, by assigning parts of a matrix to a specific block in the GPU, leveraging the constant memory and launching the frustum of rays in the respective direction defined by the block-assigned resulting matrix. This way, the rays are processed in a more coherent manner, and the GPU's constant memory is used to its full potential. Moreover, the frustum could be instantiated directly on the GPU, and the identical rays could be transformed and translated through random values, generated by the mersene twister algorithm that can be implemented on a CUDA kernel, and therefore be naturally processed in parallel. This would result in a more efficient memory transfer, since the rays shouldn't be transferred back to the CPU, but only the resulting intersected leaves.
 
-image:ROOT::Nvidia-GPU-memory-structure.png[]
+image::ROOT:Nvidia-GPU-memory-structure.png[]
 
 (image found link:https://www.researchgate.net/figure/Nvidia-GPU-memory-structure_fig3_346228460[here])
+
+include::ROOT:partial$bib.adoc[]
