@@ -148,10 +148,10 @@ public:
                 for( auto const& face :  M_rangeFaces)
                 {
                     // Create a map connecting face_id element to marker name (which must contain the string "_face_")
-                    auto f = boost::unwrap_ref( face );                    
+                    auto f = boost::unwrap_ref( face );
                     for( auto m : f.marker() )
                     {                        
-                        if (mesh->markerName(m).find("_face_") != std::string::npos)       
+                        if (mesh->markerName(m).find("_face_") != std::string::npos)
                         {                     
                             M_mapEntityToBuildingFace.insert( std::make_pair( f.id(), mesh->markerName(m) ) );
                             M_listMarkerFaceEntity[mesh->markerName(m)].push_back(std::ref(f));
@@ -160,6 +160,56 @@ public:
                 }
                 // Create a BVH containing all the faces of the buildings
                 M_bvh = boundingVolumeHierarchy( _range=M_rangeFaces );
+            }
+            else if( specs["/Buildings"_json_pointer].contains("aggregatedMarkers"))
+            {
+                M_rangeFaces = markedelements(mesh,"building"); // it contains all the faces of all buildings
+                for( auto const& face :  M_rangeFaces)
+                {
+                    auto f = boost::unwrap_ref( face );
+                    std::vector<std::string> composite_marker; // collects all necessary marker substrings to compose the face marker using buildingId and faceId
+                    for( auto m : f.marker() )
+                    {
+                        auto markerName = mesh->markerName(m);
+
+                        if(markerName.find("buildingVerticalFace_") != std::string::npos)
+                        {
+                            auto pos = markerName.find_last_of('_');
+                            composite_marker.push_back("_face" + markerName.substr(pos, std::string::npos));
+                        }
+                        else if(markerName.find("buildingRoof") != std::string::npos)
+                        {
+                            composite_marker.push_back( "_face_roof");
+                        }
+                        else if((markerName.find("buildingId_") != std::string::npos))
+                        {
+                            auto pos = markerName.find_last_of('_');
+                            // insert the building name at the beginning of the vector
+                            composite_marker.insert(composite_marker.begin(), "building" + markerName.substr(pos, std::string::npos));
+                        }
+                        else
+                        {
+                            // markers "building" and "terrain" are not useful
+                        }
+                    }
+
+                    std::string faceName;
+                    for(auto marker_ : composite_marker )
+                        faceName += marker_;
+
+                    
+                    if( M_listMarkerFaceEntity[faceName].empty() )
+                        M_listFaceMarkers.push_back(faceName);
+                    M_listMarkerFaceEntity[faceName].push_back(std::ref(f));
+                    M_mapEntityToBuildingFace.insert( std::make_pair( f.id(), faceName ) );
+
+                }
+                // Create a BVH containing all the faces of the buildings
+                LOG(INFO) << "BVH construction: beginning";
+                M_bvh = boundingVolumeHierarchy( _range=M_rangeFaces );
+                LOG(INFO) << "BVH construction: end";
+
+                std::cout << "BVH construction: end" << std::endl;
             }
         }        
     }
@@ -336,7 +386,7 @@ public:
                 computeMasksOneBuilding(building_name);
             }
         }
-        else if( j_["/Buildings"_json_pointer].contains("fileFaces") ) // a csv containing the face markers is provided
+        else if( j_["/Buildings"_json_pointer].contains("fileFaces") ||  j_["/Buildings"_json_pointer].contains("aggregatedMarkers") ) // a csv containing the face markers is provided, or they are computed using aggregated markers
         {            
             std::vector<double> random_direction(3);            
 
@@ -347,6 +397,8 @@ public:
             // Store large vectors containing all the shading mask matrices whose columns are stacked onto each other
             std::vector<double> SM_tables(M_listFaceMarkers.size() * matrixSize,0);
             std::vector<double> Angle_tables(M_listFaceMarkers.size() * matrixSize,0);
+
+            std::cout << "Allocated SM_tables and Angle_tables of size " << M_listFaceMarkers.size() * matrixSize << std::endl;
 
             int markerNumber = 0;   
 
@@ -570,6 +622,7 @@ public:
                                 }
 
                                 i_marker += 1;
+                                // std::cout << "I_marker " << i_marker << " thread number " << id_thread << " marker " << marker << std::endl;
                             }
                             return true;
                         };
@@ -585,6 +638,8 @@ public:
 
                     int n0 = 0;
                     int t = 0;
+
+                    // std::cout << "Size of marker list per thread " << marker_threads_list_length << std::endl;
 
                     std::vector<std::vector<std::string>> marker_thread_lists(marker_threads_list_length.size());
                     
@@ -627,6 +682,7 @@ public:
             // Save the shading mask table to a csv file
             if(M_saveMasks)
             {
+                if(j_["/Buildings"_json_pointer].contains("fileFaces") )
                 for(int i=0; i< M_listFaceMarkers.size(); i++)
                 {
                     std::string building_name = std::to_string(i);
@@ -634,6 +690,17 @@ public:
                     auto initial_index_SM = SM_tables.begin() +  i * matrixSize;
                     auto shadingMatrix = Eigen::Map<Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor>>(&(*initial_index_SM),M_azimuthSize, M_altitudeSize);                
                     saveShadingMask(building_name,marker,shadingMatrix.matrix());
+                }
+                else if(j_["/Buildings"_json_pointer].contains("aggregatedMarkers") )
+                {
+                    for(int i=0; i< M_listFaceMarkers.size(); i++)
+                    {
+                        std::string building_name = M_listFaceMarkers[i];
+                        std::string marker = "";
+                        auto initial_index_SM = SM_tables.begin() +  i * matrixSize;
+                        auto shadingMatrix = Eigen::Map<Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor>>(&(*initial_index_SM),M_azimuthSize, M_altitudeSize);                
+                        saveShadingMask(building_name,marker,shadingMatrix.matrix());
+                    }
                 }
             }
         }
