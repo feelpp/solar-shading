@@ -213,6 +213,7 @@ public:
             else if( specs["/Buildings"_json_pointer].contains("aggregatedMarkers"))
             {
                 M_rangeFaces = markedelements(mesh,"building"); // it contains all the faces of all buildings
+                tic();
                 for( auto const& face :  M_rangeFaces)
                 {
                     auto f = boost::unwrap_ref( face );
@@ -253,12 +254,13 @@ public:
                     M_mapEntityToBuildingFace.insert( std::make_pair( f.id(), faceName ) );
 
                 }
+                toc("Building markers and associated data structures");
                 // Create a BVH containing all the faces of the buildings
                 LOG(INFO) << "BVH construction: beginning";
+                tic();
                 M_bvh = boundingVolumeHierarchy( _range=M_rangeFaces );
+                toc("BVH built");
                 LOG(INFO) << "BVH construction: end";
-
-                std::cout << "BVH construction: end" << std::endl;
             }
         }        
     }
@@ -675,7 +677,7 @@ public:
                             }
                             return true;
                         };
-
+                    tic();
                     // Store the index of M_listFaceMarkers where each thread will stop its computations
                     std::vector<int> marker_threads_list_length;
 
@@ -688,7 +690,7 @@ public:
                     int n0 = 0;
                     int t = 0;
 
-                    // std::cout << "Size of marker list per thread " << marker_threads_list_length << std::endl;
+                    std::cout << "Size of marker list per thread " << marker_threads_list_length << std::endl;
 
                     std::vector<std::vector<std::string>> marker_thread_lists(marker_threads_list_length.size());
                     
@@ -721,6 +723,7 @@ public:
                     // Wait for the result to be ready
                     auto a =  f.get();  
                     }
+                    toc("Shading masks computed using raytracing");
             }
             
             // Divide the shading mask by the corresponding value of the angle table
@@ -731,6 +734,7 @@ public:
             // Save the shading mask table to a csv file
             if(M_saveMasks)
             {
+                tic();
                 if(j_["/Buildings"_json_pointer].contains("fileFaces") )
                 for(int i=0; i< M_listFaceMarkers.size(); i++)
                 {
@@ -751,6 +755,7 @@ public:
                         saveShadingMask(building_name,marker,shadingMatrix.matrix());
                     }
                 }
+                toc("Mask CSV saved");
             }
         }
     }

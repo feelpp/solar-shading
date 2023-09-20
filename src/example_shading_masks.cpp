@@ -30,7 +30,9 @@ int main(int argc, char **argv)
     json json_buildings = json::parse( astr );
 
     // Load the mesh
-    auto mesh = loadMesh( _mesh = new mesh_t );
+    tic();
+    auto mesh = loadMesh( _mesh = new mesh_t, _update=MESH_UPDATE_ELEMENTS_ADJACENCY|MESH_NO_UPDATE_MEASURES|MESH_GEOMAP_NOT_CACHED );
+    toc("Mesh loaded");
 
     // Compute the shading masks
     ShadingMask<mesh_t> sm(mesh,json_buildings);
