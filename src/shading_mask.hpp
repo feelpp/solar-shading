@@ -59,10 +59,59 @@ public:
         int index_azimuth, index_altitude;
         M_raysdirections.resize(M_Nrays);
         std::vector<double> random_direction(3);
+        std::map< std::pair<int,int>, std::vector<int> > check_directions;
         for(int i=0; i<M_Nrays; i++)
         {
             getRandomDirectionSM(random_direction,M_gen,M_gen2,index_azimuth,index_altitude);                    
             M_raysdirections[i] = std::make_tuple(random_direction,index_azimuth,index_altitude);
+            check_directions[std::make_pair(index_azimuth,index_altitude)].push_back(i);
+        }
+        // Check if all the possible combinations of [0,intervalsAzimuth] x [0,intervalsAltitude] have at least one associated ray 
+        std::map< std::pair<int,int>, std::vector<int> >::iterator it;
+        for(int i=0; i<intervalsAzimuth; i++)
+        {
+            for(int j=0; j<intervalsAltitude; j++)
+            {
+                it = check_directions.find(std::make_pair(i,j));
+                if(it == check_directions.end())
+                {
+                    std::cout << fmt::format("Direction associated with indices ({},{}) is missing. Replacing one direction with it \n",i,j);
+                    
+                    std::pair<int,int> kl_pair;
+                    bool leave_loop = false;
+                    
+                    for(int k=0;k<intervalsAzimuth; k++)
+                    {
+                        for(int l=0; l<intervalsAltitude; l++)
+                        {
+                            kl_pair=std::make_pair(k,l);
+                            if( check_directions[kl_pair].size() > 1 )
+                            {
+                                std::vector<int> list_indices = check_directions[kl_pair];
+                                int index_to_substitute = list_indices.back();
+                                list_indices.pop_back();
+
+                                // Compute the direction associated with the indices (i,j)
+                                double phi = -( M_azimuthAngles[i] ) + M_PI*0.5 ; // recover spherical coordinate from azimuth angle
+                                double theta = M_PI*0.5 - M_altitudeAngles[j]; // recover spherical coordinate from altitude
+
+                                random_direction[0]=math::sin(theta)*math::cos(phi);
+                                random_direction[1]=math::sin(theta)*math::sin(phi);
+                                random_direction[2]=math::cos(theta);
+
+                                M_raysdirections[index_to_substitute] = std::make_tuple(random_direction,i,j);
+                                check_directions[std::make_pair(i,j)].push_back(index_to_substitute);
+
+                                leave_loop = true;
+                            }
+                            if(leave_loop)
+                                break;
+                        }
+                        if(leave_loop)
+                                break;
+                    }
+                }
+            }
         }
         
         if constexpr( MeshType::nDim==MeshType::nRealDim )
