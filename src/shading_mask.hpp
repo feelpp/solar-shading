@@ -57,6 +57,9 @@ public:
     // Save the shading mask table to a CSV file
     void saveShadingMask(std::string building_name, std::string marker_name, const Eigen::Ref<const Eigen::MatrixXd>& M);
 
+    // Save the shading mask table metadata to json
+    void saveMetadata();
+
 private:
     
     std::map<std::string,std::unique_ptr<BVH<typename tr_mesh_type::element_type>>> M_bvh_tree_vector;
@@ -83,6 +86,8 @@ private:
     bool M_saveMasks;
 
     nl::json j_;
+
+    nl::json M_metadataJson;
 
     std::random_device M_rd;
     std::random_device M_rd2;

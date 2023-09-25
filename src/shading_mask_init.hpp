@@ -4,6 +4,10 @@ namespace Feel
 template <typename MeshType>
 ShadingMask<MeshType>::ShadingMask(mesh_ptrtype mesh, nl::json const& specs, int intervalsAzimuth, int intervalsAltitude )
 {
+    auto start_computation = std::chrono::system_clock::now();
+    std::time_t beginning_time = std::chrono::system_clock::to_time_t(start_computation);
+    M_metadataJson["shadingMask"]["Timestamp"]["Beginning"] = strtok(std::ctime(&beginning_time),"\n");;
+
     // Read the number of rays per triangle and the number of threads
     j_ = specs;
     M_Nrays = specs["Nrays"];
@@ -94,6 +98,10 @@ ShadingMask<MeshType>::ShadingMask(mesh_ptrtype mesh, nl::json const& specs, int
         if( specs["/Buildings"_json_pointer].contains("list") ) // the list of volume markers is provided
         {
             auto markersVolume = specs["Buildings"]["list"].get<std::vector<std::string>>();
+            int nBuildings = 0;
+            int nFaces = 0;
+            
+            tic();
             for(std::string buildingName : markersVolume)
             {
                 std::cout << fmt::format("{}\n",buildingName);
@@ -105,7 +113,17 @@ ShadingMask<MeshType>::ShadingMask(mesh_ptrtype mesh, nl::json const& specs, int
 
                 M_submeshes.insert(std::make_pair( buildingName , surfaceSubmesh ));
 
+                nBuildings +=1;
+                nFaces += nelements(elements(surfaceSubmesh));
             }
+            auto bvhBuildingTime = toc("BVH built");
+            LOG(INFO) << "BVHs construction: end";
+
+            M_metadataJson["shadingMask"]["Timer"]["BVHs_total_building_time"] = bvhBuildingTime;
+
+            M_metadataJson["shadingMask"]["Method"] = "listVolumes";
+            M_metadataJson["shadingMask"]["nBuildings"] = nBuildings;
+            M_metadataJson["shadingMask"]["nFaces"] = nFaces;
         }
         else if( specs["/Buildings"_json_pointer].contains("fileVolumes")) // a csv containing the volume markers is provided
         {
@@ -114,6 +132,10 @@ ShadingMask<MeshType>::ShadingMask(mesh_ptrtype mesh, nl::json const& specs, int
 
             std::ifstream fileVolumes(Environment::expand(specs["Buildings"]["fileVolumes"].get<std::string>()));
 
+            int nBuildings = 0;
+            int nFaces = 0;
+            
+            tic();
             // read, line by line, the building marker
             while ( getline(fileVolumes,buildingName) )
             {
@@ -125,7 +147,18 @@ ShadingMask<MeshType>::ShadingMask(mesh_ptrtype mesh, nl::json const& specs, int
 
                 M_submeshes.insert(std::make_pair( buildingName , surfaceSubmesh ));
 
+                nBuildings +=1;
+                nFaces += nelements(elements(surfaceSubmesh));
+
             }
+            auto bvhBuildingTime = toc("BVHs built");
+            LOG(INFO) << "BVHs construction: end";
+
+            M_metadataJson["shadingMask"]["Timer"]["BVHs_total_building_time"] = bvhBuildingTime;
+
+            M_metadataJson["shadingMask"]["Method"] = "fileVolumes";
+            M_metadataJson["shadingMask"]["nBuildings"] = nBuildings;
+            M_metadataJson["shadingMask"]["nFaces"] = nFaces;
 
         }
     }
@@ -137,6 +170,10 @@ ShadingMask<MeshType>::ShadingMask(mesh_ptrtype mesh, nl::json const& specs, int
             std::string buildingName;
             std::ifstream fileSurfaces(Environment::expand(specs["Buildings"]["fileSurfaces"].get<std::string>()));
             std::cout << Environment::expand(specs["Buildings"]["fileSurfaces"].get<std::string>()) << std::endl;
+
+            int nBuildings = 0;
+            int nFaces = 0;
+            tic();
             // read, line by line, the building marker
             while ( getline(fileSurfaces,buildingName) )
             {
@@ -154,7 +191,18 @@ ShadingMask<MeshType>::ShadingMask(mesh_ptrtype mesh, nl::json const& specs, int
 
                 M_submeshes.insert(std::make_pair( buildingName , surfaceSubmesh ));
 
+                nBuildings +=1;
+                nFaces += nelements(elements(surfaceSubmesh));
+
             }
+            auto bvhBuildingTime = toc("BVHs built");
+            LOG(INFO) << "BVHs construction: end";
+
+            M_metadataJson["shadingMask"]["Timer"]["BVHs_total_building_time"] = bvhBuildingTime;
+
+            M_metadataJson["shadingMask"]["Method"] = "fileSurfaces";
+            M_metadataJson["shadingMask"]["nBuildings"] = nBuildings;
+            M_metadataJson["shadingMask"]["nFaces"] = nFaces;
         }
         // Store only the view on the surface mesh faces
         else if( specs["/Buildings"_json_pointer].contains("fileFaces") ) // a csv containing the face markers is provided
@@ -162,12 +210,18 @@ ShadingMask<MeshType>::ShadingMask(mesh_ptrtype mesh, nl::json const& specs, int
             std::string faceName;
             std::ifstream fileFaces(Environment::expand(specs["Buildings"]["fileFaces"].get<std::string>()));
 
+            int nMarkers = 0;
+
             while ( getline(fileFaces,faceName) )
             {
                 M_listFaceMarkers.push_back(faceName);
                 M_listMarkerFaceEntity[faceName];
+
+                nMarkers += 1;
             }
             M_rangeFaces = markedelements(mesh,M_listFaceMarkers);
+
+            int nFaces = 0;
             for( auto const& face :  M_rangeFaces)
             {
                 // Create a map connecting face_id element to marker name (which must contain the string "_face_")
@@ -179,15 +233,29 @@ ShadingMask<MeshType>::ShadingMask(mesh_ptrtype mesh, nl::json const& specs, int
                         M_mapEntityToBuildingFace.insert( std::make_pair( f.id(), mesh->markerName(m) ) );
                         M_listMarkerFaceEntity[mesh->markerName(m)].push_back(std::ref(f));
                     }
-                }                    
+                }     
+
+                nFaces += 1;               
             }
+
+            M_metadataJson["shadingMask"]["Method"] = "fileFaces";
+            M_metadataJson["shadingMask"]["nMarkers"] = nMarkers;
+            M_metadataJson["shadingMask"]["nFaces"] = nFaces;
+
             // Create a BVH containing all the faces of the buildings
+            tic();
             M_bvh = boundingVolumeHierarchy( _range=M_rangeFaces );
+            auto bvhBuildingTime = toc("BVH built");
+            LOG(INFO) << "BVH construction: end";
+
+            M_metadataJson["shadingMask"]["Timer"]["BVH_building_time"] = bvhBuildingTime;
         }
         else if( specs["/Buildings"_json_pointer].contains("aggregatedMarkers"))
         {
             M_rangeFaces = markedelements(mesh,"building"); // it contains all the faces of all buildings
             tic();
+            int nFaces = 0;
+            int nMarkers = 0;
             for( auto const& face :  M_rangeFaces)
             {
                 auto f = boost::unwrap_ref( face );
@@ -223,18 +291,30 @@ ShadingMask<MeshType>::ShadingMask(mesh_ptrtype mesh, nl::json const& specs, int
 
                 
                 if( M_listMarkerFaceEntity[faceName].empty() )
+                {
                     M_listFaceMarkers.push_back(faceName);
+                    nMarkers +=1;
+                }
                 M_listMarkerFaceEntity[faceName].push_back(std::ref(f));
                 M_mapEntityToBuildingFace.insert( std::make_pair( f.id(), faceName ) );
 
+                nFaces += 1;
+
             }
-            toc("Building markers and associated data structures");
+            auto dataStructureBuildingTime = toc("Building markers and associated data structures");
+            M_metadataJson["shadingMask"]["Method"] = "aggregatedMarkers";
+            M_metadataJson["shadingMask"]["nBuildingFaces"] = nFaces;
+            M_metadataJson["shadingMask"]["nMarkers"] = nMarkers;
+            M_metadataJson["shadingMask"]["Timer"]["DataStructures_building_time"] = dataStructureBuildingTime;
+
             // Create a BVH containing all the faces of the buildings
             LOG(INFO) << "BVH construction: beginning";
             tic();
             M_bvh = boundingVolumeHierarchy( _range=M_rangeFaces );
-            toc("BVH built");
+            auto bvhBuildingTime = toc("BVH built");
             LOG(INFO) << "BVH construction: end";
+
+            M_metadataJson["shadingMask"]["Timer"]["BVH_building_time"] = bvhBuildingTime;
         }
     }        
 }

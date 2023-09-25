@@ -155,26 +155,47 @@ namespace Feel
         if( j_["/Buildings"_json_pointer].contains("list") ) // the list of volume markers is provided
         {
             auto markersVolume = j_["Buildings"]["list"].get<std::vector<std::string>>();
+            tic();
             for(std::string building_name : markersVolume)
             {
                 computeMasksOneBuilding(building_name);//,M_bvh_tree_vector[building_name]);
             }
+            auto timeComputation = toc("Shading masks computed using raytracing");
+            M_metadataJson["shadingMask"]["Timer"]["MaskComputation"] = timeComputation;
+            M_metadataJson["shadingMask"]["Nthreads"] = M_Nthreads;
+            M_metadataJson["shadingMask"]["NraysPerElement"] = M_Nrays;
         }
         else if( j_["/Buildings"_json_pointer].contains("fileVolumes")) // a csv containing the volume markers is provided
         {
+            std::string building_name;
             std::ifstream fileVolumes(Environment::expand(j_["Buildings"]["fileVolumes"].get<std::string>()));
+            tic();
+            // read, line by line, the building marker
+            while ( getline(fileVolumes,building_name) )
+            {
+                computeMasksOneBuilding(building_name);
+            }
+            auto timeComputation = toc("Shading masks computed using raytracing");
+            M_metadataJson["shadingMask"]["Timer"]["MaskComputation"] = timeComputation;
+            M_metadataJson["shadingMask"]["Nthreads"] = M_Nthreads;
+            M_metadataJson["shadingMask"]["NraysPerElement"] = M_Nrays;
         }
             // read, line by line, the building marker
         else if( j_["/Buildings"_json_pointer].contains("fileSurfaces") ) // a csv containing the surface markers is provided
         {
             std::string building_name;
             std::ifstream fileSurfaces(Environment::expand(j_["Buildings"]["fileSurfaces"].get<std::string>()));
-
+            tic();
             // read, line by line, the building marker
             while ( getline(fileSurfaces,building_name) )
             {
                 computeMasksOneBuilding(building_name);
             }
+            auto timeComputation = toc("Shading masks computed using raytracing");
+            M_metadataJson["shadingMask"]["Timer"]["MaskComputation"] = timeComputation;
+            M_metadataJson["shadingMask"]["Nthreads"] = M_Nthreads;
+            M_metadataJson["shadingMask"]["NraysPerElement"] = M_Nrays;
+            
         }
         else if( j_["/Buildings"_json_pointer].contains("fileFaces") ||  j_["/Buildings"_json_pointer].contains("aggregatedMarkers") ) // a csv containing the face markers is provided, or they are computed using aggregated markers
         {            
@@ -195,6 +216,7 @@ namespace Feel
             // Multithread over rays
             if (M_mthreadtype == "ray")
             {
+                tic();
                 for(auto const &eltWrap : M_rangeFaces ) // from each element of the submesh, launch M_Nrays randomly oriented
                 {
                     auto const& el = unwrap_ref( eltWrap );
@@ -315,6 +337,10 @@ namespace Feel
 
                     }
                 }
+                auto timeComputation = toc("Shading masks computed using raytracing");
+                M_metadataJson["shadingMask"]["Timer"]["MaskComputation"] = timeComputation;
+                M_metadataJson["shadingMask"]["Nthreads"] = M_Nthreads;
+                M_metadataJson["shadingMask"]["NraysPerElement"] = M_Nrays;
             }
 // Multithread over markers
             else if (M_mthreadtype == "markers")
@@ -462,7 +488,11 @@ namespace Feel
                     // Wait for the result to be ready
                     auto a =  f.get();  
                     }
-                    toc("Shading masks computed using raytracing");
+                    auto timeComputation = toc("Shading masks computed using raytracing");
+                    M_metadataJson["shadingMask"]["Timer"]["MaskComputation"] = timeComputation;
+                    M_metadataJson["shadingMask"]["Nthreads"] = M_Nthreads;
+                    M_metadataJson["shadingMask"]["NraysPerElement"] = M_Nrays;
+                    
             }
             
             // Divide the shading mask by the corresponding value of the angle table
@@ -494,9 +524,14 @@ namespace Feel
                         saveShadingMask(building_name,marker,shadingMatrix.matrix());
                     }
                 }
-                toc("Mask CSV saved");
+                auto timeCSVsaving = toc("Mask CSV saved");
+                M_metadataJson["shadingMask"]["Timer"]["MaskCSVsaving"] = timeCSVsaving;
             }
         }
+        auto end_computation = std::chrono::system_clock::now();
+        std::time_t end_time = std::chrono::system_clock::to_time_t(end_computation);
+        M_metadataJson["shadingMask"]["Timestamp"]["End"] = strtok(std::ctime(&end_time),"\n");
+        saveMetadata();   
     }
 
 }

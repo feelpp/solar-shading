@@ -30,4 +30,20 @@ namespace Feel
         matrix_file.close();
     }
 
+
+
+    template <typename MeshType>
+    void 
+    ShadingMask<MeshType>::saveMetadata()
+    {
+        std::string folder = (boost::filesystem::path(Environment::appRepository())).string();
+        if (!boost::filesystem::exists(folder))
+            boost::filesystem::create_directory(folder);
+        
+        std::string json_filename = folder+"/shadingmask_metadata.json";
+
+        std::ofstream o(json_filename);
+        o << std::setw(6) << M_metadataJson << std::endl;
+                
+    }
 }

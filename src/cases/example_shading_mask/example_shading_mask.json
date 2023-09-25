@@ -1,5 +1,5 @@
 {
-    "Nrays":1000,
+    "Nrays":5000,
     "Multithread":
     {
         "Nthreads":4,
