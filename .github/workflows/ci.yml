@@ -16,7 +16,7 @@ jobs:
     name: Build, Install, Package documentation
     if: "!contains(github.event.head_commit.message, 'docs skip')"
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Install credentials
       run: echo https://$GITHUB_OAUTH:@github.com > $HOME/.git-credentials
       env:
@@ -46,7 +46,7 @@ jobs:
     if: "!contains(github.event.head_commit.message, 'code skip')"
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         lfs: true
         recursive: true
@@ -90,7 +90,7 @@ jobs:
     name: Build docker, tag and push
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         lfs: true
         submodules: 'recursive'
