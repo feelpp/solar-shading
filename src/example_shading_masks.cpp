@@ -31,7 +31,13 @@ int main(int argc, char **argv)
 
     // Load the mesh
     tic();
+
+#if FEELPP_TOP_DIM==2
     auto mesh = loadMesh( _mesh = new mesh_t, _update=MESH_UPDATE_ELEMENTS_ADJACENCY|MESH_NO_UPDATE_MEASURES|MESH_GEOMAP_NOT_CACHED );
+#else
+    auto mesh = loadMesh( _mesh = new mesh_t );
+#endif
+
     toc("Mesh loaded");
 
     // Compute the shading masks

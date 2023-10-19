@@ -40,11 +40,11 @@ ShadingMask<MeshType>::ShadingMask(mesh_ptrtype mesh, nl::json const& specs, int
     std::map< std::pair<int,int>, std::vector<int> > check_directions;
     for(int i=0; i<M_Nrays; i++)
     {
-        getRandomDirectionSM(random_direction,M_gen,M_gen2,index_azimuth,index_altitude);                    
+        getRandomDirectionSM(random_direction,M_gen,M_gen2,index_azimuth,index_altitude);
         M_raysdirections[i] = std::make_tuple(random_direction,index_azimuth,index_altitude);
         check_directions[std::make_pair(index_azimuth,index_altitude)].push_back(i);
     }
-    // Check if all the possible combinations of [0,intervalsAzimuth] x [0,intervalsAltitude] have at least one associated ray 
+    // Check if all the possible combinations of [0,intervalsAzimuth] x [0,intervalsAltitude] have at least one associated ray
     std::map< std::pair<int,int>, std::vector<int> >::iterator it;
     for(int i=0; i<intervalsAzimuth; i++)
     {
@@ -54,10 +54,10 @@ ShadingMask<MeshType>::ShadingMask(mesh_ptrtype mesh, nl::json const& specs, int
             if(it == check_directions.end())
             {
                 std::cout << fmt::format("Direction associated with indices ({},{}) is missing. Replacing one direction with it \n",i,j);
-                
+
                 std::pair<int,int> kl_pair;
                 bool leave_loop = false;
-                
+
                 for(int k=0;k<intervalsAzimuth; k++)
                 {
                     for(int l=0; l<intervalsAltitude; l++)
@@ -91,7 +91,7 @@ ShadingMask<MeshType>::ShadingMask(mesh_ptrtype mesh, nl::json const& specs, int
             }
         }
     }
-    
+
     if constexpr( MeshType::nDim==MeshType::nRealDim )
     {
         // For each building, save the surface mesh and build the corresponding BVH tree for ray search
@@ -100,14 +100,13 @@ ShadingMask<MeshType>::ShadingMask(mesh_ptrtype mesh, nl::json const& specs, int
             auto markersVolume = specs["Buildings"]["list"].get<std::vector<std::string>>();
             int nBuildings = 0;
             int nFaces = 0;
-            
+
             tic();
             for(std::string buildingName : markersVolume)
             {
                 std::cout << fmt::format("{}\n",buildingName);
-                auto volumeSubmesh = createSubmesh(_mesh=mesh,_range=markedelements(mesh,buildingName));
-                auto surfaceSubmesh = createSubmesh(_mesh=volumeSubmesh,_range=boundaryfaces(volumeSubmesh));
-
+                auto volumeSubmesh = createSubmesh(_mesh=mesh,_range=markedelements(mesh,buildingName),_update=0,_view=1);
+                auto surfaceSubmesh = createSubmesh(_mesh=volumeSubmesh,_range=boundaryfaces(volumeSubmesh),_update=0,_view=1);
                 auto bvhBuilding = boundingVolumeHierarchy(_range=elements(surfaceSubmesh));
                 M_bvh_tree_vector.insert(std::make_pair( buildingName , std::move(bvhBuilding) ));
 
@@ -134,14 +133,14 @@ ShadingMask<MeshType>::ShadingMask(mesh_ptrtype mesh, nl::json const& specs, int
 
             int nBuildings = 0;
             int nFaces = 0;
-            
+
             tic();
             // read, line by line, the building marker
             while ( getline(fileVolumes,buildingName) )
             {
                 std::cout << fmt::format("{}\n",buildingName);
-                auto volumeSubmesh = createSubmesh(_mesh=mesh,_range=markedelements(mesh,buildingName));
-                auto surfaceSubmesh = createSubmesh(_mesh=volumeSubmesh,_range=boundaryfaces(volumeSubmesh));
+                auto volumeSubmesh = createSubmesh(_mesh=mesh,_range=markedelements(mesh,buildingName),_update=0,_view=1);
+                auto surfaceSubmesh = createSubmesh(_mesh=volumeSubmesh,_range=boundaryfaces(volumeSubmesh),_update=0,_view=1);
                 auto bvhBuilding = boundingVolumeHierarchy(_range=elements(surfaceSubmesh));
                 M_bvh_tree_vector.insert(std::make_pair( buildingName , std::move(bvhBuilding) ));
 
@@ -227,15 +226,15 @@ ShadingMask<MeshType>::ShadingMask(mesh_ptrtype mesh, nl::json const& specs, int
                 // Create a map connecting face_id element to marker name (which must contain the string "_face_")
                 auto f = boost::unwrap_ref( face );
                 for( auto m : f.marker() )
-                {                        
+                {
                     if (mesh->markerName(m).find("_face_") != std::string::npos)
-                    {                     
+                    {
                         M_mapEntityToBuildingFace.insert( std::make_pair( f.id(), mesh->markerName(m) ) );
                         M_listMarkerFaceEntity[mesh->markerName(m)].push_back(std::ref(f));
                     }
-                }     
+                }
 
-                nFaces += 1;               
+                nFaces += 1;
             }
 
             M_metadataJson["shadingMask"]["Method"] = "fileFaces";
@@ -289,7 +288,7 @@ ShadingMask<MeshType>::ShadingMask(mesh_ptrtype mesh, nl::json const& specs, int
                 for(auto marker_ : composite_marker )
                     faceName += marker_;
 
-                
+
                 if( M_listMarkerFaceEntity[faceName].empty() )
                 {
                     M_listFaceMarkers.push_back(faceName);
@@ -316,11 +315,11 @@ ShadingMask<MeshType>::ShadingMask(mesh_ptrtype mesh, nl::json const& specs, int
 
             M_metadataJson["shadingMask"]["Timer"]["BVH_building_time"] = bvhBuildingTime;
         }
-    }        
+    }
 }
 
 template <typename MeshType>
-void 
+void
 ShadingMask<MeshType>::fixAzimuthAltitudeDiscretization(int intervalsAzimuth, int intervalsAltitude)
     {
         M_azimuthSize = intervalsAzimuth;
