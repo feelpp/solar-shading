@@ -1,9 +1,0 @@
-{
-    "Nrays":5000,
-    "Buildings":{"fileFaces":"$cfgdir/example_shading_mask_surface_face_id.txt"},
-    "SaveMasks":true,
-    "Multithread":{
-        "Nthreads":9,
-        "type":"markers" //markers,rays
-    }
-}
