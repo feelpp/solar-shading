@@ -1,0 +1,9 @@
+{
+    "Nrays":5000,
+    "Buildings":{"aggregatedMarkers":""},
+    "SaveMasks":true,
+    "Multithread":{
+        "Nthreads":20,
+        "type":"markers" //markers,ray
+    }
+}
