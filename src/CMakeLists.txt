@@ -27,7 +27,6 @@
 #BEGIN::SPECX
 # will need to be replaced
 file(GLOB_RECURSE Specx_list 
-    
     "/home/u2/lemoine/SpecxProjects/specxpp/*.hpp"
 )
 if (TRUE)
@@ -85,18 +84,19 @@ target_link_libraries(${SOLARSHADING_TARGET_NAME_SPECX}
 
 
 
-
-
-
-
 if ( FEELPP_HAS_SPECX )
-    MESSAGE(****************++++++++++++++++++++++*******************)
+    MESSAGE(***********+++++++++ S P E C X in FEELPP ++++++++++++*******************)
 endif()
 
+if(TRUE)
+    feelpp_add_application( SM_Specx_3 SRCS Specx_Solar_Shading.cpp DEFS FEELPP_TOP_DIM=3 LINK_LIBRARIES ${SOLARSHADING_TARGET_NAME_SPECX} Feelpp::feelpp_specx )
+endif()
 
-feelpp_add_application( SM_Specx_3 SRCS Specx_Solar_Shading.cpp DEFS FEELPP_TOP_DIM=3 LINK_LIBRARIES ${SOLARSHADING_TARGET_NAME_SPECX} Feelpp::feelpp_specx )
+if(TRUE)
+    feelpp_add_application( SM_Specx_2 SRCS Specx_Solar_Shading.cpp DEFS FEELPP_TOP_DIM=2 LINK_LIBRARIES ${SOLARSHADING_TARGET_NAME_SPECX} Feelpp::feelpp_specx )
+endif()
 
-feelpp_add_application( SM_Specx_2 SRCS Specx_Solar_Shading.cpp DEFS FEELPP_TOP_DIM=2 LINK_LIBRARIES ${SOLARSHADING_TARGET_NAME_SPECX} Feelpp::feelpp_specx )
-
-feelpp_add_testcase(cases)
+if(TRUE)
+    feelpp_add_testcase(cases)
+endif()
 

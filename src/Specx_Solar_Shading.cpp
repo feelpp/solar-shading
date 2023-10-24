@@ -70,8 +70,8 @@ int main(int argc, char **argv)
     std::cout<<"[SPECX INFO] : Compute...\n";
     sm.computeMasks();
     std::cout<<"\n\n";
-    std::cout<<"[SPECX INFO] : END !!!\n";
+    std::cout<<"[SPECX INFO] : END !!!\n\n\n";
 
-    std::cout << fmt::format("End Shading mask example\n");
+    //std::cout << fmt::format("End Shading mask example\n");
     return 0;
 }

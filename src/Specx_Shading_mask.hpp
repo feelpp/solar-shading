@@ -97,6 +97,7 @@ public:
     // Save the shading mask table metadata to json
     void saveMetadata();
 
+
 private:
     
     std::map<std::string,std::unique_ptr<BVH<typename tr_mesh_type::element_type>>> M_bvh_tree_vector;
