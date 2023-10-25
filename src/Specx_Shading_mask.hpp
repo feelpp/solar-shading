@@ -134,6 +134,8 @@ private:
 
     int NbObjects; 
     int SpecxNbThreadDesired;
+    bool QSaveSpecxGenerateReports;
+    bool QSpecxLockConfigWaitSave;
 };
 } // namespace Feel
 

@@ -16,6 +16,9 @@ ShadingMask<MeshType>::ShadingMask(mesh_ptrtype mesh, nl::json const& specs, int
     M_saveMasks = specs["SaveMasks"];
 
     SpecxNbThreadDesired=5;
+    QSaveSpecxGenerateReports=true;
+    QSpecxLockConfigWaitSave=true;
+    //QSpecxLockConfigWaitSave=false;
 
     // Fix the size of the shading mask matrix
     fixAzimuthAltitudeDiscretization(intervalsAzimuth, intervalsAltitude);
@@ -227,7 +230,7 @@ ShadingMask<MeshType>::ShadingMask(mesh_ptrtype mesh, nl::json const& specs, int
 
 
 
-            int NumModel=2;
+            int NumModel=1;
            
 
             

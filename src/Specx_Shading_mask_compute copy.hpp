@@ -621,11 +621,7 @@ namespace Feel
                                                 auto SM_vector = Eigen::Map<Eigen::VectorXd>( &(*initial_index_SM), matrixSize);
                                                 auto Angle_vector = Eigen::Map<Eigen::VectorXd>( &(*initial_index_Angles), matrixSize);
 
-                                                //std::cout <<"faces_with_marker="<<faces_with_marker.size()<<"\n";
 
-
-                                                //BEGIN:SUB PART
-                                              
                                                 for(auto const& face : faces_with_marker)
                                                 {
                                                     for(int j=0;j<M_Nrays;j++)
@@ -690,11 +686,6 @@ namespace Feel
                                                         }
                                                     }
                                                 }
-                                                
-                                                //END:SUB PART
-
-
-
 
                                                 i_marker += 1;
                                                 // std::cout << "I_marker " << i_marker << " thread number " << id_thread << " marker " << marker << std::endl;
