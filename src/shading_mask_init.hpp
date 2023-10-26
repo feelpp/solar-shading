@@ -67,7 +67,8 @@ ShadingMask<MeshType>::ShadingMask(mesh_ptrtype mesh, nl::json const& specs, int
                         {
                             std::vector<int> list_indices = check_directions[kl_pair];
                             int index_to_substitute = list_indices.back();
-                            list_indices.pop_back();
+                            check_directions[kl_pair].pop_back();
+                            std::cout << fmt::format("Inserting direction associated with indices ({},{}) and deleting one direction associated with indices ({},{}) \n",i,j,k,l);
 
                             // Compute the direction associated with the indices (i,j)
                             double phi = -( M_azimuthAngles[i] ) + M_PI*0.5 ; // recover spherical coordinate from azimuth angle
@@ -276,7 +277,7 @@ ShadingMask<MeshType>::ShadingMask(mesh_ptrtype mesh, nl::json const& specs, int
                     {
                         auto pos = markerName.find_last_of('_');
                         // insert the building name at the beginning of the vector
-                        composite_marker.insert(composite_marker.begin(), "building" + markerName.substr(pos, std::string::npos));
+                        composite_marker.insert(composite_marker.begin(), "building" + markerName.substr(pos+1));
                     }
                     else
                     {
