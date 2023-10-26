@@ -563,16 +563,12 @@ namespace Feel
                     }
 
                 //BLOCK002:END
-
-
-                bool QViewInfoSpecx=false;
-                QViewInfoSpecx=true;
-
-
+                
+                //QViewInfoSpecx=true;
                 //SpecxNbThreadDesired=20;
                 //SpecxNbThreadDesired=10;
                 //SpecxNbThreadDesired=5;
-                SpecxNbThreadDesired=M_Nthreads;
+                //SpecxNbThreadDesired=M_Nthreads;
                 NbObjects=M_Nthreads;
 
                 int NbLoop=0; int NbTh=0; int NbCoor=0;
@@ -724,7 +720,7 @@ namespace Feel
 
                    
                     
-                    //std:promise1.set_value(0);
+                   
 
 
                     int NbidxN=NbTh;
@@ -818,10 +814,7 @@ namespace Feel
 
             if(M_saveMasks)
             {
-                bool QViewInfoSpecx=true;
-                bool QSaveWithSpecx=true;
-                SpecxNbThreadDesired=SpUtils::DefaultNumThreads();
-                SpecxNbThreadDesired=90;
+                //QViewInfoSpecx=true;
 
                 tic();
                 if(j_["/Buildings"_json_pointer].contains("fileFaces") )
@@ -835,9 +828,9 @@ namespace Feel
                     {
                         NbObjects=M_listFaceMarkers.size();
                         int NbLoop=0; int NbTh=0; int NbCoor=0;
-                        GetSpecxPreprocessingParameters(NbObjects,SpecxNbThreadDesired,NbLoop,NbTh,NbCoor);
+                        GetSpecxPreprocessingParameters(NbObjects,SpecxSaveNbThreadDesired,NbLoop,NbTh,NbCoor);
                         if (QViewInfoSpecx) {
-                            std::cout<<"[SPECX INFO] : SpecxNbThreadDesired="<<SpecxNbThreadDesired<<"\n";
+                            std::cout<<"[SPECX INFO] : SpecxSaveNbThreadDesired="<<SpecxSaveNbThreadDesired<<"\n";
                             std::cout<<"[SPECX INFO] : Nb Objects="<<NbObjects<<"\n";
                             std::cout<<"[SPECX INFO] : Nb Loops="<<NbLoop<<" Th="<<NbTh<<" Coor="<<NbCoor<<"\n";
                             std::cout<<"[SPECX INFO] : NbThreads="<<NbTh<<" used\n";
@@ -924,9 +917,9 @@ namespace Feel
                     {
                         NbObjects=M_listFaceMarkers.size();
                         int NbLoop=0; int NbTh=0; int NbCoor=0;
-                        GetSpecxPreprocessingParameters(NbObjects,SpecxNbThreadDesired,NbLoop,NbTh,NbCoor);
+                        GetSpecxPreprocessingParameters(NbObjects,SpecxSaveNbThreadDesired,NbLoop,NbTh,NbCoor);
                         if (QViewInfoSpecx) {
-                            std::cout<<"[SPECX INFO] : SpecxNbThreadDesired="<<SpecxNbThreadDesired<<"\n";
+                            std::cout<<"[SPECX INFO] : SpecxSaveNbThreadDesired="<<SpecxSaveNbThreadDesired<<"\n";
                             std::cout<<"[SPECX INFO] : Nb Objects="<<NbObjects<<"\n";
                             std::cout<<"[SPECX INFO] : Nb Loops="<<NbLoop<<" Th="<<NbTh<<" Coor="<<NbCoor<<"\n";
                             std::cout<<"[SPECX INFO] : NbThreads="<<NbTh<<" used\n";

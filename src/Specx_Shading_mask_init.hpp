@@ -15,10 +15,17 @@ ShadingMask<MeshType>::ShadingMask(mesh_ptrtype mesh, nl::json const& specs, int
     M_mthreadtype = specs["Multithread"]["type"].get<std::string>();
     M_saveMasks = specs["SaveMasks"];
 
-    SpecxNbThreadDesired=5;
-    QSaveSpecxGenerateReports=true;
-    QSpecxLockConfigWaitSave=true;
+
+    SpecxNbThreadDesired     = SpUtils::DefaultNumThreads();
+    SpecxNbThreadDesired     = 5;
+    SpecxNbThreadDesired     = M_Nthreads;
+    SpecxSaveNbThreadDesired = SpUtils::DefaultNumThreads();;
+    SpecxSaveNbThreadDesired = 80;
+    QSaveSpecxGenerateReports= true;
+    QSpecxLockConfigWaitSave = true;
     //QSpecxLockConfigWaitSave=false;
+    QSaveWithSpecx           = false;
+    QViewInfoSpecx           = true;
 
     // Fix the size of the shading mask matrix
     fixAzimuthAltitudeDiscretization(intervalsAzimuth, intervalsAltitude);
@@ -50,7 +57,7 @@ ShadingMask<MeshType>::ShadingMask(mesh_ptrtype mesh, nl::json const& specs, int
         check_directions[std::make_pair(index_azimuth,index_altitude)].push_back(i);
     }
     // Check if all the possible combinations of [0,intervalsAzimuth] x [0,intervalsAltitude] have at least one associated ray 
-    std::map< std::pair<int,int>, std::vector<int> >::iterator it;
+        std::map< std::pair<int,int>, std::vector<int> >::iterator it;
     for(int i=0; i<intervalsAzimuth; i++)
     {
         for(int j=0; j<intervalsAltitude; j++)
@@ -59,10 +66,10 @@ ShadingMask<MeshType>::ShadingMask(mesh_ptrtype mesh, nl::json const& specs, int
             if(it == check_directions.end())
             {
                 std::cout << fmt::format("Direction associated with indices ({},{}) is missing. Replacing one direction with it \n",i,j);
-                
+
                 std::pair<int,int> kl_pair;
                 bool leave_loop = false;
-                
+
                 for(int k=0;k<intervalsAzimuth; k++)
                 {
                     for(int l=0; l<intervalsAltitude; l++)
@@ -72,7 +79,8 @@ ShadingMask<MeshType>::ShadingMask(mesh_ptrtype mesh, nl::json const& specs, int
                         {
                             std::vector<int> list_indices = check_directions[kl_pair];
                             int index_to_substitute = list_indices.back();
-                            list_indices.pop_back();
+                            check_directions[kl_pair].pop_back();
+                            std::cout << fmt::format("Inserting direction associated with indices ({},{}) and deleting one direction associated with indices ({},{}) \n",i,j,k,l);
 
                             // Compute the direction associated with the indices (i,j)
                             double phi = -( M_azimuthAngles[i] ) + M_PI*0.5 ; // recover spherical coordinate from azimuth angle
@@ -675,6 +683,7 @@ ShadingMask<MeshType>::ShadingMask(mesh_ptrtype mesh, nl::json const& specs, int
 
             std::cout<<"[SPECX INFO] : *Section AggregatedMarkers\n";
 
+            
             M_rangeFaces = markedelements(mesh,"building"); // it contains all the faces of all buildings
             tic();
             int nFaces = 0;
@@ -683,7 +692,6 @@ ShadingMask<MeshType>::ShadingMask(mesh_ptrtype mesh, nl::json const& specs, int
             {
                 auto f = boost::unwrap_ref( face );
                 std::vector<std::string> composite_marker; // collects all necessary marker substrings to compose the face marker using buildingId and faceId
-                
                 for( auto m : f.marker() )
                 {
                     auto markerName = mesh->markerName(m);
@@ -701,22 +709,19 @@ ShadingMask<MeshType>::ShadingMask(mesh_ptrtype mesh, nl::json const& specs, int
                     {
                         auto pos = markerName.find_last_of('_');
                         // insert the building name at the beginning of the vector
-                        composite_marker.insert(composite_marker.begin(), "building" + markerName.substr(pos, std::string::npos));
+                        composite_marker.insert(composite_marker.begin(), "building" + markerName.substr(pos+1));
                     }
                     else
                     {
                         // markers "building" and "terrain" are not useful
                     }
-
-
-
                 }
 
                 std::string faceName;
                 for(auto marker_ : composite_marker )
                     faceName += marker_;
 
-                
+
                 if( M_listMarkerFaceEntity[faceName].empty() )
                 {
                     M_listFaceMarkers.push_back(faceName);
@@ -728,7 +733,6 @@ ShadingMask<MeshType>::ShadingMask(mesh_ptrtype mesh, nl::json const& specs, int
                 nFaces += 1;
 
             }
-
 
 
 
@@ -754,7 +758,7 @@ ShadingMask<MeshType>::ShadingMask(mesh_ptrtype mesh, nl::json const& specs, int
 
 
 template <typename MeshType>
-void 
+void
 ShadingMask<MeshType>::fixAzimuthAltitudeDiscretization(int intervalsAzimuth, int intervalsAltitude)
     {
         M_azimuthSize = intervalsAzimuth;

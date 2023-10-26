@@ -132,10 +132,13 @@ private:
     std::mt19937 M_gen;
     std::mt19937 M_gen2;
 
-    int NbObjects; 
-    int SpecxNbThreadDesired;
+    int  NbObjects; 
+    int  SpecxNbThreadDesired;
+    int  SpecxSaveNbThreadDesired;
     bool QSaveSpecxGenerateReports;
     bool QSpecxLockConfigWaitSave;
+    bool QSaveWithSpecx;
+    bool QViewInfoSpecx;
 };
 } // namespace Feel
 

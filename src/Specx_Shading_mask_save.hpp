@@ -6,9 +6,7 @@ namespace Feel
     void 
     ShadingMask<MeshType>::saveShadingMask(std::string building_name, std::string marker_name, const Eigen::Ref<const Eigen::MatrixXd>& M)
     {
-
         
-
         int i_long=0;
         int j_alt=0;
 
@@ -21,7 +19,8 @@ namespace Feel
             boost::filesystem::create_directory(shadingMaskFolder);
 
         std::string matrix_filename = shadingMaskFolder+"/SM_Matrix_"+building_name+"_"+marker_name+".csv";
-        matrix_file.open(matrix_filename,std::ios_base::out);
+        //matrix_file.open(matrix_filename,std::ios_base::out);
+        matrix_file.open(matrix_filename,std::ios_base::trunc);
         for(int i=0; i<M_azimuthSize; i++)
         {
             for(int j=0; j<M_altitudeSize-1; j++)
