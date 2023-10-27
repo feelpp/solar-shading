@@ -22,14 +22,14 @@ class ShadingMask
                                             entity_range_t<faces_reference_wrapper_t<MeshType>> >::type;
 
     using wrapper_type = elements_reference_wrapper_t<MeshType>;
-                                        
+
     typedef typename matrix_node<double>::type matrix_node_type;
 
 public:
     using value_type = double;
 
     ShadingMask(mesh_ptrtype mesh, nl::json const& specs, int intervalsAzimuth=72, int intervalsAltitude=10 );
-    
+
     // Subdivide the azimuth angles [0,360]° and altitude angles [0,90]° in subsets for easier computation of the shading masks
     void fixAzimuthAltitudeDiscretization(int intervalsAzimuth=72, int intervalsAltitude=10);
 
@@ -60,8 +60,8 @@ public:
     // Save the shading mask table metadata to json
     void saveMetadata();
 
-private:
-    
+protected:
+
     std::map<std::string,std::unique_ptr<BVH<typename tr_mesh_type::element_type>>> M_bvh_tree_vector;
     std::map<std::string,tr_mesh_ptrtype> M_submeshes;
     std::map<int,node_type> M_faces_to_normals;

@@ -34,5 +34,7 @@ target_link_libraries(${SOLARSHADING_TARGET_NAME} INTERFACE Feelpp::feelpp)
 feelpp_add_application(example_shading_masks_surface_mesh SRCS example_shading_masks.cpp DEFS FEELPP_TOP_DIM=2 LINK_LIBRARIES ${SOLARSHADING_TARGET_NAME} TESTS NO_MPI_TEST INSTALL)
 feelpp_add_application(example_shading_masks_volume_mesh SRCS example_shading_masks.cpp DEFS FEELPP_TOP_DIM=3 LINK_LIBRARIES ${SOLARSHADING_TARGET_NAME} TESTS NO_MPI_TEST INSTALL)
 
+feelpp_add_application(shading_mask_ai_dataset SRCS shading_mask_ai_dataset.cpp LINK_LIBRARIES ${SOLARSHADING_TARGET_NAME} INSTALL)
+
 
 feelpp_add_testcase(cases)

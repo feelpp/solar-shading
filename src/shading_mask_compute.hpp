@@ -4,7 +4,7 @@ namespace Feel
 
     // Compute shading masks for one building only
     template <typename MeshType>
-    void 
+    void
     ShadingMask<MeshType>::computeMasksOneBuilding(std::string building_name)
     {
         int dim = M_submeshes[building_name]->realDimension();
@@ -63,7 +63,7 @@ namespace Feel
                                 // Choose the direction randomly among the latitude and azimuth
                                 random_direction = std::get<0>(M_raysdirections[initial_index_rays + j]);
                                 index_azimuth = std::get<1>(M_raysdirections[initial_index_rays + j]);
-                                index_altitude = std::get<2>(M_raysdirections[initial_index_rays + j]);                              
+                                index_altitude = std::get<2>(M_raysdirections[initial_index_rays + j]);
                                 for(int i=0;i<dim;i++)
                                 {
                                     rand_dir(i) = random_direction[i];
@@ -149,7 +149,7 @@ namespace Feel
 
     // Compute shading masks for the buildings in the json file
     template <typename MeshType>
-    void 
+    void
     ShadingMask<MeshType>::computeMasks()
     {
         if( j_["/Buildings"_json_pointer].contains("list") ) // the list of volume markers is provided
@@ -195,11 +195,11 @@ namespace Feel
             M_metadataJson["shadingMask"]["Timer"]["MaskComputation"] = timeComputation;
             M_metadataJson["shadingMask"]["Nthreads"] = M_Nthreads;
             M_metadataJson["shadingMask"]["NraysPerElement"] = M_Nrays;
-            
+
         }
         else if( j_["/Buildings"_json_pointer].contains("fileFaces") ||  j_["/Buildings"_json_pointer].contains("aggregatedMarkers") ) // a csv containing the face markers is provided, or they are computed using aggregated markers
-        {            
-            std::vector<double> random_direction(3);            
+        {
+            std::vector<double> random_direction(3);
 
             std::map<std::string, int> markerLineMap;
 
@@ -211,7 +211,7 @@ namespace Feel
 
             std::cout << "Allocated SM_tables and Angle_tables of size " << M_listFaceMarkers.size() * matrixSize << std::endl;
 
-            int markerNumber = 0;   
+            int markerNumber = 0;
 
             // Multithread over rays
             if (M_mthreadtype == "ray")
@@ -227,7 +227,7 @@ namespace Feel
 
                             Eigen::VectorXd SM_vector(matrixSize);
                             Eigen::VectorXd Angle_vector(matrixSize);
-                            
+
                             SM_vector.setZero();
                             Angle_vector.setZero();
 
@@ -244,7 +244,7 @@ namespace Feel
                                 Eigen::VectorXd rand_dir(3);
                                 Eigen::VectorXd p1(3),p2(3),p3(3),origin(3);
                                 bool inward_ray=false;
-                                
+
                                 for(int i=0;i<3;i++)
                                 {
                                     p1(i)=column(el.vertices(), 0)[i];
@@ -254,7 +254,7 @@ namespace Feel
                                 }
                                 auto element_normal = ((p3-p1).head<3>()).cross((p2-p1).head<3>());
                                 element_normal.normalize();
-                                
+
                                 random_direction = std::get<0>(M_raysdirections[initial_index_rays + j]);
                                 index_azimuth = std::get<1>(M_raysdirections[initial_index_rays + j]);
                                 index_altitude = std::get<2>(M_raysdirections[initial_index_rays + j]);
@@ -278,7 +278,7 @@ namespace Feel
                                 {
                                     auto rayIntersectionResult =  M_bvh->intersect(ray) ;
                                     if ( !rayIntersectionResult.empty() )
-                                        closer_intersection_element = 1;                                
+                                        closer_intersection_element = 1;
                                 }
                                 // Compute the index associated to the entry to modify
                                 // The vector is constituted of M_altitudeSize blocks of M_azimuthSize stacked onto each other
@@ -319,7 +319,7 @@ namespace Feel
                     if( markerLineMap.find(elMarker) == markerLineMap.end())
                     {
                         markerLineMap.insert(std::make_pair(elMarker,markerNumber));
-                        markerNumber += 1; 
+                        markerNumber += 1;
                     }
                     auto initial_index_SM = SM_tables.begin() +  markerLineMap[elMarker] * matrixSize;
                     auto initial_index_Angles = Angle_tables.begin() +  markerLineMap[elMarker] * matrixSize;
@@ -327,10 +327,10 @@ namespace Feel
                     // Add the tables obtained in threads
                     auto SM_tables_subset = Eigen::Map<Eigen::VectorXd>( &(*initial_index_SM), matrixSize);
                     auto Angle_tables_subset = Eigen::Map<Eigen::VectorXd>( &(*initial_index_Angles), matrixSize);
-                    
+
                     for( auto& f : futures){
                         // Wait for the result to be ready
-                        auto two_vectors =  f.get();                                    
+                        auto two_vectors =  f.get();
 
                         SM_tables_subset += two_vectors.first;
                         Angle_tables_subset += two_vectors.second;
@@ -345,12 +345,12 @@ namespace Feel
 // Multithread over markers
             else if (M_mthreadtype == "markers")
             {
-                
+
                     auto multithreading_over_markers = [&](std::vector<std::string> marker_list_thread, int id_thread, int start_index){
 
                             int index_altitude;
                             int index_azimuth;
-                            
+
                             int initial_index_marker;
                             int i_marker = 0;
 
@@ -361,7 +361,7 @@ namespace Feel
                             for( auto const& marker : marker_list_thread)
                             {
                                 auto faces_with_marker = M_listMarkerFaceEntity[marker];
-                                
+
                                 initial_index_marker = start_index + i_marker;
 
                                 auto initial_index_SM = SM_tables.begin() +  initial_index_marker * matrixSize;
@@ -382,7 +382,7 @@ namespace Feel
                                         Eigen::VectorXd rand_dir(3);
                                         Eigen::VectorXd p1(3),p2(3),p3(3),origin(3);
                                         bool inward_ray=false;
-                                        
+
                                         for(int i=0;i<3;i++)
                                         {
                                             p1(i)=column(face.vertices(), 0)[i];
@@ -394,7 +394,7 @@ namespace Feel
                                         element_normal.normalize();
 
                                         // Choose the direction randomly among the latitude and azimuth
-                                        
+
                                         random_direction = std::get<0>(M_raysdirections[j]);
                                         index_azimuth = std::get<1>(M_raysdirections[j]);
                                         index_altitude = std::get<2>(M_raysdirections[j]);
@@ -418,7 +418,7 @@ namespace Feel
                                         {
                                             auto rayIntersectionResult =  M_bvh->intersect(ray) ;
                                             if ( !rayIntersectionResult.empty() )
-                                                closer_intersection_element = 1;                                
+                                                closer_intersection_element = 1;
                                         }
                                         // Compute the index associated to the entry to modify
                                         // The vector is constituted of M_altitudeSize blocks of M_azimuthSize stacked onto each other
@@ -458,7 +458,7 @@ namespace Feel
                     std::cout << "Size of marker list per thread " << marker_threads_list_length << std::endl;
 
                     std::vector<std::vector<std::string>> marker_thread_lists(marker_threads_list_length.size());
-                    
+
                     // Store the index of M_listFaceMarkers from where each thread will start its computations
                     std::vector<int> start_index_list(marker_threads_list_length.size());
                     start_index_list[0]=0;
@@ -475,7 +475,7 @@ namespace Feel
                     }
 
                     // Used to store the future results
-                    // need to 
+                    // need to
                     std::vector< std::future< bool > > futures;
 
                     for(int t= 0; t < M_Nthreads; ++t){
@@ -486,18 +486,18 @@ namespace Feel
                     // Collect futures just to allow asynchronous executions
                     for( auto& f : futures){
                     // Wait for the result to be ready
-                    auto a =  f.get();  
+                    auto a =  f.get();
                     }
                     auto timeComputation = toc("Shading masks computed using raytracing");
                     M_metadataJson["shadingMask"]["Timer"]["MaskComputation"] = timeComputation;
                     M_metadataJson["shadingMask"]["Nthreads"] = M_Nthreads;
                     M_metadataJson["shadingMask"]["NraysPerElement"] = M_Nrays;
-                    
+
             }
-            
+
             // Divide the shading mask by the corresponding value of the angle table
             // If an angle combination has not been selected, suppose there is no shadow
-            std::transform(SM_tables.begin(),SM_tables.end(),Angle_tables.begin(),SM_tables.begin(),std::divides<double>());            
+            std::transform(SM_tables.begin(),SM_tables.end(),Angle_tables.begin(),SM_tables.begin(),std::divides<double>());
 
             // Shading mask value 0 means that the surface is not shadowed, value 1 it is fully shadowed
             // Save the shading mask table to a csv file
@@ -510,7 +510,7 @@ namespace Feel
                     std::string building_name = std::to_string(i);
                     std::string marker = std::to_string(i);
                     auto initial_index_SM = SM_tables.begin() +  i * matrixSize;
-                    auto shadingMatrix = Eigen::Map<Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor>>(&(*initial_index_SM),M_azimuthSize, M_altitudeSize);                
+                    auto shadingMatrix = Eigen::Map<Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor>>(&(*initial_index_SM),M_azimuthSize, M_altitudeSize);
                     saveShadingMask(building_name,marker,shadingMatrix.matrix());
                 }
                 else if(j_["/Buildings"_json_pointer].contains("aggregatedMarkers") )
@@ -520,7 +520,7 @@ namespace Feel
                         std::string building_name = M_listFaceMarkers[i];
                         std::string marker = "";
                         auto initial_index_SM = SM_tables.begin() +  i * matrixSize;
-                        auto shadingMatrix = Eigen::Map<Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor>>(&(*initial_index_SM),M_azimuthSize, M_altitudeSize);                
+                        auto shadingMatrix = Eigen::Map<Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor>>(&(*initial_index_SM),M_azimuthSize, M_altitudeSize);
                         saveShadingMask(building_name,marker,shadingMatrix.matrix());
                     }
                 }
@@ -531,7 +531,7 @@ namespace Feel
         auto end_computation = std::chrono::system_clock::now();
         std::time_t end_time = std::chrono::system_clock::to_time_t(end_computation);
         M_metadataJson["shadingMask"]["Timestamp"]["End"] = strtok(std::ctime(&end_time),"\n");
-        saveMetadata();   
+        saveMetadata();
     }
 
 }
