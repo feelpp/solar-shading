@@ -24,8 +24,13 @@ ShadingMask<MeshType>::ShadingMask(mesh_ptrtype mesh, nl::json const& specs, int
     QSaveSpecxGenerateReports= true;
     QSpecxLockConfigWaitSave = true;
     //QSpecxLockConfigWaitSave=false;
-    QSaveWithSpecx           = false;
+    QSaveWithSpecx           = true;
     QViewInfoSpecx           = true;
+    QCTRL_SAVE_NORMAL        = true;
+    QCTRL_DATA               = true;
+
+    QCTRL_SAVE_SEED          = true;
+    QCTRL_LOAD_SEED          = false;
 
     // Fix the size of the shading mask matrix
     fixAzimuthAltitudeDiscretization(intervalsAzimuth, intervalsAltitude);
@@ -41,6 +46,42 @@ ShadingMask<MeshType>::ShadingMask(mesh_ptrtype mesh, nl::json const& specs, int
     gen2.seed(std::chrono::high_resolution_clock::now()
                         .time_since_epoch()
                         .count());
+
+
+
+    //BEGIN::SAVE AND LOAD SEED
+    // save state
+    if (QCTRL_SAVE_SEED)
+    {
+        std::cout<<"[SPECX INFO] : Saving seed...\n";
+        {
+            std::string SeedFolder = (boost::filesystem::path(Environment::appRepository())/("seed")).string();
+            if (!boost::filesystem::exists(SeedFolder))
+            boost::filesystem::create_directory(SeedFolder);
+            std::ofstream fout1(SeedFolder+"/seed_gen.dat");
+            fout1 << gen;
+            fout1.close();
+            std::ofstream fout2(SeedFolder+"/seed_gen2.dat");
+            fout2 << gen2;
+            fout2.close();
+        }
+    }
+
+    if (QCTRL_LOAD_SEED)
+    {
+        std::cout<<"[SPECX INFO] : Loading seed...\n";
+        {
+            std::string SeedFolder = (boost::filesystem::path(Environment::appRepository())/("seed")).string();
+            std::ifstream fin1(SeedFolder+"/seed_gen.dat");
+            fin1 >> gen;
+            fin1.close();
+            std::ifstream fin2(SeedFolder+"/seed_gen2.dat");
+            fin2 >> gen2;
+            fin2.close();
+        }
+    }
+    //END::SAVE AND LOAD SEED
+
 
     M_gen=gen;
     M_gen2=gen2;

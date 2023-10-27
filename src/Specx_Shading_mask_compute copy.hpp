@@ -563,16 +563,12 @@ namespace Feel
                     }
 
                 //BLOCK002:END
-
-
-                bool QViewInfoSpecx=false;
-                QViewInfoSpecx=true;
-
-
+                
+                //QViewInfoSpecx=true;
                 //SpecxNbThreadDesired=20;
                 //SpecxNbThreadDesired=10;
                 //SpecxNbThreadDesired=5;
-                SpecxNbThreadDesired=M_Nthreads;
+                //SpecxNbThreadDesired=M_Nthreads;
                 NbObjects=M_Nthreads;
 
                 int NbLoop=0; int NbTh=0; int NbCoor=0;
@@ -621,7 +617,11 @@ namespace Feel
                                                 auto SM_vector = Eigen::Map<Eigen::VectorXd>( &(*initial_index_SM), matrixSize);
                                                 auto Angle_vector = Eigen::Map<Eigen::VectorXd>( &(*initial_index_Angles), matrixSize);
 
+                                                //std::cout <<"faces_with_marker="<<faces_with_marker.size()<<"\n";
 
+
+                                                //BEGIN:SUB PART
+                                              
                                                 for(auto const& face : faces_with_marker)
                                                 {
                                                     for(int j=0;j<M_Nrays;j++)
@@ -686,6 +686,11 @@ namespace Feel
                                                         }
                                                     }
                                                 }
+                                                
+                                                //END:SUB PART
+
+
+
 
                                                 i_marker += 1;
                                                 // std::cout << "I_marker " << i_marker << " thread number " << id_thread << " marker " << marker << std::endl;
@@ -715,7 +720,7 @@ namespace Feel
 
                    
                     
-                    //std:promise1.set_value(0);
+                   
 
 
                     int NbidxN=NbTh;
@@ -809,10 +814,7 @@ namespace Feel
 
             if(M_saveMasks)
             {
-                bool QViewInfoSpecx=true;
-                bool QSaveWithSpecx=true;
-                SpecxNbThreadDesired=SpUtils::DefaultNumThreads();
-                SpecxNbThreadDesired=90;
+                //QViewInfoSpecx=true;
 
                 tic();
                 if(j_["/Buildings"_json_pointer].contains("fileFaces") )
@@ -826,9 +828,9 @@ namespace Feel
                     {
                         NbObjects=M_listFaceMarkers.size();
                         int NbLoop=0; int NbTh=0; int NbCoor=0;
-                        GetSpecxPreprocessingParameters(NbObjects,SpecxNbThreadDesired,NbLoop,NbTh,NbCoor);
+                        GetSpecxPreprocessingParameters(NbObjects,SpecxSaveNbThreadDesired,NbLoop,NbTh,NbCoor);
                         if (QViewInfoSpecx) {
-                            std::cout<<"[SPECX INFO] : SpecxNbThreadDesired="<<SpecxNbThreadDesired<<"\n";
+                            std::cout<<"[SPECX INFO] : SpecxSaveNbThreadDesired="<<SpecxSaveNbThreadDesired<<"\n";
                             std::cout<<"[SPECX INFO] : Nb Objects="<<NbObjects<<"\n";
                             std::cout<<"[SPECX INFO] : Nb Loops="<<NbLoop<<" Th="<<NbTh<<" Coor="<<NbCoor<<"\n";
                             std::cout<<"[SPECX INFO] : NbThreads="<<NbTh<<" used\n";
@@ -915,9 +917,9 @@ namespace Feel
                     {
                         NbObjects=M_listFaceMarkers.size();
                         int NbLoop=0; int NbTh=0; int NbCoor=0;
-                        GetSpecxPreprocessingParameters(NbObjects,SpecxNbThreadDesired,NbLoop,NbTh,NbCoor);
+                        GetSpecxPreprocessingParameters(NbObjects,SpecxSaveNbThreadDesired,NbLoop,NbTh,NbCoor);
                         if (QViewInfoSpecx) {
-                            std::cout<<"[SPECX INFO] : SpecxNbThreadDesired="<<SpecxNbThreadDesired<<"\n";
+                            std::cout<<"[SPECX INFO] : SpecxSaveNbThreadDesired="<<SpecxSaveNbThreadDesired<<"\n";
                             std::cout<<"[SPECX INFO] : Nb Objects="<<NbObjects<<"\n";
                             std::cout<<"[SPECX INFO] : Nb Loops="<<NbLoop<<" Th="<<NbTh<<" Coor="<<NbCoor<<"\n";
                             std::cout<<"[SPECX INFO] : NbThreads="<<NbTh<<" used\n";
@@ -993,6 +995,37 @@ namespace Feel
                         }
 
                     }
+
+
+                    //CTRL mode normal
+                    //CONCLUSION we have the same values
+                    bool QCTRL=true;
+                    if((M_saveMasks) && (QCTRL))
+                    {
+                        if(j_["/Buildings"_json_pointer].contains("fileFaces") )
+                        for(int i=0; i< M_listFaceMarkers.size(); i++)
+                        {
+                            std::string building_name = std::to_string(i);
+                            std::string marker = std::to_string(i);
+                            auto initial_index_SM = SM_tables.begin() +  i * matrixSize;
+                            auto shadingMatrix = Eigen::Map<Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor>>(&(*initial_index_SM),M_azimuthSize, M_altitudeSize);                
+                            saveShadingMask("CTRL_"+building_name,marker,shadingMatrix.matrix());
+                        }
+                        else if(j_["/Buildings"_json_pointer].contains("aggregatedMarkers") )
+                        {
+                            for(int i=0; i< M_listFaceMarkers.size(); i++)
+                            {
+                                std::string building_name = M_listFaceMarkers[i];
+                                std::string marker = "";
+                                auto initial_index_SM = SM_tables.begin() +  i * matrixSize;
+                                auto shadingMatrix = Eigen::Map<Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor>>(&(*initial_index_SM),M_azimuthSize, M_altitudeSize);                
+                                saveShadingMask("CTRL_"+building_name,marker,shadingMatrix.matrix());
+                            }
+                        }
+                    }
+
+
+
 
 
 

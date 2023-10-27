@@ -97,6 +97,11 @@ public:
     // Save the shading mask table metadata to json
     void saveMetadata();
 
+    // Test if it the same
+    bool testShadingMaskComparisonLevel1(std::string shadingMaskFolder,std::string building_name,std::string marker_name);
+
+    bool testShadingMaskComparisonLevel2(std::string shadingMaskFolder,std::string building_name,std::string marker_name);
+
 
 private:
     
@@ -139,6 +144,10 @@ private:
     bool QSpecxLockConfigWaitSave;
     bool QSaveWithSpecx;
     bool QViewInfoSpecx;
+    bool QCTRL_SAVE_NORMAL;
+    bool QCTRL_DATA;
+    bool QCTRL_SAVE_SEED;
+    bool QCTRL_LOAD_SEED;
 };
 } // namespace Feel
 

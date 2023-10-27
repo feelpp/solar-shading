@@ -997,12 +997,67 @@ namespace Feel
                     }
 
 
+                    //CTRL mode normal
+                    if((M_saveMasks) && (QCTRL_SAVE_NORMAL))
+                    {
+                        cout<<"\n";
+                        cout<<"[SPECX INFO] : TASK SAVE CTRL DATA\n";
+                        if(j_["/Buildings"_json_pointer].contains("fileFaces") )
+                        {
+                            for(int i=0; i< M_listFaceMarkers.size(); i++)
+                            {
+                                std::string building_name = std::to_string(i);
+                                std::string marker = std::to_string(i);
+                                auto initial_index_SM = SM_tables.begin() +  i * matrixSize;
+                                auto shadingMatrix = Eigen::Map<Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor>>(&(*initial_index_SM),M_azimuthSize, M_altitudeSize);                
+                                saveShadingMask("CTRL_"+building_name,marker,shadingMatrix.matrix());
+                            }
+                        }
+                        else if(j_["/Buildings"_json_pointer].contains("aggregatedMarkers") )
+                        {
+                            for(int i=0; i< M_listFaceMarkers.size(); i++)
+                            {
+                                std::string building_name = M_listFaceMarkers[i];
+                                std::string marker = "";
+                                auto initial_index_SM = SM_tables.begin() +  i * matrixSize;
+                                auto shadingMatrix = Eigen::Map<Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor>>(&(*initial_index_SM),M_azimuthSize, M_altitudeSize);                
+                                saveShadingMask("CTRL_"+building_name,marker,shadingMatrix.matrix());
+                            }
+                        }
+                    }
 
+                    if((M_saveMasks) && (QCTRL_DATA))
+                    {
+                        //CTRL 
+                        if ((j_["/Buildings"_json_pointer].contains("aggregatedMarkers") ) && (true)) 
+                        {
+                            bool QTestOK=true;
+                            cout<<"[SPECX INFO] : TASK CTRL DATA ===> ";
+                            for(int i=0; i< M_listFaceMarkers.size(); i++)
+                                {
+                                    std::string building_name = M_listFaceMarkers[i];
+                                    std::string marker = "";
+                                    std::string shadingMaskFolder = (boost::filesystem::path(Environment::appRepository())/("shadingMasks")).string();
+                                    QTestOK=QTestOK && (testShadingMaskComparisonLevel1(shadingMaskFolder,building_name,marker));
+
+                                    testShadingMaskComparisonLevel2(shadingMaskFolder,building_name,marker);
+
+                                    //cout<<".";
+                                }
+                            //cout<<"\n";
+                            if (QTestOK) { cout<<"TRUE\n"; } else { cout<<"ERROR\n"; }
+                            
+                        }
+                    }
 
                     if (QViewInfoSpecx) { std::cout<<"[SPECX INFO] : ******Saved Aggregated Markers.\n"; }
                 }
+
+
                 auto timeCSVsaving = toc("Mask CSV saved");
                 M_metadataJson["shadingMask"]["Timer"]["MaskCSVsaving"] = timeCSVsaving;
+
+
             }
         }
         auto end_computation = std::chrono::system_clock::now();
