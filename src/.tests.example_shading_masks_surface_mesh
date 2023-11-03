@@ -1,1 +1,2 @@
 example_shading_masks_surface_mesh-1 --config-file ${CMAKE_CURRENT_SOURCE_DIR}/cases/example_shading_mask/example_shading_mask_surface.cfg
+example_shading_masks_surface_mesh-2 --config-file ${CMAKE_CURRENT_SOURCE_DIR}/cases/example_shading_mask/example_shading_mask_face.cfg
