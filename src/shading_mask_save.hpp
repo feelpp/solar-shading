@@ -1,4 +1,3 @@
-
 namespace Feel
 {
 
@@ -13,9 +12,9 @@ namespace Feel
 
         // Save the matrix into a CSV file, inside the shadingMasks subfolder of the results folder
         std::ofstream matrix_file;
-        std::string shadingMaskFolder = (boost::filesystem::path(Environment::appRepository())/("shadingMasks")).string();
-        if (!boost::filesystem::exists(shadingMaskFolder))
-            boost::filesystem::create_directory(shadingMaskFolder);
+        std::string shadingMaskFolder = (fs::path(Environment::appRepository())/("shadingMasks")).string();
+        if (!fs::exists(shadingMaskFolder))
+            fs::create_directory(shadingMaskFolder);
 
         std::string matrix_filename = shadingMaskFolder+"/SM_Matrix_"+building_name+"_"+marker_name+".csv";
         matrix_file.open(matrix_filename,std::ios_base::trunc);
@@ -36,9 +35,9 @@ namespace Feel
     void
     ShadingMask<MeshType>::saveMetadata()
     {
-        std::string folder = (boost::filesystem::path(Environment::appRepository())).string();
-        if (!boost::filesystem::exists(folder))
-            boost::filesystem::create_directory(folder);
+        std::string folder = (fs::path(Environment::appRepository())).string();
+        if (!fs::exists(folder))
+            fs::create_directory(folder);
 
         std::string json_filename = folder+"/shadingmask_metadata.json";
 
