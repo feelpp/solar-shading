@@ -15,7 +15,7 @@ ShadingMask<MeshType>::ShadingMask(mesh_ptrtype mesh, nl::json const& specs, int
     M_mthreadtype = specs["Multithread"]["type"].get<std::string>();
     M_saveMasks = specs["SaveMasks"];
 
-
+    QMAKE_WITH_SPECX         = true;
     SpecxNbThreadDesired     = SpUtils::DefaultNumThreads();
     SpecxNbThreadDesired     = 5;
     SpecxNbThreadDesired     = M_Nthreads;
@@ -30,7 +30,12 @@ ShadingMask<MeshType>::ShadingMask(mesh_ptrtype mesh, nl::json const& specs, int
     QCTRL_DATA               = true;
 
     QCTRL_SAVE_SEED          = true;
-    QCTRL_LOAD_SEED          = false;
+    QCTRL_SAVE_SEED          = false;
+    QCTRL_LOAD_SEED          = true;
+    //QCTRL_LOAD_SEED          = false;
+
+
+    if (!QMAKE_WITH_SPECX) { QSaveWithSpecx=false; } 
 
     // Fix the size of the shading mask matrix
     fixAzimuthAltitudeDiscretization(intervalsAzimuth, intervalsAltitude);

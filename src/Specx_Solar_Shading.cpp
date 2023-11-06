@@ -18,6 +18,7 @@
 #include "Utils/small_vector.hpp"
 
 
+#include <ncurses.h>
 
 using namespace Feel;
 
