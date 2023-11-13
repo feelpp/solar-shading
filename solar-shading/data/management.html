@@ -292,30 +292,15 @@ fig.show()</code></pre>
 <summary class="title">Results</summary>
 <div class="content">
 ---------------------------------------------------------------------------
-IndexError                                Traceback (most recent call last)
-File <ipython-input-1-3969f0de79b0>:20
-     18 sys.path.insert(1,repo_root+"/src/visualization/")
-     19 from shading_mask_visualization import plotShadingMask
----> 20 fig=plotShadingMask(sm_csv_name,save=False)
-     21 import sys
-     22 fig.write_html(file=sys.stdout, include_plotlyjs=False)
+ModuleNotFoundError                       Traceback (most recent call last)
+<ipython-input-1-3969f0de79b0> in <module>
+      1 import sys
+      2 import os
+----> 3 import git
+      4
+      5 # Extract the root of the git repository
 
-File /nvme0/prudhomm/github-actions/actions-runner-3/_work/solar-shading/solar-shading/src/visualization/shading_mask_visualization.py:59, in plotShadingMask(csv_filename, save)
-     53 hovertemplate = ('Altitude: %{r}<br>'
-     54             'Azimuth: %{theta}<br>'
-     55             'Solar mask: %{customdata}<br>'
-     56             '<extra></extra>')
-     58 # azimuth-altitude coordinates
----> 59 r, theta = np.mgrid[0:90:shading_test_values.shape[1]+1j, 0:360:shading_test_values.shape[0]+1j]
-     61 # Plotly polar representation of the shading mask
-     62 fig = go.Figure(go.Barpolar(
-     63         r=r.ravel(),
-     64         theta=theta.ravel(),
-   (...)
-     72         )
-     73     )
-
-IndexError: tuple index out of range
+ModuleNotFoundError: No module named 'git'
 </div>
 </details>
 <div class="listingblock">
@@ -352,13 +337,15 @@ for fig in figs:
 <summary class="title">Results</summary>
 <div class="content">
 ---------------------------------------------------------------------------
-NameError                                 Traceback (most recent call last)
-File <ipython-input-1-ef10b6b90e28>:26
-     24 for fig in figs:
-     25     import sys
----> 26 fig.write_html(file=sys.stdout, include_plotlyjs=False)
+ModuleNotFoundError                       Traceback (most recent call last)
+<ipython-input-1-ef10b6b90e28> in <module>
+      1 import sys
+      2 import os
+----> 3 import git
+      4
+      5 # Extract the root of the git repository
 
-NameError: name 'fig' is not defined
+ModuleNotFoundError: No module named 'git'
 </div>
 </details>
 </div>
