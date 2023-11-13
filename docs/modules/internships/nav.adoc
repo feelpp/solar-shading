@@ -3,3 +3,4 @@
 ** xref:devora/chap1.adoc[Shading Masks]
 ** xref:devora/chap2.adoc[Bounding Volume Hierarchy]
 ** xref:devora/chap3.adoc[Benchmarking and Performance Measurement]
+** xref:PERFORMANCE.adoc[Performance metrics and scale]

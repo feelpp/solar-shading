@@ -1,0 +1,87 @@
+= Performance metrics and scale
+
+*Scalability* refers to the capacity of a program to efficiently use added computing resources, i.e. CPU cores. The gain in performance depends on the nature of the problem, the algorithm or program used to solve it, the underlying hardware, and the number of CPU cores being used. A scalability analysis where the software is tested using a fixed problem while varying the number of CPU cores  according to some method (e.g. 2, 4, 8, 16, 32, 64 cores). 
+
+
+== Low scalability
+
+To *reduce scalability*, the problem size is increased in proportion to the addition of cores to ideally obtain linear scalability and the execution time remains stable. The size of the problem is characterized differently depending on its nature. 
+Calculating efficiency is simple: the baseline runtime (1 core) is divided by the runtime with n cores and the result is converted to a percentage. Again, the goal is to achieve 75% efficiency.
+
+*Less scalability* seems appropriate for programs that make intensive use of memory. It is usually preferable when a parallel program favors communication with nearby entities, but otherwise it will generally cause a performance penalty.
+
+In the parallelization of the code not every operation can be done in parallel and so some percentage of the program's execution remains serial. This percentage represents an ultimate limit for the parallel efficiency of the software. The parallelization of the program normally requires a certain amount of communication and synchronization among the parallel processes and the cost of this "parallel overhead" will increase with the number of processes working together, typically as a power of the number of cores, T c ∝ n α  where α > 1 . If we now suppose that the scientific part of the program's run time is divided equally among the number of cores apart from a residual serial part, so T s = A + B / n , the total duration of the program T = T s + T c = A + B / n + C n α  (with A, B and C positive real numbers whose value depends on the particular cluster, program and test problem) will ultimately be dominated by this final parallel overhead factor as n → ∞. In the case where A  and B  are much larger than C , when we plot the curve of the run time versus the number of CPU cores we will obtain something that looks like the accompanying figure. 
+
+== Strong scaling
+
+In this case the problem to be used for the scalability analysis is fixed while the number of CPU cores increases. Ideally, we would expect the scaling to be linear, i.e. the decrease in the program's run time compared to some reference value is the reciprocal of the number of cores added compared to that used for the reference calculation.
+
+The formula for the efficiency here is quite simple, just the reference run time divided by the run time at n cores then multiplied by 100 to obtain a percentage. Once again, the goal is to achieve an efficiency of at least 75%. As is often the case, efficiency remains high up to larger core counts than with strong scaling. 
+
+*Amdahl's law*: The base formula is 
+
+    S = 1 / (1- p+ p/s), where…
+
+    - S is the speedup of a process 
+    - p is the proportion of a program that can be made parallel, and... 
+    - s is the speedup factor of the parallel portion.
+
+This formula states that the maximum improvement in speed of a process is limited by the proportion of the program that can be made parallel.
+
+*Speedup* is the metric to characterize the performance of parallelization. Its initial definition is simple and makes it possible to quantify the gain obtained by a parallel algorithm and implementation.
+
+    S(p) = T (1)/T (p),   1 < S(p) ≤ p
+
+T (1) and T (p), have respectively the processing times on 1 and p resources. These can be calculation cores in a processor, processors in a shared memory machine, nodes (PCs) in a cluster.
+A speedup less than 1 actually corresponds to a slowdown, and therefore normally to failed parallelization.
+
+image::002.jpg[Img2,400,400]
+Fig: the three types of possible speedup (left) and the classic look of an experimental Speedup (right)
+
+The calculation of the speedup therefore implies being able to measure T (1) by dealing with the problem on a single resource. But in the case of treatment of very large problems, this is not always possible. For example, there may not be enough memory space or disk space associated with a single PC to store all the data of the problem. Or the execution time on a single resource can be too long for you to accept the experience! It is always possible to take as a reference time T (rmin): the execution time on the minimum number of resources (RMIN) to be used, and to calculate accelerations relating to T (RMIN) (rather than T ( 1)). But the analyzes are more complicated and the quantity of RMIN resources can vary with the type of resources used, making more difficult the comparison of acceleration curves on various distributed architectures.
+
+When we can measure a speedup s (p), we must normally obtain: 1 <s (p) ≤ p, hoping for a value of S (p) as close as possible to p.
+A speedup less than 1 corresponds in fact to a slowdown, and therefore normally to a failed parallelization. But in the case of treatment of very large problems, we may have to reason differently.
+
+A speedup S(p) greater than p corresponds to hyper-acceleration, and always has an explanation. For example, by using more PCs we will have used more computing cores, but also more memory, more cache, more disks, and we will ultimately have accumulated several gains.
+
+Example of a parallel execution time:
+
+    log(T(P)) = log(T(1))-log(P)  
+
+In log scale a hyperbola is very quickly identified: line of slope -1. we easily detect: 
+
+    - a complete departure from theory
+    - a deviation from a threshold…
+
+
+The classic look of a Speedup curve of a fixed size problem is that of the right figure. The start of the curve is often close to the ideal (s (p) = p), then spread out, and tangent a horizontal ceiling. The presence of a ceiling is actually inevitable, even on an ideal machine as soon as part of the problem is not parallelizable, and also because of the significant cost of communications in real machines. If we further increase the number of processors used, we can even get a fall from the Speedup because the new processors will not be used and the communications times between more processors will become greater. It is therefore necessary (generally) to use a reasonable number of calculation resources for the problem of problem treated, which is trying to measure the efficiency
+
+*Efficiency* is a profitability metric which makes it possible to quantify the rate of good use of the resources used in a parallelization:
+
+    e(p) = S(p)/p  (fraction of the ideal acceleration)
+
+Logically, we must obtain: 0% < e(p) ≤ 100%, hoping for a value of e(p) as close as possible to 100%. A speedup of only 70 with 100 resources will give an efficiency of 70%, which means that 30% of the resource potential is not (or is badly) used. e(P) > 100%  hyperacceleration 
+
+image::003.jpg[Img3,400,400]
+
+Often the one who uses the parallelized/distributed application will prefer maximize the SPEEDUP at all costs, a sign of ever faster treatments. But the one who finances the purchase of resources and their operation will prefer to maintain the efficiency above a minimum threshold, below which the improper use of resources (waste) is not acceptable. The management of a calculation center can take into account the effectiveness of the codes executed there: we can thus limit the number of nodes allocated to too ineffective codes to leave them to better parallelized codes
+
+The major goal is to be able to tackle bigger problems with more resources. Therefore we introduce the Size up parameters.
+Size up, this consists of seeking to keep the execution time constant: processing larger problems in the same amount of time using more resources.
+
+    T (n0, p0) = T (n1, p1) = T (n2, p2) = Cte
+
+image::004.jpg[Img4,400,400]
+Fig: Study of maintaining the execution time during a Size up: very successful (in green), and failed (in pink)
+
+The above figure illustrates three different behaviors from a distributed application with quadratic calculations (of O (N2)):
+The blue curve illustrates the ideal case where we can find couples (nk = problem size, pk = number of nodes)
+
+The green curve represents an experimental time curve of a successful size up:
+- The curve is almost flat, the execution times are maintained almost constant.
+- The number of PK resources are almost those expected, they are just a little larger than in the ideal case.
+
+On the other hand, the pink curve represents a curve of size up where you absolutely cannot maintain the execution time. The pink points represent the minimum execution times obtained for problems of problems NK = K.N0, and we observe that these minimum times are moving more and more from the reference time T (N0, P0).
+
+
