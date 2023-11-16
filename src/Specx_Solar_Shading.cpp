@@ -64,14 +64,74 @@ int main(int argc, char **argv)
 
 
     // Compute the shading masks
-    std::cout<<"\n\n";
-    std::cout<<"[SPECX INFO] : Compute the shading masks.\n";
-    ShadingMask<mesh_t> sm(mesh,json_buildings);
-    std::cout<<"\n\n";
-    std::cout<<"[SPECX INFO] : Compute...\n";
-    sm.computeMasks();
-    std::cout<<"\n\n";
-    std::cout<<"[SPECX INFO] : END !!!\n\n\n";
+    
+    if (1==1) {
+        std::cout<<"\n\n";
+        std::cout<<"[SPECX INFO] : Compute the shading masks.\n";
+        //ShadingMask<mesh_t> sm(mesh,json_buildings);
+        ShadingMask<mesh_t> sm(-1,-1,mesh,json_buildings,72,10);
+        std::cout<<"\n\n";
+        std::cout<<"[SPECX INFO] : Compute...\n";
+        sm.computeMasks();
+        std::cout<<"\n\n";
+        std::cout<<"[SPECX INFO] : END !!!\n\n\n";
+    }
+    
+
+    
+    if (1==0) //SCALINGs
+    {
+        int TestNbThread,TestNbRayon;
+        TestNbThread=8;
+        TestNbRayon=8000;
+        for (int k=0; k<8; k++)
+        {
+            TestNbThread=pow(2,k);
+            TestNbRayon=TestNbThread*1000;
+                std::cout<<"&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&\n";
+                std::cout<<"NbThread="<<TestNbThread<<" NbRays="<<TestNbRayon<<"\n";
+                std::cout<<"&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&\n";
+
+                std::cout<<"\n\n";
+                std::cout<<"[SPECX INFO] : Compute the shading masks.\n";
+                ShadingMask<mesh_t> sm(TestNbThread,TestNbRayon,mesh,json_buildings,72,10);
+                std::cout<<"\n\n";
+                std::cout<<"[SPECX INFO] : Compute...\n";
+                sm.computeMasks();
+                std::cout<<"\n\n";
+                std::cout<<"[SPECX INFO] : END !!!\n\n\n";
+        }
+    }
+
+
+    if (1==0) //NO SCALING
+    {
+        int TestNbThread,TestNbRayon;
+        TestNbRayon=50000;
+        for (int j=9; j<10; j++)
+        {
+            //TestNbRayon=0;
+            //for (int i=1; i<11; i++)
+            {    
+                //TestNbRayon=TestNbRayon+5000;  
+                TestNbThread=(j-1)*10; 
+                if (j==1) {  TestNbThread=1; }
+                std::cout<<"&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&\n";
+                std::cout<<"NbThread="<<TestNbThread<<" NbRays="<<TestNbRayon<<"\n";
+                std::cout<<"&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&\n";
+
+                std::cout<<"\n\n";
+                std::cout<<"[SPECX INFO] : Compute the shading masks.\n";
+                ShadingMask<mesh_t> sm(TestNbThread,TestNbRayon,mesh,json_buildings,72,10);
+                std::cout<<"\n\n";
+                std::cout<<"[SPECX INFO] : Compute...\n";
+                sm.computeMasks();
+                std::cout<<"\n\n";
+                std::cout<<"[SPECX INFO] : END !!!\n\n\n";
+            }
+        }
+    }
+    
 
     //std::cout << fmt::format("End Shading mask example\n");
     return 0;

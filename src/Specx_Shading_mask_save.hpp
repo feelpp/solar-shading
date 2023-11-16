@@ -55,7 +55,7 @@ namespace Feel
             std::getline(FICH_CTRL,MatLine_CTRL);
             QRep=QRep && (MatLine_NEW.compare(MatLine_CTRL)==0); i++;
             if (!QRep) { QCTRL=true; }
-            if (QCTRL) {
+            /*if (QCTRL) {
                 cout<<"*** ERROR !!! ***\n";
                 cout<<"  Name NEW  = ["<<matrix_filename_NEW<<"]\n";
                 cout<<"  Name CTRL = ["<<matrix_filename_CTRL<<"]\n";    
@@ -64,9 +64,13 @@ namespace Feel
                 cout<<"  Lgn Mat NEW  ="<<MatLine_NEW<<"\n";
                 cout<<(MatLine_NEW.compare(MatLine_CTRL)==0);
             }
+            */
         }
         FICH_NEW.close(); FICH_CTRL.close();
-        if (QCTRL) { cout<<"Test mat:"<<building_name+"_"+marker_name+".csv ===>"<<QRep<<"\n"; getchar();}
+        if (QCTRL) { 
+                    //cout<<"Test mat:"<<building_name+"_"+marker_name+".csv ===>"<<QRep<<"\n"; 
+                    //getchar();
+                     }
         return QRep;
     }
 
@@ -143,7 +147,9 @@ namespace Feel
         }
         FICH_NEW.close(); FICH_CTRL.close();
         //QCTRL=true;
-        if (QCTRL) { cout<<"Test mat:"<<building_name+"_"+marker_name+".csv ===>"<<QRep<<"\n"; getchar();}
+        if (QCTRL) { cout<<"Test mat:"<<building_name+"_"+marker_name+".csv ===>"<<QRep<<"\n"; 
+                    //getchar();
+        }
         return QRep;
     }
 
@@ -155,7 +161,10 @@ namespace Feel
         if (!boost::filesystem::exists(folder))
             boost::filesystem::create_directory(folder);
         
-        std::string json_filename = folder+"/shadingmask_metadata.json";
+        //std::string json_filename = folder+"/shadingmask_metadata.json";
+        std::string json_filename = folder+"/shadingmask_metadata_"
+            +std::to_string(M_Nthreads)+"_"
+            +std::to_string(M_Nrays)+".json";
 
         std::ofstream o(json_filename);
         o << std::setw(6) << M_metadataJson << std::endl;

@@ -16,13 +16,15 @@
 #include <ncurses.h>
 
 
-void GetSpecxPreprocessingParameters(int NbObjects,int NbTasks,int & NbLoop, int & NbTh, int & NbCoor)
+void GetSpecxPreprocessingParameters(int NbObjects,int NbTasks,int & NbLoop, int & NbTh, int & NbCoor,bool QViewInfo)
 {
-    NbTasks=std::min(NbTasks,NbObjects);
-    int NbTasksToSubmit = std::min(NbTasks,std::min(NbObjects,SpUtils::DefaultNumThreads()));
-    NbLoop=std::max(1,NbObjects/NbTasks);
-    NbCoor=round((float(NbObjects)/float(NbTasks)-float(NbObjects/NbTasks))*float(NbTasks));
-    NbTh=NbTasks; 
+    if (QViewInfo) { std::cout<<"[SPECX INFO] : SpecxSaveNbThreadDesired="<<NbTasks; }
+        NbTasks=std::min(NbTasks,NbObjects);
+        int NbTasksToSubmit = std::min(NbTasks,std::min(NbObjects,SpUtils::DefaultNumThreads()));
+        NbLoop=std::max(1,NbObjects/NbTasks);
+        NbCoor=round((float(NbObjects)/float(NbTasks)-float(NbObjects/NbTasks))*float(NbTasks));
+        NbTh=NbTasks; 
+    if (QViewInfo) { std::cout<<" Nb Objects="<<NbObjects<<" Nb Loops="<<NbLoop<<" Coor="<<NbCoor<<" NbThreads="<<NbTh<<" used\n"; }
 }
 
 
@@ -143,7 +145,9 @@ public:
 
     using value_type = double;
 
-    ShadingMask(mesh_ptrtype mesh, nl::json const& specs, int intervalsAzimuth=72, int intervalsAltitude=10 );
+    //ShadingMask(mesh_ptrtype mesh, nl::json const& specs, int intervalsAzimuth=72, int intervalsAltitude=10 );
+
+    ShadingMask(int TestNbThread,int TestNbRayon,mesh_ptrtype mesh, nl::json const& specs,int intervalsAzimuth=72, int intervalsAltitude=10);
     
     // Subdivide the azimuth angles [0,360]° and altitude angles [0,90]° in subsets for easier computation of the shading masks
     void fixAzimuthAltitudeDiscretization(int intervalsAzimuth=72, int intervalsAltitude=10);
@@ -227,6 +231,10 @@ private:
     bool QCTRL_SAVE_SEED;
     bool QCTRL_LOAD_SEED;
     bool QMAKE_WITH_SPECX;
+
+    int  SpecxActivateSubNumberPart;
+
+    std::time_t beginning_time;
 };
 } // namespace Feel
 

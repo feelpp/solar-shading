@@ -169,11 +169,7 @@ namespace Feel
             auto markersVolume = j_["Buildings"]["list"].get<std::vector<std::string>>();
             
             int NbLoop=0; int NbTh=0; int NbCoor=0;
-            GetSpecxPreprocessingParameters(NbObjects,SpecxNbThreadDesired,NbLoop,NbTh,NbCoor);
-            std::cout<<"[SPECX INFO] : SpecxNbThreadDesired="<<SpecxNbThreadDesired<<"\n";
-            std::cout<<"[SPECX INFO] : Nb Objects="<<NbObjects<<"\n";
-            std::cout<<"[SPECX INFO] : Nb Loops="<<NbLoop<<" Th="<<NbTh<<" Coor="<<NbCoor<<"\n";
-            std::cout<<"[SPECX INFO] : NbThreads="<<NbTh<<" used\n";
+            GetSpecxPreprocessingParameters(NbObjects,SpecxNbThreadDesired,NbLoop,NbTh,NbCoor,QViewInfoSpecx);
             SpRuntime runtime1(NbTh);
 
             tic();
@@ -245,11 +241,7 @@ namespace Feel
             //SpecxNbThreadDesired=std::sqrt(NbObjects);
        
             int NbLoop=0; int NbTh=0; int NbCoor=0;
-            GetSpecxPreprocessingParameters(NbObjects,SpecxNbThreadDesired,NbLoop,NbTh,NbCoor);
-            std::cout<<"[SPECX INFO] : SpecxNbThreadDesired="<<SpecxNbThreadDesired<<"\n";
-            std::cout<<"[SPECX INFO] : Nb Objects="<<NbObjects<<"\n";
-            std::cout<<"[SPECX INFO] : Nb Loops="<<NbLoop<<" Th="<<NbTh<<" Coor="<<NbCoor<<"\n";
-            std::cout<<"[SPECX INFO] : NbThreads="<<NbTh<<" used\n";
+            GetSpecxPreprocessingParameters(NbObjects,SpecxNbThreadDesired,NbLoop,NbTh,NbCoor,QViewInfoSpecx);
             SpRuntime runtime1(NbTh);
 
             //std::string buildingName;
@@ -321,11 +313,7 @@ namespace Feel
             //for(int k = 0 ; k < NbObjects ; ++k){ std::cout<<ListObjects[k]<<"\n";} //CTRL
             
             int NbLoop=0; int NbTh=0; int NbCoor=0;
-            GetSpecxPreprocessingParameters(NbObjects,SpecxNbThreadDesired,NbLoop,NbTh,NbCoor);
-            std::cout<<"[SPECX INFO] : SpecxNbThreadDesired="<<SpecxNbThreadDesired<<"\n";
-            std::cout<<"[SPECX INFO] : Nb Objects="<<NbObjects<<"\n";
-            std::cout<<"[SPECX INFO] : Nb Loops="<<NbLoop<<" Th="<<NbTh<<" Coor="<<NbCoor<<"\n";
-            std::cout<<"[SPECX INFO] : NbThreads="<<NbTh<<" used\n";
+            GetSpecxPreprocessingParameters(NbObjects,SpecxNbThreadDesired,NbLoop,NbTh,NbCoor,QViewInfoSpecx);
             SpRuntime runtime1(NbTh);
 
             tic();
@@ -390,7 +378,7 @@ namespace Feel
             std::vector<double> SM_tables(M_listFaceMarkers.size() * matrixSize,0);
             std::vector<double> Angle_tables(M_listFaceMarkers.size() * matrixSize,0);
 
-            std::cout << "Allocated SM_tables and Angle_tables of size " << M_listFaceMarkers.size() * matrixSize << std::endl;
+            std::cout << "\nAllocated SM_tables and Angle_tables of size " << M_listFaceMarkers.size() * matrixSize << std::endl;
 
             int markerNumber = 0;  
 
@@ -638,6 +626,7 @@ namespace Feel
                                     int t = 0;
 
                                     std::cout << "Size of marker list per thread " << marker_threads_list_length << std::endl;
+                                    std::cout << "\n";
 
                                     std::vector<std::vector<std::string>> marker_thread_lists(marker_threads_list_length.size());
                                     
@@ -678,8 +667,9 @@ namespace Feel
                             }
             }
 
+
             if (QMAKE_WITH_SPECX) {
-                // Multithread over rays
+                // Multithread over rays with Specx
                 if (M_mthreadtype == "ray")
                 {
 
@@ -688,124 +678,161 @@ namespace Feel
                     tic();
                     for(auto const &eltWrap : M_rangeFaces ) // from each element of the submesh, launch M_Nrays randomly oriented
                     {
+                        
                         auto const& el = unwrap_ref( eltWrap );
-
                         auto elMarker = M_mapEntityToBuildingFace.at(el.id());
 
-                        auto multithreading_over_rays = [&](int n_rays_thread, int id_thread){
-
-                                Eigen::VectorXd SM_vector(matrixSize);
-                                Eigen::VectorXd Angle_vector(matrixSize);
-                                
-                                SM_vector.setZero();
-                                Angle_vector.setZero();
-
-                                int index_altitude;
-                                int index_azimuth;
-
-                                int initial_index_rays = n_rays_thread * id_thread ;
-                                for(int j=0;j<n_rays_thread;j++)
-                                {
-
-                                    // Construct the ray emitting from a random point of the element
-                                    auto random_origin = get_random_point(el.vertices());
-
-                                    Eigen::VectorXd rand_dir(3);
-                                    Eigen::VectorXd p1(3),p2(3),p3(3),origin(3);
-                                    bool inward_ray=false;
-                                    
-                                    for(int i=0;i<3;i++)
-                                    {
-                                        p1(i)=column(el.vertices(), 0)[i];
-                                        p2(i)=column(el.vertices(), 1)[i];
-                                        p3(i)=column(el.vertices(), 2)[i];
-                                        origin(i) = random_origin[i];
-                                    }
-                                    auto element_normal = ((p3-p1).head<3>()).cross((p2-p1).head<3>());
-                                    element_normal.normalize();
-                                    
-                                    random_direction = std::get<0>(M_raysdirections[initial_index_rays + j]);
-                                    index_azimuth = std::get<1>(M_raysdirections[initial_index_rays + j]);
-                                    index_altitude = std::get<2>(M_raysdirections[initial_index_rays + j]);
-                                    for(int i=0;i<3;i++)
-                                    {
-                                        rand_dir(i) = random_direction[i];
-                                    }
-                                    if(rand_dir.dot(element_normal)>=0)
-                                    {
-                                        inward_ray=true;
-                                    }
-
-                                    BVHRay<mesh_type::nRealDim> ray( origin, rand_dir, 1e-8 );
-
-                                    int closer_intersection_element = -1;
-                                    if(inward_ray)
-                                    {
-                                        closer_intersection_element = 1;
-                                    }
-                                    else
-                                    {
-                                        auto rayIntersectionResult =  M_bvh->intersect(ray) ;
-                                        if ( !rayIntersectionResult.empty() )
-                                            closer_intersection_element = 1;                                
-                                    }
-                                    // Compute the index associated to the entry to modify
-                                    // The vector is constituted of M_altitudeSize blocks of M_azimuthSize stacked onto each other
-                                    int vector_entry = index_azimuth + M_azimuthSize*index_altitude;
-
-                                    // If there is an intersection, increase the shading mask table entry by 1 and augment the angle table by 1 as well
-                                    if ( closer_intersection_element >=0 )
-                                    {
-                                        SM_vector(vector_entry)++;
-                                        Angle_vector(vector_entry)++;
-                                    }
-                                    else
-                                    {
-                                        Angle_vector(vector_entry)++;
-                                    }
-                                }
-                                return std::make_pair(SM_vector,Angle_vector);
-                            };
-
-                        // Execute the lambda function on multiple threads using
-                        // std::async and std::future to collect the results
                         std::vector<int> n_rays_thread;
                         n_rays_thread.push_back(M_Nrays - (M_Nthreads-1) * (int)(M_Nrays / M_Nthreads));
 
-                        for(int t= 1; t < M_Nthreads; ++t){
-                        n_rays_thread.push_back( M_Nrays / M_Nthreads);
-                        }
+                        for(int t= 1; t < M_Nthreads; ++t){ n_rays_thread.push_back( M_Nrays / M_Nthreads); }
 
-                        // Used to store the future results
-                        std::vector< std::future< std::pair<Eigen::VectorXd, Eigen::VectorXd > > > futures;
 
-                        for(int t = 0; t < M_Nthreads; ++t){
+                                /* BEGIN LAMBDA FUNCTION RAY *********************************************************************/
+                                auto multithreading_over_rays = [&](int n_rays_thread, int id_thread){
 
-                            // Start a new asynchronous task
-                            futures.emplace_back(std::async(std::launch::async, multithreading_over_rays, n_rays_thread[t], t));
-                        }
+                                        Eigen::VectorXd SM_vector(matrixSize);
+                                        Eigen::VectorXd Angle_vector(matrixSize);
+                                        
+                                        SM_vector.setZero();
+                                        Angle_vector.setZero();
 
-                        if( markerLineMap.find(elMarker) == markerLineMap.end())
-                        {
-                            markerLineMap.insert(std::make_pair(elMarker,markerNumber));
-                            markerNumber += 1; 
-                        }
-                        auto initial_index_SM = SM_tables.begin() +  markerLineMap[elMarker] * matrixSize;
-                        auto initial_index_Angles = Angle_tables.begin() +  markerLineMap[elMarker] * matrixSize;
+                                        int index_altitude;
+                                        int index_azimuth;
 
-                        // Add the tables obtained in threads
-                        auto SM_tables_subset = Eigen::Map<Eigen::VectorXd>( &(*initial_index_SM), matrixSize);
-                        auto Angle_tables_subset = Eigen::Map<Eigen::VectorXd>( &(*initial_index_Angles), matrixSize);
+                                        int initial_index_rays = n_rays_thread * id_thread ;
+                                        for(int j=0;j<n_rays_thread;j++)
+                                        {
+
+                                            // Construct the ray emitting from a random point of the element
+                                            auto random_origin = get_random_point(el.vertices());
+
+                                            Eigen::VectorXd rand_dir(3);
+                                            Eigen::VectorXd p1(3),p2(3),p3(3),origin(3);
+                                            bool inward_ray=false;
+                                            
+                                            for(int i=0;i<3;i++)
+                                            {
+                                                p1(i)=column(el.vertices(), 0)[i];
+                                                p2(i)=column(el.vertices(), 1)[i];
+                                                p3(i)=column(el.vertices(), 2)[i];
+                                                origin(i) = random_origin[i];
+                                            }
+                                            auto element_normal = ((p3-p1).head<3>()).cross((p2-p1).head<3>());
+                                            element_normal.normalize();
+                                            
+                                            random_direction = std::get<0>(M_raysdirections[initial_index_rays + j]);
+                                            index_azimuth = std::get<1>(M_raysdirections[initial_index_rays + j]);
+                                            index_altitude = std::get<2>(M_raysdirections[initial_index_rays + j]);
+                                            for(int i=0;i<3;i++)
+                                            {
+                                                rand_dir(i) = random_direction[i];
+                                            }
+                                            if(rand_dir.dot(element_normal)>=0)
+                                            {
+                                                inward_ray=true;
+                                            }
+
+                                            BVHRay<mesh_type::nRealDim> ray( origin, rand_dir, 1e-8 );
+
+                                            int closer_intersection_element = -1;
+                                            if(inward_ray)
+                                            {
+                                                closer_intersection_element = 1;
+                                            }
+                                            else
+                                            {
+                                                auto rayIntersectionResult =  M_bvh->intersect(ray) ;
+                                                if ( !rayIntersectionResult.empty() )
+                                                    closer_intersection_element = 1;                                
+                                            }
+                                            // Compute the index associated to the entry to modify
+                                            // The vector is constituted of M_altitudeSize blocks of M_azimuthSize stacked onto each other
+                                            int vector_entry = index_azimuth + M_azimuthSize*index_altitude;
+
+                                            // If there is an intersection, increase the shading mask table entry by 1 and augment the angle table by 1 as well
+                                            if ( closer_intersection_element >=0 )
+                                            {
+                                                SM_vector(vector_entry)++;
+                                                Angle_vector(vector_entry)++;
+                                            }
+                                            else
+                                            {
+                                                Angle_vector(vector_entry)++;
+                                            }
+                                        }
+                                        return std::make_pair(SM_vector,Angle_vector);
+                                };
+                                /*END LAMBDA FUNCTION RAY *********************************************************************/
+
+
+
+                        NbObjects=M_Nthreads;
+
+                        int NbLoop=0; int NbTh=0; int NbCoor=0;
+                        GetSpecxPreprocessingParameters(NbObjects,SpecxNbThreadDesired,NbLoop,NbTh,NbCoor,QViewInfoSpecx);
+                        SpRuntime runtime1(NbTh);
+
+                        NbTh=runtime1.getNbThreads(); //CTRL if OK
+                        if (QViewInfoSpecx) { std::cout<<"[SPECX INFO] : Num Thread in markers="<<NbTh<<"\n"; }
+                        usleep(10);
+                        //getchar();
+                            
                         
-                        for( auto& f : futures){
-                            // Wait for the result to be ready
-                            auto two_vectors =  f.get();                                    
+                        SpTimer timerTask1;
 
-                            SM_tables_subset += two_vectors.first;
-                            Angle_tables_subset += two_vectors.second;
 
+                            int NbidxN=NbTh;
+                            for(int idxLoop = 0 ; idxLoop < NbLoop ; ++idxLoop){
+                                if (idxLoop==NbLoop-1) { NbTh=NbTh+NbCoor; }
+                                for(int idx = 0 ; idx < NbTh ; ++idx){
+                                        int Index=idxLoop*NbidxN+idx;
+                                        runtime1.task(
+                                        SpRead(Index),
+                                        [&](const int & k) -> bool {
+                                            //if (QViewInfoSpecx) { std::cout <<"ST:"<<k<<"\n"; }
+                                            //std::cout <<" "<<marker_thread_lists[k]<<"\n";
+                                            multithreading_over_rays(n_rays_thread[k],k);
+                                            //if (QViewInfoSpecx) { std::cout <<"EE\n"; }
+                                        return true;
+                                        }
+                                        ).setTaskName("Op("+std::to_string(Index)+")");
+                                        usleep(10);
+                                        std::atomic_int counter(0);
+                                        
+                                }//End for
+                                runtime1.waitAllTasks();
+                                usleep(100);
+                            }//End For idxLoop
+
+
+                            if( markerLineMap.find(elMarker) == markerLineMap.end())
+                            { markerLineMap.insert(std::make_pair(elMarker,markerNumber)); markerNumber += 1; }
+                            auto initial_index_SM = SM_tables.begin() +  markerLineMap[elMarker] * matrixSize;
+                            auto initial_index_Angles = Angle_tables.begin() +  markerLineMap[elMarker] * matrixSize;
+                            // Add the tables obtained in threads
+                            auto SM_tables_subset = Eigen::Map<Eigen::VectorXd>( &(*initial_index_SM), matrixSize);
+                            auto Angle_tables_subset = Eigen::Map<Eigen::VectorXd>( &(*initial_index_Angles), matrixSize);
+
+                        runtime1.waitAllTasks();
+                        runtime1.stopAllThreads();
+                        timerTask1.stop();
+
+
+                        auto timeSpecxTask1=timerTask1.getElapsed();
+                        M_metadataJson["shadingMask"]["Timer Specx"]["MaskSaving Task 1"] = timeSpecxTask1;
+
+                        if (QViewInfoSpecx) {
+                            //std::cout<<"\n";
+                            //std::cout<<"[SPECX INFO] : STOP ALL SPECX THREAD\n";
+                            std::cout<<"[SPECX INFO] : Task Time = "<<timeSpecxTask1<< " s" << std::endl; 
+                            std::cout<<"\n";
                         }
-                    }
+
+                    }//END for M_rangeFaces
+
+
+
                     auto timeComputation = toc("Shading masks computed using raytracing");
                     M_metadataJson["shadingMask"]["Timer"]["MaskComputation"] = timeComputation;
                     M_metadataJson["shadingMask"]["Nthreads"] = M_Nthreads;
@@ -829,6 +856,7 @@ namespace Feel
                         int t = 0;
 
                         std::cout << "Size of marker list per thread " << marker_threads_list_length << std::endl;
+                        std::cout << "\n";
 
                         std::vector<std::vector<std::string>> marker_thread_lists(marker_threads_list_length.size());
                         // Store the index of M_listFaceMarkers from where each thread will start its computations
@@ -836,14 +864,10 @@ namespace Feel
                         start_index_list[0]=0;
                         for(auto n : marker_threads_list_length)
                         {
-                            for(int i=n0; i< n; i++)
-                            {
-                                marker_thread_lists[t].push_back(M_listFaceMarkers[i]);
-                            }
+                            for(int i=n0; i< n; i++) { marker_thread_lists[t].push_back(M_listFaceMarkers[i]); }
                             n0 = n;
                             t += 1;
                             start_index_list[t]=n;
-
                             //std::cout<<start_index_list[t]<<"\n"; 
                         }
 
@@ -857,21 +881,30 @@ namespace Feel
                     NbObjects=M_Nthreads;
 
                     int NbLoop=0; int NbTh=0; int NbCoor=0;
-                    GetSpecxPreprocessingParameters(NbObjects,SpecxNbThreadDesired,NbLoop,NbTh,NbCoor);
-                    if (QViewInfoSpecx) {
-                        std::cout<<"[SPECX INFO] : SpecxNbThreadDesired="<<SpecxNbThreadDesired<<"\n";
-                        std::cout<<"[SPECX INFO] : Nb Objects="<<NbObjects<<"\n";
-                        std::cout<<"[SPECX INFO] : Nb Loops="<<NbLoop<<" Th="<<NbTh<<" Coor="<<NbCoor<<"\n";
-                        std::cout<<"[SPECX INFO] : NbThreads="<<NbTh<<" used\n";
-                    }
-                    SpRuntime runtime1(NbTh);
-                    NbTh=runtime1.getNbThreads(); //CTRL if OK
+                    GetSpecxPreprocessingParameters(NbObjects,SpecxNbThreadDesired,NbLoop,NbTh,NbCoor,QViewInfoSpecx);
+                    //SpRuntime runtime1(NbTh);
+
+                    
+                    int NbThSub=NbTh;
+                    NbThSub=3;
+                    int SizeBlock=M_Nrays/NbThSub;
+                    int DiffBlock=M_Nrays-SizeBlock*NbThSub;
+
+                    std::cout<<" SizeBlock="<<SizeBlock<<" NbThSub="<<NbThSub<<" T="<<SizeBlock*NbThSub<<" DiffBlock="<<DiffBlock<<"\n";
+                    
+                    
+                    //std::cout<<"> PRESS KEY <\n"; getchar();
+
+
+                    //NbTh=runtime1.getNbThreads(); //CTRL if OK
                     if (QViewInfoSpecx) { std::cout<<"[SPECX INFO] : Num Thread in markers="<<NbTh<<"\n"; }
 
                     //std::cout<<"\nM_Nthreads="<<M_Nthreads<<"\n";
+
+                    
                     
 
-                    /* BEGIN LAMBDA FUNCTION *********************************************************************/
+                    /* BEGIN LAMBDA FUNCTION MARKERS *********************************************************************/
                                     auto multithreading_over_markers = [&](std::vector<std::string> marker_list_thread, int id_thread, int start_index){
 
                                                 int index_altitude;
@@ -909,67 +942,132 @@ namespace Feel
                                                 
                                                     for(auto const& face : faces_with_marker)
                                                     {
-                                                        for(int j=0;j<M_Nrays;j++)
-                                                        {
-                                                            // Construct the ray emitting from a random point of the element
-                                                            auto random_origin = get_random_point(face.vertices());
 
-                                                            Eigen::VectorXd rand_dir(3);
-                                                            Eigen::VectorXd p1(3),p2(3),p3(3),origin(3);
-                                                            bool inward_ray=false;
-                                                            
-                                                            for(int i=0;i<3;i++)
-                                                            {
-                                                                p1(i)=column(face.vertices(), 0)[i];
-                                                                p2(i)=column(face.vertices(), 1)[i];
-                                                                p3(i)=column(face.vertices(), 2)[i];
-                                                                origin(i) = random_origin[i];
-                                                            }
-                                                            auto element_normal = ((p3-p1).head<3>()).cross((p2-p1).head<3>());
-                                                            element_normal.normalize();
+                                                       if (SpecxActivateSubNumberPart==1) { 
 
-                                                            // Choose the direction randomly among the latitude and azimuth
-                                                            
-                                                            random_direction = std::get<0>(M_raysdirections[j]);
-                                                            index_azimuth = std::get<1>(M_raysdirections[j]);
-                                                            index_altitude = std::get<2>(M_raysdirections[j]);
-                                                            for(int i=0;i<3;i++)
-                                                            {
-                                                                rand_dir(i) = random_direction[i];
-                                                            }
-                                                            if(rand_dir.dot(element_normal)>=0)
-                                                            {
-                                                                inward_ray=true;
-                                                            }
 
-                                                            BVHRay<mesh_type::nRealDim> ray( origin, rand_dir, 1e-8 );
+                                                       SpRuntime runtimeSub(NbThSub);
+                                                        
+                                                        for(int k1 = 0 ; k1 < NbThSub ; ++k1){
+                                                            int VkBegin=k1*SizeBlock;
+                                                            int VkEnd=(k1+1)*SizeBlock;
+                                                            if ((k1==NbThSub-1) && (k1>0) && (DiffBlock>0)) { VkEnd=VkBegin+DiffBlock; }
 
-                                                            int closer_intersection_element = -1;
-                                                            if(inward_ray)
-                                                            {
-                                                                closer_intersection_element = 1;
-                                                            }
-                                                            else
-                                                            {
-                                                                auto rayIntersectionResult =  M_bvh->intersect(ray) ;
-                                                                if ( !rayIntersectionResult.empty() )
-                                                                    closer_intersection_element = 1;                                
-                                                            }
-                                                            // Compute the index associated to the entry to modify
-                                                            // The vector is constituted of M_altitudeSize blocks of M_azimuthSize stacked onto each other
-                                                            vector_entry = index_azimuth + M_azimuthSize*index_altitude;
+                                                            runtimeSub.task(
+                                                            SpRead(VkBegin),SpRead(VkEnd),
+                                                            [&](const int & jBegin,const int & jEnd) -> bool {
+                                                                //std::cout<<"Vk1="<<VkBegin<<":"<<VkEnd<<"\n";
+                                                                //std::cout<<"> PRESS KEY <\n"; getchar();
 
-                                                            // If there is an intersection, increase the shading mask table entry by 1 and augment the angle table by 1 as well
-                                                            if ( closer_intersection_element >=0 )
-                                                            {
-                                                                SM_vector(vector_entry)++;
-                                                                Angle_vector(vector_entry)++;
+                                                                //usleep(100);
+                                                                if (1==1)
+                                                                {
+                                                                        for(int j=jBegin;j<jEnd;j++)
+                                                                        //for(int j=VkBegin;j<VkEnd;j++)
+                                                                        {
+                                                                            // Construct the ray emitting from a random point of the element
+                                                                            auto random_origin = get_random_point(face.vertices());
+
+                                                                            Eigen::VectorXd rand_dir(3);
+                                                                            Eigen::VectorXd p1(3),p2(3),p3(3),origin(3);
+                                                                            bool inward_ray=false;
+                                                                            
+                                                                            for(int i=0;i<3;i++)
+                                                                            {
+                                                                                p1(i)=column(face.vertices(), 0)[i]; p2(i)=column(face.vertices(), 1)[i]; p3(i)=column(face.vertices(), 2)[i];
+                                                                                origin(i) = random_origin[i];
+                                                                            }
+                                                                            auto element_normal = ((p3-p1).head<3>()).cross((p2-p1).head<3>());
+                                                                            element_normal.normalize();
+
+                                                                            random_direction = std::get<0>(M_raysdirections[j]);
+                                                                            index_azimuth    = std::get<1>(M_raysdirections[j]);
+                                                                            index_altitude   = std::get<2>(M_raysdirections[j]);
+
+                                                                            for(int i=0;i<3;i++)                { rand_dir(i) = random_direction[i];}
+                                                                            if(rand_dir.dot(element_normal)>=0) { inward_ray=true; }
+
+                                                                            BVHRay<mesh_type::nRealDim> ray( origin, rand_dir, 1e-8 );
+
+                                                                            int closer_intersection_element = -1;
+                                                                            if(inward_ray) 
+                                                                                { closer_intersection_element = 1; }
+                                                                            else
+                                                                                {   auto rayIntersectionResult =  M_bvh->intersect(ray) ;
+                                                                                    if ( !rayIntersectionResult.empty() )closer_intersection_element = 1;                                
+                                                                                }
+                                                                            // Compute the index associated to the entry to modify
+                                                                            // The vector is constituted of M_altitudeSize blocks of M_azimuthSize stacked onto each other
+                                                                            vector_entry = index_azimuth + M_azimuthSize*index_altitude;
+
+                                                                            // If there is an intersection, increase the shading mask table entry by 1 and augment the angle table by 1 as well
+                                                                            if ( closer_intersection_element >=0 )
+                                                                                { SM_vector(vector_entry)++; Angle_vector(vector_entry)++; }
+                                                                            else
+                                                                                { Angle_vector(vector_entry)++; }
+                                                                        }//END:FOR
+
+                                                                }
+                                                             return true;
                                                             }
-                                                            else
+                                                            ).setTaskName("SubOp("+std::to_string(k1)+")");
+                                                        }  
+                                                        //std::atomic_int counter(0);
+                                                        runtimeSub.waitAllTasks();
+                                                        runtimeSub.stopAllThreads();
+
+                                                        //runtimeSub.generateDot("RuntimeSub.dot",true);
+                                                        //runtimeSub.generateTrace("RuntimeSub.svg");
+                                                        
+                                                       }//END IF ACTIVATION 1°
+                                                       
+
+
+                                                        if (SpecxActivateSubNumberPart==0) { 
+                                                            for(int j=0;j<M_Nrays;j++)
                                                             {
-                                                                Angle_vector(vector_entry)++;
+                                                                // Construct the ray emitting from a random point of the element
+                                                                auto random_origin = get_random_point(face.vertices());
+
+                                                                Eigen::VectorXd rand_dir(3);
+                                                                Eigen::VectorXd p1(3),p2(3),p3(3),origin(3);
+                                                                bool inward_ray=false;
+                                                                
+                                                                for(int i=0;i<3;i++)
+                                                                {
+                                                                    p1(i)=column(face.vertices(), 0)[i]; p2(i)=column(face.vertices(), 1)[i]; p3(i)=column(face.vertices(), 2)[i];
+                                                                    origin(i) = random_origin[i];
+                                                                }
+                                                                auto element_normal = ((p3-p1).head<3>()).cross((p2-p1).head<3>());
+                                                                element_normal.normalize();
+
+                                                                random_direction = std::get<0>(M_raysdirections[j]);
+                                                                index_azimuth    = std::get<1>(M_raysdirections[j]);
+                                                                index_altitude   = std::get<2>(M_raysdirections[j]);
+
+                                                                for(int i=0;i<3;i++)                { rand_dir(i) = random_direction[i];}
+                                                                if(rand_dir.dot(element_normal)>=0) { inward_ray=true; }
+
+                                                                BVHRay<mesh_type::nRealDim> ray( origin, rand_dir, 1e-8 );
+
+                                                                int closer_intersection_element = -1;
+                                                                if(inward_ray) 
+                                                                    { closer_intersection_element = 1; }
+                                                                else
+                                                                    {   auto rayIntersectionResult =  M_bvh->intersect(ray) ;
+                                                                        if ( !rayIntersectionResult.empty() )closer_intersection_element = 1;                                
+                                                                    }
+                                                                // Compute the index associated to the entry to modify
+                                                                // The vector is constituted of M_altitudeSize blocks of M_azimuthSize stacked onto each other
+                                                                vector_entry = index_azimuth + M_azimuthSize*index_altitude;
+
+                                                                // If there is an intersection, increase the shading mask table entry by 1 and augment the angle table by 1 as well
+                                                                if ( closer_intersection_element >=0 )
+                                                                    { SM_vector(vector_entry)++; Angle_vector(vector_entry)++; }
+                                                                else
+                                                                    { Angle_vector(vector_entry)++; }
                                                             }
-                                                        }
+                                                        }//END IF ACTIVATION 2°
                                                     }
                                                     
                                                     //END:SUB PART
@@ -983,9 +1081,13 @@ namespace Feel
                                                 return true;
                                             };
 
+                    /*END LAMBDA FUNCTION MARKERS *********************************************************************/
 
-                    /*END LAMBDA FUNCTION *********************************************************************/
 
+
+
+                    
+                    SpRuntime runtime1(NbTh);
                     usleep(10);
                     //getchar();
                         
@@ -1016,44 +1118,20 @@ namespace Feel
                             usleep(100);
                         }//End For idxLoop
 
-
-
-                
                     runtime1.waitAllTasks();
                     runtime1.stopAllThreads();
                     timerTask1.stop();
 
-
                     auto timeSpecxTask1=timerTask1.getElapsed();
-                    M_metadataJson["shadingMask"]["Timer Specx"]["MaskSaving Task 1"] = timeSpecxTask1;
+                    M_metadataJson["shadingMask"]["Timer Specx"]["Compute Task 1"] = timeSpecxTask1;
 
                     if (QViewInfoSpecx) {
-                        std::cout<<"\n";
-                        std::cout<<"\n";
-                        std::cout<<"[SPECX INFO] : STOP ALL SPECX THREAD\n";
+                        //std::cout<<"\n";
+                        //std::cout<<"[SPECX INFO] : STOP ALL SPECX THREAD\n";
                         std::cout<<"[SPECX INFO] : Task Time = "<<timeSpecxTask1<< " s" << std::endl; 
+                        std::cout<<"\n";
                     }
 
-                    //std::cout<<"=END MARKERS============================================\n";
-                    //getchar();
-
-    /*
-                //KILL this part
-                        // Used to store the future results
-                        // need to 
-                        std::vector< std::future< bool > > futures;
-
-                        for(int t= 0; t < M_Nthreads; ++t){
-                        // Launch in parallel asynchronously
-                        futures.emplace_back(std::async(std::launch::async, multithreading_over_markers, marker_thread_lists[t], t, start_index_list[t]));
-                        }
-
-                        // Collect futures just to allow asynchronous executions
-                        for( auto& f : futures){
-                        // Wait for the result to be ready
-                        auto a =  f.get();  
-                        }
-    */
                         auto timeComputation = toc("Shading masks computed using raytracing");
                         M_metadataJson["shadingMask"]["Timer"]["MaskComputation"] = timeComputation;
                         M_metadataJson["shadingMask"]["Nthreads"] = M_Nthreads;
@@ -1082,7 +1160,7 @@ namespace Feel
 
 
             std::cout<<"[SPECX INFO] : ******Save Shading Mask.\n";
-            std::cout<<"[SPECX INFO] : SAVE RESULTS IN PARALLEL MODE\n";
+            
 
             if(M_saveMasks)
             {
@@ -1091,23 +1169,17 @@ namespace Feel
                 tic();
                 if(j_["/Buildings"_json_pointer].contains("fileFaces") )
                 {
-                    if (QViewInfoSpecx) { 
-                            std::cout<<"[SPECX INFO] : ******Save file Faces.\n"; 
-                            std::cout<<"[SPECX INFO] : "<<M_listFaceMarkers.size()<<"\n"; 
+                    if (QViewInfoSpecx) {                  
+                            std::cout<<"[SPECX INFO] : SAVE RESULTS IN PARALLEL MODE ("<<M_listFaceMarkers.size()<<") FACES\n"; 
                     }
 
                     if (QSaveWithSpecx)
                     {
                         NbObjects=M_listFaceMarkers.size();
                         int NbLoop=0; int NbTh=0; int NbCoor=0;
-                        GetSpecxPreprocessingParameters(NbObjects,SpecxSaveNbThreadDesired,NbLoop,NbTh,NbCoor);
-                        if (QViewInfoSpecx) {
-                            std::cout<<"[SPECX INFO] : SpecxSaveNbThreadDesired="<<SpecxSaveNbThreadDesired<<"\n";
-                            std::cout<<"[SPECX INFO] : Nb Objects="<<NbObjects<<"\n";
-                            std::cout<<"[SPECX INFO] : Nb Loops="<<NbLoop<<" Th="<<NbTh<<" Coor="<<NbCoor<<"\n";
-                            std::cout<<"[SPECX INFO] : NbThreads="<<NbTh<<" used\n";
-                        }
+                        GetSpecxPreprocessingParameters(NbObjects,SpecxSaveNbThreadDesired,NbLoop,NbTh,NbCoor,QViewInfoSpecx);
                         SpRuntime runtime5(NbTh);
+                        
                         NbTh=runtime5.getNbThreads(); //CTRL if OK
                         if (QViewInfoSpecx) { std::cout<<"[SPECX INFO] : Num Thread in markers="<<NbTh<<"\n"; }
                         usleep(10);
@@ -1148,10 +1220,10 @@ namespace Feel
                         M_metadataJson["shadingMask"]["Timer Specx"]["Time save parallel mode"] = timeSpecxTask5;
 
                         if (QViewInfoSpecx) {
-                            std::cout<<"\n";
-                            std::cout<<"\n";
-                            std::cout<<"[SPECX INFO] : STOP ALL SPECX THREAD\n";
+                            //std::cout<<"\n";
+                            //std::cout<<"[SPECX INFO] : STOP ALL SPECX THREAD\n";
                             std::cout<<"[SPECX INFO] : Task Time = "<<timeSpecxTask5<< " s" << std::endl;
+                            std::cout<<"\n";
                         }
 
                         if (QSaveSpecxGenerateReports) {
@@ -1181,8 +1253,7 @@ namespace Feel
                 {
 
                     if (QViewInfoSpecx) { 
-                        std::cout<<"[SPECX INFO] : ******Save Aggregated Markers.\n"; 
-                        std::cout<<"[SPECX INFO] : "<<M_listFaceMarkers.size()<<"\n"; 
+                        std::cout<<"[SPECX INFO] : SAVE RESULTS IN PARALLEL MODE ("<<M_listFaceMarkers.size()<<") MARKERS\n"; 
                     }
 
                     if (QSaveWithSpecx)
@@ -1190,14 +1261,9 @@ namespace Feel
                         
                         NbObjects=M_listFaceMarkers.size();
                         int NbLoop=0; int NbTh=0; int NbCoor=0;
-                        GetSpecxPreprocessingParameters(NbObjects,SpecxSaveNbThreadDesired,NbLoop,NbTh,NbCoor);
-                        if (QViewInfoSpecx) {
-                            std::cout<<"[SPECX INFO] : SpecxSaveNbThreadDesired="<<SpecxSaveNbThreadDesired<<"\n";
-                            std::cout<<"[SPECX INFO] : Nb Objects="<<NbObjects<<"\n";
-                            std::cout<<"[SPECX INFO] : Nb Loops="<<NbLoop<<" Th="<<NbTh<<" Coor="<<NbCoor<<"\n";
-                            std::cout<<"[SPECX INFO] : NbThreads="<<NbTh<<" used\n";
-                        }
+                        GetSpecxPreprocessingParameters(NbObjects,SpecxSaveNbThreadDesired,NbLoop,NbTh,NbCoor,QViewInfoSpecx);
                         SpRuntime runtime5(NbTh);
+
                         NbTh=runtime5.getNbThreads(); //CTRL if OK
                         if (QViewInfoSpecx) { std::cout<<"[SPECX INFO] : Num Thread in markers="<<NbTh<<"\n"; }
                         usleep(10);
@@ -1222,11 +1288,14 @@ namespace Feel
                                     }
                                     ).setTaskName("Op("+std::to_string(Index)+")");
 
-                                    if (QSpecxLockConfigWaitSave) { usleep(10); std::atomic_int counter(0); }    
+                                    if (QSpecxLockConfigWaitSave) { usleep(10); std::atomic_int counter(0); } 
+                                    //if (QSpecxLockConfigWaitSave) { std::atomic_int counter(0); usleep(10); }   
                                     //usleep(1);                                
                             }//End for
 
                             if (QSpecxLockConfigWaitSave) { runtime5.waitAllTasks(); usleep(10); }
+                            //if (QSpecxLockConfigWaitSave) { runtime5.waitAllTasks(); usleep(100); }
+                            //usleep(100);
                             
                         }//End For idxLoop
 
@@ -1240,10 +1309,10 @@ namespace Feel
                         M_metadataJson["shadingMask"]["Timer Specx"]["Time save parallel mode"] = timeSpecxTask5;
 
                         if (QViewInfoSpecx) {
-                            std::cout<<"\n";
-                            std::cout<<"\n";
-                            std::cout<<"[SPECX INFO] : STOP ALL SPECX THREAD\n";
+                            //std::cout<<"\n";
+                            //std::cout<<"[SPECX INFO] : STOP ALL SPECX THREAD\n";
                             std::cout<<"[SPECX INFO] : Task Time = "<<timeSpecxTask5<< " s" << std::endl;
+                            std::cout<<"\n";
                         }
                         
                         if (QSaveSpecxGenerateReports) {
@@ -1312,6 +1381,7 @@ namespace Feel
                     if((M_saveMasks) && (QCTRL_DATA))
                     {
                         tic();
+                        cout<<"\n";
                         cout<<"[SPECX INFO] : TASK CTRL DATA Level ===> ";
                         //CTRL 
                         if ((j_["/Buildings"_json_pointer].contains("aggregatedMarkers") ) && (true)) 
@@ -1342,7 +1412,7 @@ namespace Feel
 
                     }
 
-                    if (QViewInfoSpecx) { std::cout<<"[SPECX INFO] : ******Saved Aggregated Markers.\n"; }
+                    //if (QViewInfoSpecx) { std::cout<<"[SPECX INFO] : ******Saved Aggregated Markers.\n"; }
                 }
 
 
@@ -1355,8 +1425,10 @@ namespace Feel
         auto end_computation = std::chrono::system_clock::now();
         std::time_t end_time = std::chrono::system_clock::to_time_t(end_computation);
         M_metadataJson["shadingMask"]["Timestamp"]["End"] = strtok(std::ctime(&end_time),"\n");
+        M_metadataJson["shadingMask"]["Timestamp"]["Delta Time"] = end_time-beginning_time;
 
-        //std::cout<<"[SPECX INFO] : ******Section Save Metadata\n";
+        std::cout<<"[SPECX INFO] : ******Section Save Metadata\n";
+        
         saveMetadata();   
     }
 

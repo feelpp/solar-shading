@@ -1,11 +1,37 @@
 
+
+
 namespace Feel
 {
 template <typename MeshType>
-ShadingMask<MeshType>::ShadingMask(mesh_ptrtype mesh, nl::json const& specs, int intervalsAzimuth, int intervalsAltitude )
+void
+ShadingMask<MeshType>::fixAzimuthAltitudeDiscretization(int intervalsAzimuth, int intervalsAltitude)
+    {
+        M_azimuthSize = intervalsAzimuth;
+        M_altitudeSize = intervalsAltitude;
+        value_type deltaAzimuth = 2* M_PI /intervalsAzimuth;
+        M_azimuthAngles.resize(M_azimuthSize);
+        for(int i=0; i<intervalsAzimuth; i++)
+        {
+            M_azimuthAngles[i] = i * deltaAzimuth+1e-6;
+        }
+
+        value_type deltaAltitude = 0.5 * M_PI /intervalsAltitude;
+        M_altitudeAngles.resize(M_altitudeSize);
+        for(int i=0; i<intervalsAltitude; i++)
+        {
+            M_altitudeAngles[i] = i * deltaAltitude;
+        }
+
+    }
+
+
+template <typename MeshType>
+ShadingMask<MeshType>::ShadingMask(int TestNbThread,int TestNbRayon,mesh_ptrtype mesh, nl::json const& specs,int intervalsAzimuth, int intervalsAltitude)
 {
     auto start_computation = std::chrono::system_clock::now();
-    std::time_t beginning_time = std::chrono::system_clock::to_time_t(start_computation);
+    beginning_time = std::chrono::system_clock::to_time_t(start_computation);
+    //std::time_t beginning_time = std::chrono::system_clock::to_time_t(start_computation);
     M_metadataJson["shadingMask"]["Timestamp"]["Beginning"] = strtok(std::ctime(&beginning_time),"\n");;
 
     // Read the number of rays per triangle and the number of threads
@@ -15,24 +41,39 @@ ShadingMask<MeshType>::ShadingMask(mesh_ptrtype mesh, nl::json const& specs, int
     M_mthreadtype = specs["Multithread"]["type"].get<std::string>();
     M_saveMasks = specs["SaveMasks"];
 
-    QMAKE_WITH_SPECX         = true;
-    SpecxNbThreadDesired     = SpUtils::DefaultNumThreads();
-    SpecxNbThreadDesired     = 5;
-    SpecxNbThreadDesired     = M_Nthreads;
-    SpecxSaveNbThreadDesired = SpUtils::DefaultNumThreads();;
-    SpecxSaveNbThreadDesired = 80;
-    QSaveSpecxGenerateReports= true;
-    QSpecxLockConfigWaitSave = true;
-    //QSpecxLockConfigWaitSave=false;
-    QSaveWithSpecx           = true;
-    QViewInfoSpecx           = true;
-    QCTRL_SAVE_NORMAL        = true;
-    QCTRL_DATA               = true;
+    if (TestNbThread!=-1)
+    {
+        M_Nrays    = TestNbRayon;
+        M_Nthreads = TestNbThread;
+    }
 
-    QCTRL_SAVE_SEED          = true;
-    QCTRL_SAVE_SEED          = false;
-    QCTRL_LOAD_SEED          = true;
-    //QCTRL_LOAD_SEED          = false;
+    QMAKE_WITH_SPECX           = true;
+    SpecxNbThreadDesired       = SpUtils::DefaultNumThreads();
+    SpecxNbThreadDesired       = 5;
+    SpecxNbThreadDesired       = M_Nthreads;
+    SpecxSaveNbThreadDesired   = SpUtils::DefaultNumThreads();;
+    SpecxSaveNbThreadDesired   = 80;
+    SpecxSaveNbThreadDesired   = M_Nthreads;
+    QSaveSpecxGenerateReports  = true;
+
+    QSpecxLockConfigWaitSave   = true;
+    //QSpecxLockConfigWaitSave= false;
+
+    QSaveWithSpecx             = true;
+    QViewInfoSpecx             = true;
+    QCTRL_SAVE_NORMAL          = true;
+    QCTRL_DATA                 = true;
+
+    QCTRL_SAVE_NORMAL          = false;
+    QCTRL_DATA                 = false;
+
+    QCTRL_SAVE_SEED            = true;
+    QCTRL_SAVE_SEED            = false;
+    QCTRL_LOAD_SEED            = true;
+    QCTRL_LOAD_SEED            = false;
+
+
+    SpecxActivateSubNumberPart = 1;
 
 
     if (!QMAKE_WITH_SPECX) { QSaveWithSpecx=false; } 
@@ -165,12 +206,9 @@ ShadingMask<MeshType>::ShadingMask(mesh_ptrtype mesh, nl::json const& specs, int
 
             NbObjects=markersVolume.size();
             int NbLoop=0; int NbTh=0; int NbCoor=0;
-            GetSpecxPreprocessingParameters(NbObjects,SpecxNbThreadDesired,NbLoop,NbTh,NbCoor);
-            std::cout<<"[SPECX INFO] : SpecxNbThreadDesired="<<SpecxNbThreadDesired<<"\n";
-            std::cout<<"[SPECX INFO] : Nb Objects="<<NbObjects<<"\n";
-            std::cout<<"[SPECX INFO] : Nb Loops="<<NbLoop<<" Th="<<NbTh<<" Coor="<<NbCoor<<"\n";
-            std::cout<<"[SPECX INFO] : NbThreads="<<NbTh<<" used\n";
+            GetSpecxPreprocessingParameters(NbObjects,SpecxNbThreadDesired,NbLoop,NbTh,NbCoor,QViewInfoSpecx);
             SpRuntime runtime0(NbTh);
+
             tic();
             std::string buildingName;
             std::atomic<int> Index(0);
@@ -268,11 +306,7 @@ ShadingMask<MeshType>::ShadingMask(mesh_ptrtype mesh, nl::json const& specs, int
             NbObjects=ListObjects.size();
             //for(int k = 0 ; k < NbObjects ; ++k){ std::cout<<ListObjects[k]<<"\n";} 
             int NbLoop=0; int NbTh=0; int NbCoor=0; 
-            GetSpecxPreprocessingParameters(NbObjects,SpecxNbThreadDesired,NbLoop,NbTh,NbCoor);
-            std::cout<<"[SPECX INFO] : SpecxNbThreadDesired="<<SpecxNbThreadDesired<<"\n";
-            std::cout<<"[SPECX INFO] : Nb Objects="<<NbObjects<<"\n";
-            std::cout<<"[SPECX INFO] : Nb Loops="<<NbLoop<<" Th="<<NbTh<<" Coor="<<NbCoor<<"\n";
-            std::cout<<"[SPECX INFO] : NbThreads="<<NbTh<<" used\n";
+            GetSpecxPreprocessingParameters(NbObjects,SpecxNbThreadDesired,NbLoop,NbTh,NbCoor,QViewInfoSpecx);
             SpRuntime runtime0(NbTh);
             //SpRuntime<SpSpeculativeModel::SP_MODEL_2> runtime0;
             
@@ -466,13 +500,8 @@ ShadingMask<MeshType>::ShadingMask(mesh_ptrtype mesh, nl::json const& specs, int
             NbObjects=ListObjects.size();
             //for(int k = 0 ; k < NbObjects ; ++k){ std::cout<<ListObjects[k]<<"\n";} 
             int NbLoop=0; int NbTh=0; int NbCoor=0; 
-            GetSpecxPreprocessingParameters(NbObjects,SpecxNbThreadDesired,NbLoop,NbTh,NbCoor);
-            std::cout<<"[SPECX INFO] : SpecxNbThreadDesired="<<SpecxNbThreadDesired<<"\n";
-            std::cout<<"[SPECX INFO] : Nb Objects="<<NbObjects<<"\n";
-            std::cout<<"[SPECX INFO] : Nb Loops="<<NbLoop<<" Th="<<NbTh<<" Coor="<<NbCoor<<"\n";
-            std::cout<<"[SPECX INFO] : NbThreads="<<NbTh<<" used\n";
+            GetSpecxPreprocessingParameters(NbObjects,SpecxNbThreadDesired,NbLoop,NbTh,NbCoor,QViewInfoSpecx);
 
-            
             tic();
             int Index=0;
             int NumModel=2;    
@@ -571,9 +600,7 @@ ShadingMask<MeshType>::ShadingMask(mesh_ptrtype mesh, nl::json const& specs, int
             std::cout<<"[SPECX INFO] : NbThreads Desired="<<M_Nthreads<<"\n";
                 
             int NbLoop=0; int NbTh=0; int NbCoor=0;
-            GetSpecxPreprocessingParameters(NbObjects,SpecxNbThreadDesired,NbLoop,NbTh,NbCoor);
-            std::cout<<"[SPECX INFO] : Nb Loops="<<NbLoop<<" Th="<<NbTh<<" Coor="<<NbCoor<<"\n";
-
+            GetSpecxPreprocessingParameters(NbObjects,SpecxNbThreadDesired,NbLoop,NbTh,NbCoor,QViewInfoSpecx);
             SpRuntime runtime0(NbTh);
 
             tic();
@@ -803,26 +830,15 @@ ShadingMask<MeshType>::ShadingMask(mesh_ptrtype mesh, nl::json const& specs, int
 }
 
 
-template <typename MeshType>
-void
-ShadingMask<MeshType>::fixAzimuthAltitudeDiscretization(int intervalsAzimuth, int intervalsAltitude)
-    {
-        M_azimuthSize = intervalsAzimuth;
-        M_altitudeSize = intervalsAltitude;
-        value_type deltaAzimuth = 2* M_PI /intervalsAzimuth;
-        M_azimuthAngles.resize(M_azimuthSize);
-        for(int i=0; i<intervalsAzimuth; i++)
-        {
-            M_azimuthAngles[i] = i * deltaAzimuth+1e-6;
-        }
 
-        value_type deltaAltitude = 0.5 * M_PI /intervalsAltitude;
-        M_altitudeAngles.resize(M_altitudeSize);
-        for(int i=0; i<intervalsAltitude; i++)
-        {
-            M_altitudeAngles[i] = i * deltaAltitude;
-        }
 
-    }
+
+
 
 }
+
+
+
+
+
+
