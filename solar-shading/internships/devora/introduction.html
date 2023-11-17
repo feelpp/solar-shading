@@ -163,22 +163,52 @@ MathJax.Hub.Config({
     <span class="nav-text">Environment</span>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="#cmake.adoc">cmake environment</a>
+    <a class="nav-link" href="../../env/cmake.html">cmake environment</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="#antora.adoc">antora environment</a>
+    <a class="nav-link" href="../../env/antora.html">antora environment</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="#vscode.adoc">vscode integration</a>
+    <a class="nav-link" href="../../env/vscode.html">vscode integration</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="#githubactions.adoc">Github Actions</a>
+    <a class="nav-link" href="../../env/githubactions.html">Github Actions</a>
   </li>
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="../../rename.html">Renaming the project</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="#jupyter.adoc">Jupyter Notebook</a>
+    <a class="nav-link" href="../../env/jupyter.html">Jupyter Notebook</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Performance Metrics</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../metrics/performance.html">cmake environment</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Internships</span>
+<ul class="nav-list">
+  <li class="nav-item is-current-page" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="introduction.html">Report Ariel De Vora</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="chap1.html">Shading Masks</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="chap2.html">Bounding Volume Hierarchy</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="chap3.html">Benchmarking and Performance Measurement</a>
   </li>
 </ul>
   </li>
@@ -208,12 +238,13 @@ MathJax.Hub.Config({
   <nav class="breadcrumbs" aria-label="breadcrumbs">
   <ul>
     <li><a href="../../index.html">Feel++ Solar Shading</a></li>
-    <li><a href="introduction.html">Shading Masks computation for solar radiation</a></li>
+    <li>Internships</li>
+    <li><a href="introduction.html">Report Ariel De Vora</a></li>
   </ul>
 </nav>
 
   
-    <div class="edit-this-page"><a href="https://github.com/feelpp/solar-shading/edit/24-dev-specx-solar-shading-algorithm/docs/modules/internships/pages/devora/introduction.adoc">Edit this Page</a></div>
+    <div class="edit-this-page"><a href="https://github.com/feelpp/solar-shading/edit/25-dev-specx-solar-shading-algorithm/docs/modules/internships/pages/devora/introduction.adoc">Edit this Page</a></div>
   
   <div class="page-downloads">
   <span class="label">Download as</span>
@@ -237,8 +268,10 @@ MathJax.Hub.Config({
 <div id="preamble">
 <div class="sectionbody">
 <hr>
-<div class="paragraph">
-<p><span class="image unresolved"><img src="ROOT::logos.png" alt="logos" width="100%"></span></p>
+<div class="imageblock text-center">
+<div class="content">
+<img src="../../_images/logos.png" alt="logos" width="100%">
+</div>
 </div>
 <br>
 <center>
@@ -267,6 +300,7 @@ MathJax.Hub.Config({
 <li><a href="#_tools">1.3. Tools</a></li>
 </ul>
 </li>
+<li><a href="#_bibliography">2. Bibliography</a></li>
 </ul>
 </div>
 </div>
@@ -413,6 +447,45 @@ MathJax.Hub.Config({
 CUDA allows we to optimize code at a low level and provides flexibility to customize algorithms and data structures based on specific requirements.</p>
 </div>
 </div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_bibliography"><a class="anchor" href="#_bibliography"></a>2. Bibliography</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p><a id="perez-1993-luminance"></a> Perez, Seals, and Michalsky. "All Weather Model for Sky Luminance Distribution." Solar Energy, Vol. 50, No. 3, 1993, pp. 235-245. Pergamon Press Ltd.</p>
+</li>
+<li>
+<p><a id="perez-1993-geostatistical"></a> R. Perez, R. Seals, P. Ineichen, and J. Michalsky. "Geostatistical properties and modeling of random cloud patterns for real skies", Solar Energy, Vol. 51, No. 1, 1993, pp. 7-18. Pergamon Press Ltd.</p>
+</li>
+<li>
+<p><a id="survey-BVHs-for-ray-tracing"></a> Daniel Meister, Shinji Ogaki, Carsten Benthin, Michael J. Doyle, Michael Guthe and Jirí Bittner. "A Survey on Bounding Volume Hierarchies for Ray Tracing." Eurographics 2021, Vol. 40, No. 2, DOI: 10.1111/cgf.142662</p>
+</li>
+<li>
+<p><a id="efficient-stackless-bvh-traversal"></a> Michal Hapala, Tomas Davidovic, Ingo Wald, Vlastimir Havran and Philipp Slusallek. "Efficient Stack-less BVH Traversal for Ray Tracing", Intel Corp.</p>
+</li>
+<li>
+<p><a id="real-time-collision-detection"></a> Christer Ericson. "Real-Time Collision Detection", Morgan Kaufmann Publishers, 2005, Sony Computer Entertainment America.</p>
+</li>
+<li>
+<p><a id="marsh-shading-masks"></a> Andrew Marsh. "The Application of Shading Masks in Building Simulation", International Building Performance Simulation Association (IBPSA), No. 9, 2005, Montreal, Canada.</p>
+</li>
+<li>
+<p><a id="marsh-webapp"></a> Andrew Marsh. "Interactive WebApp for Dynamic OverShadowing",  link::https://drajmarsh.bitbucket.io/cie-sky.html[his website], University of Sydney, 2006.</p>
+</li>
+<li>
+<p><a id="zenith-luminance"></a> M. Karayel, M. Navvab, E. Ne&#8217;eman, and S. Selkowitz. "Zenith Luminance and Sky Luminance Distributions for Daylighting Calculations", Energy and Buildings, Vol. 6, Energy Efficient Buildings Program, Lawrence Berkeley Laboratory, University of California, Berkeley, CA 94720 (U.S.A.)</p>
+</li>
+<li>
+<p><a id="stanford-lecture-optix"></a> Stanford University lecture on OptiX ray tracing, link::https://www.youtube.com/watch?v=KH3hS0LBq80[YouTube], used for the speculative traversal.</p>
+</li>
+<li>
+<p><a id="freiburg-lecture-bvh"></a> University of Freiburg lecture on Bounding Volume Hierarchy, link::https://www.youtube.com/watch?v=wktOtEDeu6Y&amp;t=622s[YouTube], used for understanding the basics of BVs and BVHs, and images.</p>
+</li>
+</ul>
 </div>
 </div>
 </div>

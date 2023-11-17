@@ -163,22 +163,52 @@ MathJax.Hub.Config({
     <span class="nav-text">Environment</span>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="#cmake.adoc">cmake environment</a>
+    <a class="nav-link" href="../../env/cmake.html">cmake environment</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="#antora.adoc">antora environment</a>
+    <a class="nav-link" href="../../env/antora.html">antora environment</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="#vscode.adoc">vscode integration</a>
+    <a class="nav-link" href="../../env/vscode.html">vscode integration</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="#githubactions.adoc">Github Actions</a>
+    <a class="nav-link" href="../../env/githubactions.html">Github Actions</a>
   </li>
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="../../rename.html">Renaming the project</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="#jupyter.adoc">Jupyter Notebook</a>
+    <a class="nav-link" href="../../env/jupyter.html">Jupyter Notebook</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Performance Metrics</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../metrics/performance.html">cmake environment</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Internships</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="introduction.html">Report Ariel De Vora</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="chap1.html">Shading Masks</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="chap2.html">Bounding Volume Hierarchy</a>
+  </li>
+  <li class="nav-item is-current-page" data-depth="2">
+    <a class="nav-link" href="chap3.html">Benchmarking and Performance Measurement</a>
   </li>
 </ul>
   </li>
@@ -208,12 +238,14 @@ MathJax.Hub.Config({
   <nav class="breadcrumbs" aria-label="breadcrumbs">
   <ul>
     <li><a href="../../index.html">Feel++ Solar Shading</a></li>
-    <li><a href="chap3.html">Chapter 3 - Becnhmarking and Performance Measurement</a></li>
+    <li>Internships</li>
+    <li><a href="introduction.html">Report Ariel De Vora</a></li>
+    <li><a href="chap3.html">Benchmarking and Performance Measurement</a></li>
   </ul>
 </nav>
 
   
-    <div class="edit-this-page"><a href="https://github.com/feelpp/solar-shading/edit/24-dev-specx-solar-shading-algorithm/docs/modules/internships/pages/devora/chap3.adoc">Edit this Page</a></div>
+    <div class="edit-this-page"><a href="https://github.com/feelpp/solar-shading/edit/25-dev-specx-solar-shading-algorithm/docs/modules/internships/pages/devora/chap3.adoc">Edit this Page</a></div>
   
   <div class="page-downloads">
   <span class="label">Download as</span>
@@ -563,8 +595,10 @@ cmake --build build/default
 <div class="paragraph">
 <p>Below you can see a first execution time comparison, using the <code>std::chrono</code> library to measure the time taken by each method to generate 1000000 random numbers. The code was compiled using different usual flags, such as <code>-O3</code>, <code>-Ofast</code>, <code>-O2</code> and <code>-O1</code>.</p>
 </div>
-<div class="paragraph">
-<p><span class="image unresolved"><img src="ROOT::flagcomparison.png" alt="Barplot comparing execution time"></span>[600]</p>
+<div class="imageblock">
+<div class="content">
+<img src="../../_images/flagcomparison.png" alt="Barplot comparing execution time][600">
+</div>
 </div>
 <div class="paragraph">
 <p>We can observe that all of the presented methods, except for Eigen&#8217;s one, are outperforming the standard library.</p>
@@ -575,14 +609,18 @@ cmake --build build/default
 <div class="paragraph">
 <p>Since Intel&#8217;s oneAPI MKL library is by far the highest speed RNG, we benchmarked it using more specific flags, such as <code>march=native</code> in order to enable all the processor&#8217;s extensions, and switching between <code>sequential</code> and <code>threaded</code> modes. The results are shown below:</p>
 </div>
-<div class="paragraph">
-<p><span class="image unresolved"><img src="ROOT::intel.png" alt="intel" width="600"></span></p>
+<div class="imageblock">
+<div class="content">
+<img src="../../_images/intel.png" alt="intel" width="600">
+</div>
 </div>
 <div class="paragraph">
 <p>And below the second speed test done on Gaia, a system composeed of 192 AMD EPYC 7552 48-Core Processors. During this second benchmark, we cycled through most of the different compilation flags combinations, and the results are shown below:</p>
 </div>
-<div class="paragraph">
-<p><span class="image unresolved"><img src="ROOT::AMDspeed.png" alt="600"></span></p>
+<div class="imageblock">
+<div class="content">
+<img src="../../_images/AMDspeed.png" alt="600">
+</div>
 </div>
 <div class="paragraph">
 <p><a href="https://caiorss.github.io/C-Cpp-Notes/compiler-flags-options.html">Here</a> is a website describing the use-cases of each compilation flag and what they do.</p>
