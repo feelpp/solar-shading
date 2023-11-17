@@ -12,3 +12,6 @@
 ** xref:env/githubactions.adoc[Github Actions]
 ** xref:rename.adoc[Renaming the project]
 ** xref:env/jupyter.adoc[Jupyter Notebook]
+
+* Performance Metrics
+** xref:metrics/performance.adoc[cmake environment]
