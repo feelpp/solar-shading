@@ -65,7 +65,7 @@ int main(int argc, char **argv)
 
     // Compute the shading masks
     
-    if (1==1) {
+    if (1==0) {
         std::cout<<"\n\n";
         std::cout<<"[SPECX INFO] : Compute the shading masks.\n";
         //ShadingMask<mesh_t> sm(mesh,json_buildings);
@@ -79,11 +79,11 @@ int main(int argc, char **argv)
     
 
     
-    if (1==0) //SCALINGs
+    if (1==1) //SCALINGs
     {
         int TestNbThread,TestNbRayon;
-        TestNbThread=8;
-        TestNbRayon=8000;
+        //TestNbThread=8;
+        //TestNbRayon=8000;
         for (int k=0; k<8; k++)
         {
             TestNbThread=pow(2,k);
@@ -107,8 +107,8 @@ int main(int argc, char **argv)
     if (1==0) //NO SCALING
     {
         int TestNbThread,TestNbRayon;
-        TestNbRayon=50000;
-        for (int j=9; j<10; j++)
+        TestNbRayon=30000;
+        for (int j=1; j<10; j++)
         {
             //TestNbRayon=0;
             //for (int i=1; i<11; i++)

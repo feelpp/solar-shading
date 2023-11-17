@@ -74,6 +74,7 @@ ShadingMask<MeshType>::ShadingMask(int TestNbThread,int TestNbRayon,mesh_ptrtype
 
 
     SpecxActivateSubNumberPart = 1;
+    if (M_Nthreads==1) { SpecxActivateSubNumberPart = 0; }
 
 
     if (!QMAKE_WITH_SPECX) { QSaveWithSpecx=false; } 
