@@ -7,7 +7,6 @@ asciidoc:
   - '@feelpp/asciidoctor-extensions'
   attributes:
     project_name: Solar Shading
-<<<<<<< HEAD
     dynamic-blocks@: ''
     project_version: 2.0.2
     numbered: true
@@ -24,10 +23,6 @@ asciidoc:
     python: Python
     vtkjs: VTK.js
     plotly: Plot.ly
-=======
-  extensions:
-    - '@feelpp/asciidoctor-extensions'
->>>>>>> 3823b6d156ff9d2d3f501f24d41a1eaeb3e5f131
 ext:
   collector:
     - run:
