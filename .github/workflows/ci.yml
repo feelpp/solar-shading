@@ -29,9 +29,12 @@ jobs:
         source .venv/bin/activate
         pip install -r requirements.txt        
     - name: Build Antora Site
-      run: npm run antora
+      run: |
+        source .venv/bin/activate
+        npm run antora
     - name: Deploy
       uses: JamesIves/github-pages-deploy-action@v4
+      if: ${{ github.ref_name == 'master' }}
       with:
           token: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: gh-pages # The branch the action should deploy to.

@@ -18,24 +18,8 @@ antora:
   extensions:
   - '@antora/collector-extension'
 asciidoc:
-  extensions:
-    - docs/asciidoc/extensions/dynamic-notebook.js
-    - docs/asciidoc/extensions/plotly.js
   attributes:
-    project_name: Feel++ Solar Shading
     dynamic-blocks@: ''
-    project_version: 2.0.2
-    numbered: true
-    allow-uri-read: true
-    hide-uri-scheme: true
-    feelpp: Feel++
-    angiotk: AngioTK
-    4fastsim: 4FastSim
-    stem: latexmath
-    hemotumpp: Hemotum++
-    eye2brain: Eye2Brain
-    swimmer: Swimmer
-    cpp: C++
-    python: Python
-    vtkjs: VTK.js
-    plotly: Plot.ly
+  extensions:
+    - '@feelpp/asciidoctor-extensions'
+

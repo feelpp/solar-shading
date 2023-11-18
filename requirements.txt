@@ -1,10 +1,16 @@
-pyvista
-xvfbwrapper
+pipx
+build
+scikit-build >= 0.8.1
+scikit_build_core
+pyproject-metadata
 ipykernel
-pythreejs
+numpy
+scipy
+pandas
+tabulate 
 plotly
-trame-vtk
-trame
 spdlog
 gitpython
 requests
+pyvista
+xvfbwrapper
