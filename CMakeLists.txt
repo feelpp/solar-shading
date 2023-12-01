@@ -22,7 +22,7 @@
 #
 #
 cmake_minimum_required(VERSION 3.21.0)
-project(solar-shading VERSION 2.0.2)
+project(ktirio-solar-shading VERSION 2.0.2)
 set(EXTRA_VERSION "")
 set(PROJECT_SHORTNAME "ss")
 

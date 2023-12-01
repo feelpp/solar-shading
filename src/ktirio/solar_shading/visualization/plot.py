@@ -8,7 +8,18 @@ import argparse
 import os
 import plotly.graph_objs as go
 
-def plotShadingMask(csv_filename,save=True):
+def plot(csv_filename, save=True):
+    """
+    This function plots the shading mask from a csv file.
+
+    Parameters:
+    csv_filename (str): The path to the csv file. The CSV file must contain a comma-separated matrix of size azimuth x altitude.
+    save (bool): A flag to determine whether to save the plot or not. Default is True.
+
+    Returns:
+    None
+
+    """
 
     # The CSV file must contain a comma-separated matrix of size
     # azimuth x altitude
@@ -87,7 +98,17 @@ def plotShadingMask(csv_filename,save=True):
         return fig
 
 
-def plotShadingMaskDir(directory_path):
+def plotDir(directory_path):
+    """
+    This function plots the shading masks for all csv files in a given directory.
+
+    Parameters:
+    directory_path (str): The path to the directory containing the csv files. Each CSV file must contain a comma-separated matrix of size azimuth x altitude.
+
+    Returns:
+    None
+
+    """
     for root, dirs, files in os.walk(directory_path):
         for file in files:
             if file.endswith(".csv"):
@@ -103,7 +124,7 @@ if __name__ == '__main__':
     p, unknown = parser.parse_known_args()
 
     if(p.dir_path and p.dir_path.exists()):
-        plotShadingMaskDir(p.dir_path)
+        plotkDir(p.dir_path)
 
     if( p.file_path  and p.file_path.exists() ):
-        plotShadingMask(p.file_path)
+        plot(p.file_path)

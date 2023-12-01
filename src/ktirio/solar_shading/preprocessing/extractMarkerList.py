@@ -5,6 +5,9 @@ from pathlib import Path
 import argparse
 
 def extractMSHmarkers(input_file):
+    """
+    Extract the list of surface and volume markers from a .msh file
+    """
     outputfile_surf = os.path.splitext(input_file)[0]+"_surf.txt" # file with all surface markers
     outputfile_vol = os.path.splitext(input_file)[0]+"_vol.txt" # file with all volume markers
     outputfile_surf_id = os.path.splitext(input_file)[0]+"_surfid.txt" # file with all building-only surface markers (not face by face nor soil)

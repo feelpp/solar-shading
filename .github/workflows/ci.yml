@@ -1,8 +1,8 @@
 name: CI
 
-on: 
+on:
   push:
-    branches: 
+    branches:
       - '**' # Push events on all branches
     paths-ignore:
       - '.github/workflows/init.yml'
@@ -11,7 +11,47 @@ on:
 
 jobs:
 
+  build_wheel:
+    runs-on: self-ubuntu-22.04
+    name: Build wheel package
+    if: "!contains(github.event.head_commit.message, 'code skip')"
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        lfs: true
+        recursive: true
+    -
+      name: Install Python/Node Env
+      run: |
+        python3 -m venv --system-site-packages .venv
+        source .venv/bin/activate
+        pip3 install -r requirements.txt
+        npm install
+    - 
+      name: Build Ktirio wheel
+      run: |
+        source .venv/bin/activate
+        npx downdoc README.adoc
+        pip3 wheel -v --wheel-dir dist .
+        pip3 install dist/*.whl
+      env:
+        CXX: clang++
+    -
+      name: Python Tests
+      run: |
+        source .venv/bin/activate
+        python3 -m pytest 
+      env:
+        PYTHONPATH: ${{ github.workspace }}
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: wheel-artifacts
+        path: dist/*.whl
+
   build_docs:
+    needs: build_wheel
     runs-on: self-ubuntu-22.04
     name: Build, Install, Package documentation
     if: "!contains(github.event.head_commit.message, 'docs skip')"
@@ -21,29 +61,33 @@ jobs:
       run: echo https://$GITHUB_OAUTH:@github.com > $HOME/.git-credentials
       env:
         GITHUB_OAUTH: ${{ secrets.CR_PAT_WORKFLOW }}
-    - name: Install NPM dependencies
-      run: npm install
+    - name: Download Wheel Packages
+      uses: actions/download-artifact@v3
+      with:
+        name: wheel-artifacts
+        path: dist/        
     - name: Install Python dependencies
       run: |
         python -m venv --system-site-packages .venv
         source .venv/bin/activate
-        pip install -r requirements.txt        
-    - name: Build Antora Site
+        pip3 install -r requirements.txt
+        pip3 install dist/*.whl
+    - name: Build Antora site
       run: |
         source .venv/bin/activate
+        npm install
         npm run antora
     - name: Deploy
+      if: github.ref == 'refs/heads/master'
       uses: JamesIves/github-pages-deploy-action@v4
-      if: ${{ github.ref_name == 'master' }}
       with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: gh-pages # The branch the action should deploy to.
           FOLDER: public # The folder the action should deploy.
 
-
   build_code:
     runs-on: self-ubuntu-22.04
-    name: Build, Install, Package code
+    name: Build deb packages
     if: "!contains(github.event.head_commit.message, 'code skip')"
     steps:
     - name: Checkout
@@ -51,88 +95,136 @@ jobs:
       with:
         lfs: true
         recursive: true
-    - 
-      name: Build 
+    -
+      name: Build
       run: |
         cmake --preset default
         cmake --build --preset default
-    - 
-      name: Check 
+    -
+      name: Check
       run: |
         ctest --preset default
       env:
-        OMPI_ALLOW_RUN_AS_ROOT: 1 
+        OMPI_ALLOW_RUN_AS_ROOT: 1
         OMPI_ALLOW_RUN_AS_ROOT_CONFIRM: 1
-    - 
+    -
       name: Package
       run: |
         cmake --build --preset default -t package
     - name: Upload Artifact
       uses: actions/upload-artifact@v3
       with:
-        # Artifact name
-        name: solar-shading-artifacts
-        # Directory containing files to upload
-        path: build/default/assets/solar-shading-*
-    - name: Release
-      if: startsWith(github.ref ,'refs/tags/v')
-      uses: softprops/action-gh-release@v1
-      with:
-        files: build/default/assets/solar-shading-*
-        draft: false
-        prerelease: ${{ contains(github.ref, 'alpha') || contains(github.ref, 'beta') || contains(github.ref, 'rc')}}
-        name: Release ${{ github.ref_name }}
-        generate_release_notes: true
-        tag_name: ${{ github.ref }}
-        token: ${{ secrets.GITHUB_TOKEN }}
-  deliver:
+        name: deb-artifacts
+        path: build/default/assets/*
+  docker:
+    if: ${{ github.ref_name == 'master' || startsWith(github.ref ,'refs/tags/v') || contains(github.event.head_commit.message, '[build container]') }}
     runs-on: self-ubuntu-22.04
     needs: build_code
-    name: Build docker, tag and push
-
+    name: Build and push docker image
+    outputs:
+      tag: ${{ steps.tag_extractor.outputs.tag }}
     steps:
     - uses: actions/checkout@v3
       with:
         lfs: true
         submodules: 'recursive'
-    - name: Download 
+    - name: Download
       uses: actions/download-artifact@v3
       with:
         # Artifact name
-        name: solar-shading-artifacts
+        name: deb-artifacts
         path: artifacts/
     -
         name: Docker meta
         id: meta
-        uses: docker/metadata-action@v4
+        uses: docker/metadata-action@v5
         with:
           images: |
-            ghcr.io/feelpp/solar-shading
+            ghcr.io/feelpp/${{ github.repository_name }}
           tags: |
             type=ref,event=branch
             type=ref,event=pr
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
+    - 
+      name: Extract tag
+      id: tag_extractor
+      run: |
+        FIRST_TAG=$(echo "${{ steps.meta.outputs.tags }}" | tr ' ' '\n' | head -n 1)
+        echo "tag=$FIRST_TAG" >> "$GITHUB_OUTPUT"
     -
       name: Set up QEMU
-      uses: docker/setup-qemu-action@v2
+      uses: docker/setup-qemu-action@v3
     -
       name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
-    - 
+      uses: docker/setup-buildx-action@v3
+    -
       name: Login to GitHub Container Registry
-      uses: docker/login-action@v2
+      uses: docker/login-action@v3
       with:
         registry: ghcr.io
         username: ${{ github.repository_owner }}
         password: ${{ secrets.CR_PAT }}
-    - 
+    -
       name: Build container image
-      uses: docker/build-push-action@v4
-      with: 
+      uses: docker/build-push-action@v5
+      with:
         context: artifacts
         push: ${{ github.event_name != 'pull_request' }}
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
         file: ./Dockerfile
-        
+  apptainer:
+    runs-on: self-apptainer
+    name: Build and Push apptainer image
+    needs: docker
+    steps:
+      -
+        name: Login to GitHub Container Registry
+        run: |
+          /usr/local/apptainer/bin/apptainer remote login  -u ${{ github.repository_owner }} -p ${{ secrets.CR_PAT }} oras://ghcr.io
+      -
+        name: Get docker image ${{ needs.docker.outputs.tag }}
+        run: |
+          echo "Using tag: ${{ needs.docker.outputs.tag }}"
+          /usr/local/apptainer/bin/apptainer pull -F ${{ github.repository_name }}.sif docker://${{ needs.docker.outputs.tag }}
+          ls -lrt
+      - 
+        name: Push apptainer image ${{ needs.docker.outputs.tag }} to ghcr.io
+        run: |
+          echo "Using tag: ${{ needs.docker.outputs.tag }}"
+          /usr/local/apptainer/bin/apptainer push ${{ github.repository_name }}.sif oras://${{ needs.docker.outputs.tag }}-sif
+  release:
+    runs-on: self-ubuntu-22.04
+    name: Release
+    needs: [build_wheel, build_code, docker, apptainer]
+    if: startsWith(github.ref ,'refs/tags/v')
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+          submodules: 'recursive'      
+      - name: Download Deb Packages
+        uses: actions/download-artifact@v3
+        with:
+          # Artifact name
+          name: deb-artifacts
+          path: artifacts/
+      - name: Download Wheel Packages
+        uses: actions/download-artifact@v3
+        with:
+          # Artifact name
+          name: wheel-artifacts
+          path: dist/
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            artifacts/*.deb
+            dist/*.whl
+          draft: false
+          prerelease: ${{ contains(github.ref, 'alpha') || contains(github.ref, 'beta') || contains(github.ref, 'rc') || contains(github.ref, 'preview')}}
+          name: Release ${{ github.ref_name }}
+          generate_release_notes: true
+          tag_name: ${{ github.ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
