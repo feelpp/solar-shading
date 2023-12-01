@@ -1,0 +1,10 @@
+{
+    "Nrays":4000,
+    "SaveMasks":true,
+    "Multithread":{
+        "Nthreads":9,
+        "type":"rays" //markers,rays
+    },
+    // "Buildings":{"fileFaces":"$cfgdir/quartier_faches_bd_faceid_reduced.txt"}
+    "Buildings":{"fileFaces":"$cfgdir/quartier_faches_bd_faceid.txt"}
+}

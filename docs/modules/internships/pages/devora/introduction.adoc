@@ -1,10 +1,9 @@
 = Shading Masks computation for solar radiation
-include::partials$bib.adoc[]
 :toc: macro
 
 - - -
 
-image:ROOT::logos.png[align="center",width="100%"]
+image::ROOT:logos.png[align="center",width="100%"]
 ++++
 <br>
 <center>
@@ -109,3 +108,5 @@ CUDA is a parallel computing platform and programming model developed by NVIDIA.
 
 With CUDA, we have fine-grained control over the GPU and can leverage its parallel processing capabilities for various applications, such as scientific simulations, image and video processing, machine learning, and more.
 CUDA allows we to optimize code at a low level and provides flexibility to customize algorithms and data structures based on specific requirements.
+
+include::ROOT:partial$bib.adoc[]

@@ -1,5 +1,10 @@
 {
-    "Nrays":1000,
-    "Nthreads":10,
+    "Nrays":5000,
+    "Multithread":
+    {
+        "Nthreads":10,
+        "type":"rays" // markers,rays
+    },
+    "SaveMasks":true,
     "Buildings":{"fileSurfaces":"$cfgdir/example_shading_mask_surface_surfid.txt"}
 }

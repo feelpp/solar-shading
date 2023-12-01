@@ -280,7 +280,7 @@ The tested libraries are:
 
 Below you can see a first execution time comparison, using the `std::chrono` library to measure the time taken by each method to generate 1000000 random numbers. The code was compiled using different usual flags, such as `-O3`, `-Ofast`, `-O2` and `-O1`. 
 
-image:ROOT::flagcomparison.png[Barplot comparing execution time][600]
+image::ROOT:flagcomparison.png[Barplot comparing execution time][600]
 
 We can observe that all of the presented methods, except for Eigen's one, are outperforming the standard library.
 
@@ -289,12 +289,12 @@ We can observe that all of the presented methods, except for Eigen's one, are ou
 
 Since Intel's oneAPI MKL library is by far the highest speed RNG, we benchmarked it using more specific flags, such as `march=native` in order to enable all the processor's extensions, and switching between `sequential` and `threaded` modes. The results are shown below:
 
-image:ROOT::intel.png[width=600]
+image::ROOT:intel.png[width=600]
 
 
 And below the second speed test done on Gaia, a system composeed of 192 AMD EPYC 7552 48-Core Processors. During this second benchmark, we cycled through most of the different compilation flags combinations, and the results are shown below:
 
-image:ROOT::AMDspeed.png[600]
+image::ROOT:AMDspeed.png[600]
 
 link:https://caiorss.github.io/C-Cpp-Notes/compiler-flags-options.html[Here] is a website describing the use-cases of each compilation flag and what they do.
 
