@@ -536,6 +536,13 @@ namespace Feel
 
 
 
+
+
+
+
+
+
+
  template <typename MeshType>
     void 
     ShadingMask<MeshType>::computeMasksSubPart1()
@@ -894,45 +901,32 @@ namespace Feel
     void 
     ShadingMask<MeshType>::computeSaveMasks(std::vector<double> SM_tables)
     {
-        if( j_["/Buildings"_json_pointer].contains("fileFaces") ||  j_["/Buildings"_json_pointer].contains("aggregatedMarkers") ) 
+        // [INFO]: refactoring OK for this parts
+        if(M_saveMasks)
         {
+            tic();
+            int numOp = 0;
+            std::string building_name, marker="";
+            if (j_["/Buildings"_json_pointer].contains("fileFaces"))         { numOp=1; }
+            if (j_["/Buildings"_json_pointer].contains("aggregatedMarkers")) { numOp=2; }
             // a csv containing the face markers is provided, or they are computed using aggregated markers
-            if(M_saveMasks)
-                {
-                    tic();
-                    if(j_["/Buildings"_json_pointer].contains("fileFaces") )
-                    for(int i=0; i< M_listFaceMarkers.size(); i++)
-                    {
-                        std::string building_name = std::to_string(i);
-                        std::string marker = std::to_string(i);
-                        auto initial_index_SM = SM_tables.begin() +  i * matrixSize;
-                        auto shadingMatrix = Eigen::Map<Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor>>(&(*initial_index_SM),M_azimuthSize, M_altitudeSize);                
-                        saveShadingMask(building_name,marker,shadingMatrix.matrix());
-                    }
-                    else if(j_["/Buildings"_json_pointer].contains("aggregatedMarkers") )
-                    {
-                        for(int i=0; i< M_listFaceMarkers.size(); i++)
-                        {
-                            std::string building_name = M_listFaceMarkers[i];
-                            std::string marker = "";
-                            auto initial_index_SM = SM_tables.begin() +  i * matrixSize;
-                            auto shadingMatrix = Eigen::Map<Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor>>(&(*initial_index_SM),M_azimuthSize, M_altitudeSize);                
-                            saveShadingMask(building_name,marker,shadingMatrix.matrix());
-                        }
-                    }
-                    auto timeCSVsaving = toc("Mask CSV saved");
-                    M_metadataJson["shadingMask"]["Timer"]["MaskCSVsaving"] = timeCSVsaving;
-                }
+
+            for(int i=0; i< M_listFaceMarkers.size(); i++)
+            {
+                if (numOp==1) { building_name = std::to_string(i); marker = std::to_string(i); }
+                if (numOp==2) { building_name = M_listFaceMarkers[i]; }
+                auto initial_index_SM = SM_tables.begin() +  i * matrixSize;
+                auto shadingMatrix = Eigen::Map<Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor>>(&(*initial_index_SM),M_azimuthSize, M_altitudeSize);   
+                saveShadingMask(building_name,marker,shadingMatrix.matrix());
+            }
+  
+            auto timeCSVsaving = toc("Mask CSV saved");
+            M_metadataJson["shadingMask"]["Timer"]["MaskCSVsaving"] = timeCSVsaving;     
         }
-
-
         auto end_computation = std::chrono::system_clock::now();
         std::time_t end_time = std::chrono::system_clock::to_time_t(end_computation);
         M_metadataJson["shadingMask"]["Timestamp"]["End"] = strtok(std::ctime(&end_time),"\n");
         saveMetadata(); 
-
     }
-
-
 
 }

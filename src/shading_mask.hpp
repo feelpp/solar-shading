@@ -2,6 +2,20 @@
 #include <feel/feelmesh/bvh.hpp>
 #include <unordered_map>
 
+
+
+auto GetListNameObjects(std::string ChName)
+{
+    std::ifstream FICH(ChName);
+    std::string lineA;
+    std::vector<std::string> ListObjects;
+    while (getline(FICH, lineA)) { ListObjects.push_back(lineA); } 
+    FICH.close();
+    return ListObjects;
+}
+
+
+
 namespace Feel {
 
 template <typename MeshType>
