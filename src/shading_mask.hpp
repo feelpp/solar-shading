@@ -30,6 +30,21 @@ public:
 
     ShadingMask(mesh_ptrtype mesh, nl::json const& specs, int intervalsAzimuth=72, int intervalsAltitude=10 );
     
+    // Create the random number generators
+    void makeRandomNumberGeneratorsSeed();
+
+     // Create and store the directions of the M_Nrays
+    void makeCreateM_NraysMatrix(int intervalsAzimuth, int intervalsAltitude);
+
+    // For each building, save the surface mesh and build the corresponding BVH tree for ray search
+    void loadMeshDataSubPart1(mesh_ptrtype mesh, nl::json const& specs);
+
+    void loadMeshDataSubPart2(mesh_ptrtype mesh, nl::json const& specs);
+
+    void loadMeshDataSubPart3(mesh_ptrtype mesh, nl::json const& specs);
+
+    void loadMeshData(mesh_ptrtype mesh, nl::json const& specs);
+    
     // Subdivide the azimuth angles [0,360]° and altitude angles [0,90]° in subsets for easier computation of the shading masks
     void fixAzimuthAltitudeDiscretization(int intervalsAzimuth=72, int intervalsAltitude=10);
 
@@ -48,8 +63,16 @@ public:
     // created by the intersection P of the ray with the plane of  V1V2V3 (as sum of V_iV_jP)
     bool isOnSurface(Eigen::VectorXd const &point,Eigen::VectorXd const &el_p1,Eigen::VectorXd const &el_p2,Eigen::VectorXd const &el_p3);
 
+
+    void computeMasksSubPart1();
+
+    void computeMasksSubPart2();
+
     // Compute shading masks for the buildings in the json file
     void computeMasks();
+
+    // Save Compute shading masks
+    void computeSaveMasks(std::vector<double> SM_tables);
 
     // Compute shading masks for one building only
     void computeMasksOneBuilding(std::string building_name);
@@ -84,6 +107,8 @@ private:
     int M_Nthreads;
     std::string M_mthreadtype;
     bool M_saveMasks;
+
+    int matrixSize;
 
     nl::json j_;
 
