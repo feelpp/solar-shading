@@ -42,7 +42,10 @@ int main(int argc, char **argv)
 
     // Compute the shading masks
     ShadingMask<mesh_t> sm(mesh,json_buildings);
-    sm.computeMasks();
+
+
+    //sm.computeMasks();
+    sm.computeMasksMaster(); //In fact
 
 
     std::cout << fmt::format("End Shading mask example\n");

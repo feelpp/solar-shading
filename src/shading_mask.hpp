@@ -77,6 +77,7 @@ public:
     // created by the intersection P of the ray with the plane of  V1V2V3 (as sum of V_iV_jP)
     bool isOnSurface(Eigen::VectorXd const &point,Eigen::VectorXd const &el_p1,Eigen::VectorXd const &el_p2,Eigen::VectorXd const &el_p3);
 
+    void computeMasksSubPart0(int numOp);
 
     void computeMasksSubPart1(int numOp);
 
@@ -99,6 +100,8 @@ public:
 
     // Save the shading mask table metadata to json
     void saveMetadata();
+
+    
 
 private:
     

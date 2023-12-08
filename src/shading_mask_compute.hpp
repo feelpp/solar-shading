@@ -542,7 +542,31 @@ namespace Feel
 
 
 
+template <typename MeshType>
+    void 
+    ShadingMask<MeshType>::computeMasksSubPart0(int numOp)
+    {
+        // [INFO]: refactoring OK for this parts
+        tic();
+        int nbObjects = 0;
+        std::string nameFile,buildingName;
+        std::vector<std::string> listObjects;
+        nl::json const&  markersVolume = j_["Buildings"]["list"].get<std::vector<std::string>>(); nbObjects=markersVolume.size(); 
 
+        for(int idx = 0 ; idx <nbObjects; ++idx)
+        {
+            if (numOp==1) { buildingName=markersVolume[idx]; }
+            computeMasksOneBuilding(buildingName);
+        }
+        
+        //BEGIN:SAVE META INFO
+        auto timeComputation = toc("Shading masks computed using raytracing");
+        M_metadataJson["shadingMask"]["Timer"]["MaskComputation"] = timeComputation;
+        M_metadataJson["shadingMask"]["Nthreads"] = M_Nthreads;
+        M_metadataJson["shadingMask"]["NraysPerElement"] = M_Nrays;
+        //END:SAVE META INFO
+
+    }
 
 
 
@@ -557,9 +581,9 @@ namespace Feel
         int nbObjects = 0;
         std::string nameFile,buildingName;
         std::vector<std::string> listObjects;
-        nl::json const& markersVolume; 
+        //nl::json const& markersVolume; 
 
-        if (numOp==1) { markersVolume = j_["Buildings"]["list"].get<std::vector<std::string>>(); nbObjects=markersVolume.size(); }
+        //if (numOp==1) { markersVolume = j_["Buildings"]["list"].get<std::vector<std::string>>(); nbObjects=markersVolume.size(); }
         if (numOp==2) { nameFile=Environment::expand(j_["Buildings"]["fileVolumes"].get<std::string>()); }
         if (numOp==3) { nameFile=Environment::expand(j_["Buildings"]["fileSurfaces"].get<std::string>()); }
  
@@ -567,7 +591,7 @@ namespace Feel
 
         for(int idx = 0 ; idx <nbObjects; ++idx)
         {
-            if (numOp==1)                { buildingName=markersVolume[idx]; }
+            //if (numOp==1)                { buildingName=markersVolume[idx]; }
             if ((numOp==2)|| (numOp==3)) { buildingName=listObjects[idx];   }
             computeMasksOneBuilding(buildingName);
         }
@@ -898,7 +922,7 @@ template <typename MeshType>
     void 
     ShadingMask<MeshType>::computeMasksMaster()
     {
-        if ( j_["/Buildings"_json_pointer].contains("list") )         { computeMasksSubPart1(1); }
+        if ( j_["/Buildings"_json_pointer].contains("list") )         { computeMasksSubPart0(1); }
         if ( j_["/Buildings"_json_pointer].contains("fileVolumes"))   { computeMasksSubPart1(2); }
         if ( j_["/Buildings"_json_pointer].contains("fileSurfaces") ) { computeMasksSubPart1(3); }
         if ( j_["/Buildings"_json_pointer].contains("fileFaces") ||  j_["/Buildings"_json_pointer].contains("aggregatedMarkers") ) 
