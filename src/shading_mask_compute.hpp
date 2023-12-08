@@ -147,6 +147,11 @@ namespace Feel
         }
     }
 
+
+
+
+    
+
     // Compute shading masks for the buildings in the json file
     template <typename MeshType>
     void 
@@ -545,50 +550,41 @@ namespace Feel
 
  template <typename MeshType>
     void 
-    ShadingMask<MeshType>::computeMasksSubPart1()
+    ShadingMask<MeshType>::computeMasksSubPart1(int numOp)
     {
+        // [INFO]: refactoring OK for this parts
         tic();
-        if( j_["/Buildings"_json_pointer].contains("list") ) // the list of volume markers is provided
+        int nbObjects = 0;
+        std::string nameFile,buildingName;
+        std::vector<std::string> listObjects;
+        nl::json const& markersVolume; 
+
+        if (numOp==1) { markersVolume = j_["Buildings"]["list"].get<std::vector<std::string>>(); nbObjects=markersVolume.size(); }
+        if (numOp==2) { nameFile=Environment::expand(j_["Buildings"]["fileVolumes"].get<std::string>()); }
+        if (numOp==3) { nameFile=Environment::expand(j_["Buildings"]["fileSurfaces"].get<std::string>()); }
+ 
+        if ((numOp==2) || (numOp==3)) { listObjects=GetListNameObjects(nameFile); nbObjects=listObjects.size(); }
+
+        for(int idx = 0 ; idx <nbObjects; ++idx)
         {
-            auto markersVolume = j_["Buildings"]["list"].get<std::vector<std::string>>();
-            for(std::string building_name : markersVolume)
-            {
-                computeMasksOneBuilding(building_name);//,M_bvh_tree_vector[building_name]);
-            }
-        }
-        else if( j_["/Buildings"_json_pointer].contains("fileVolumes")) // a csv containing the volume markers is provided
-        {
-            std::string building_name;
-            std::ifstream fileVolumes(Environment::expand(j_["Buildings"]["fileVolumes"].get<std::string>()));
-            // read, line by line, the building marker
-            while ( getline(fileVolumes,building_name) )
-            {
-                computeMasksOneBuilding(building_name);
-            }
-        }
-            // read, line by line, the building marker
-        else if( j_["/Buildings"_json_pointer].contains("fileSurfaces") ) // a csv containing the surface markers is provided
-        {
-            std::string building_name;
-            std::ifstream fileSurfaces(Environment::expand(j_["Buildings"]["fileSurfaces"].get<std::string>()));
-            // read, line by line, the building marker
-            while ( getline(fileSurfaces,building_name) )
-            {
-                computeMasksOneBuilding(building_name);
-            }
+            if (numOp==1)                { buildingName=markersVolume[idx]; }
+            if ((numOp==2)|| (numOp==3)) { buildingName=listObjects[idx];   }
+            computeMasksOneBuilding(buildingName);
         }
         
+        //BEGIN:SAVE META INFO
         auto timeComputation = toc("Shading masks computed using raytracing");
         M_metadataJson["shadingMask"]["Timer"]["MaskComputation"] = timeComputation;
         M_metadataJson["shadingMask"]["Nthreads"] = M_Nthreads;
         M_metadataJson["shadingMask"]["NraysPerElement"] = M_Nrays;
+        //END:SAVE META INFO
 
     }
 
 
  template <typename MeshType>
     void 
-    ShadingMask<MeshType>::computeMasksSubPart2()
+    ShadingMask<MeshType>::computeMasksSubPart2(int numOp)
     {
         if( j_["/Buildings"_json_pointer].contains("fileFaces") ||  j_["/Buildings"_json_pointer].contains("aggregatedMarkers") ) // a csv containing the face markers is provided, or they are computed using aggregated markers
         {            
@@ -607,7 +603,7 @@ namespace Feel
             int markerNumber = 0;   
 
             // Multithread over rays
-            if (M_mthreadtype == "ray")
+            if (numOp==1) //Ray
             {
                 tic();
                 for(auto const &eltWrap : M_rangeFaces ) // from each element of the submesh, launch M_Nrays randomly oriented
@@ -736,7 +732,7 @@ namespace Feel
                 M_metadataJson["shadingMask"]["NraysPerElement"] = M_Nrays;
             }
 // Multithread over markers
-            else if (M_mthreadtype == "markers")
+            if (numOp==2) //narkers
             {
                 
                     auto multithreading_over_markers = [&](std::vector<std::string> marker_list_thread, int id_thread, int start_index){
@@ -897,6 +893,23 @@ namespace Feel
 
 
 
+// Compute shading masks for the buildings in the json file
+template <typename MeshType>
+    void 
+    ShadingMask<MeshType>::computeMasksMaster()
+    {
+        if ( j_["/Buildings"_json_pointer].contains("list") )         { computeMasksSubPart1(1); }
+        if ( j_["/Buildings"_json_pointer].contains("fileVolumes"))   { computeMasksSubPart1(2); }
+        if ( j_["/Buildings"_json_pointer].contains("fileSurfaces") ) { computeMasksSubPart1(3); }
+        if ( j_["/Buildings"_json_pointer].contains("fileFaces") ||  j_["/Buildings"_json_pointer].contains("aggregatedMarkers") ) 
+        {            
+            if (M_mthreadtype == "ray")     { computeMasksSubPart2(1); }
+            if (M_mthreadtype == "markers") { computeMasksSubPart2(2); }
+        }
+    }
+
+
+
  template <typename MeshType>
     void 
     ShadingMask<MeshType>::computeSaveMasks(std::vector<double> SM_tables)
@@ -928,5 +941,7 @@ namespace Feel
         M_metadataJson["shadingMask"]["Timestamp"]["End"] = strtok(std::ctime(&end_time),"\n");
         saveMetadata(); 
     }
+
+
 
 }

@@ -1,6 +1,9 @@
 
 namespace Feel
 {
+
+
+
 template <typename MeshType>
 ShadingMask<MeshType>::ShadingMask(mesh_ptrtype mesh, nl::json const& specs, int intervalsAzimuth, int intervalsAltitude )
 {
@@ -322,6 +325,12 @@ ShadingMask<MeshType>::ShadingMask(mesh_ptrtype mesh, nl::json const& specs, int
 
 
 
+
+
+
+
+
+
 template <typename MeshType>
 void
 ShadingMask<MeshType>::fixAzimuthAltitudeDiscretization(int intervalsAzimuth, int intervalsAltitude)
@@ -441,7 +450,7 @@ ShadingMask<MeshType>::makeCreateM_NraysMatrix(int intervalsAzimuth, int interva
 
 template <typename MeshType>
 void
-ShadingMask<MeshType>::loadMeshDataSubPart1(mesh_ptrtype mesh, nl::json const& specs)
+ShadingMask<MeshType>::loadMeshDataSubPart1(mesh_ptrtype mesh,int numOp)
     {   
         // [INFO]: refactoring OK for this parts
         // For each building, save the surface mesh and build the corresponding BVH tree for ray search
@@ -449,23 +458,21 @@ ShadingMask<MeshType>::loadMeshDataSubPart1(mesh_ptrtype mesh, nl::json const& s
         int nBuildings = 0;
         int nFaces = 0; 
         int nbObjects = 0;
-        int numOp = 0;
         std::string buildingName;
         std::string nameFile;
         std::vector<std::string> listObjects;
         nl::json const& markersVolume; 
 
-        if( specs["/Buildings"_json_pointer].contains("list") ) // the list of volume markers is provided
+        if(numOp==1) // the list of volume markers is provided
         {
-            markersVolume = specs["Buildings"]["list"].get<std::vector<std::string>>(); //To review if it possible to...
-            nbObjects=markersVolume.size(); numOp=1;
+            markersVolume = j_["Buildings"]["list"].get<std::vector<std::string>>(); //To review if it possible to...
+            nbObjects=markersVolume.size(); 
         }
-        else if ( specs["/Buildings"_json_pointer].contains("fileVolumes")) // a csv containing the volume markers is provided
+        if (numOp==2) // a csv containing the volume markers is provided
         {
-            nameFile=Environment::expand(specs["Buildings"]["fileVolumes"].get<std::string>());
-            std::ifstream fileVolumes(nameFile);
+            nameFile=Environment::expand(j_["Buildings"]["fileVolumes"].get<std::string>());
             listObjects=GetListNameObjects(nameFile);
-            nbObjects=listObjects.size(); numOp=2;            
+            nbObjects=listObjects.size();       
         }
             
         for(int idx = 0 ; idx <nbObjects; ++idx)
@@ -497,14 +504,13 @@ ShadingMask<MeshType>::loadMeshDataSubPart1(mesh_ptrtype mesh, nl::json const& s
 
 template <typename MeshType>
 void
-ShadingMask<MeshType>::loadMeshDataSubPart2(mesh_ptrtype mesh, nl::json const& specs)
+ShadingMask<MeshType>::loadMeshDataSubPart2(mesh_ptrtype mesh,int numOp)
     {
         // [INFO]: refactoring OK for this parts
         // For each building, save the surface mesh and build the corresponding BVH tree for ray search
         tic();
         int nBuildings = 0;
         int nFaces = 0;
-        int numOp = 0;
         int nMarkers = 0;
         int nbObjects = 0;
         std::string buildingName;
@@ -512,18 +518,10 @@ ShadingMask<MeshType>::loadMeshDataSubPart2(mesh_ptrtype mesh, nl::json const& s
         std::vector<std::string> listObjects;
         std::string nameFile;
 
-
-        if( specs["/Buildings"_json_pointer].contains("fileSurfaces") ) // a csv containing the surface markers is provided
-        {
-            nameFile=Environment::expand(specs["Buildings"]["fileSurfaces"].get<std::string>()); numOp = 1;
-        }
-
-        if( specs["/Buildings"_json_pointer].contains("fileFaces") ) // a csv containing the face markers is provided
-        {
-            nameFile=Environment::expand(specs["Buildings"]["fileFaces"].get<std::string>()); numOp = 2;
-        }
-
-        std::ifstream fileSurfaces(nameFile); listObjects=GetListNameObjects(nameFile); nbObjects=listObjects.size();
+        
+        if (numOp==1) { nameFile=Environment::expand(j_["Buildings"]["fileSurfaces"].get<std::string>()); } // a csv containing the surface markers is provided
+        if (numOp==2) { nameFile=Environment::expand(j_["Buildings"]["fileFaces"].get<std::string>());} // a csv containing the face markers is provided
+        listObjects=GetListNameObjects(nameFile); nbObjects=listObjects.size();
 
         if (numOp==1) //fileSurfaces
         { 
@@ -547,9 +545,9 @@ ShadingMask<MeshType>::loadMeshDataSubPart2(mesh_ptrtype mesh, nl::json const& s
             }
         }
 
-        if (numOp==1) //fileFaces // Store only the view on the surface mesh faces
+        if (numOp==2) //fileFaces // Store only the view on the surface mesh faces
         {
-            std::ifstream fileFaces(Environment::expand(specs["Buildings"]["fileFaces"].get<std::string>()));
+            std::ifstream fileFaces(Environment::expand(j_["Buildings"]["fileFaces"].get<std::string>()));
             while ( getline(fileFaces,faceName) )
             {
                 M_listFaceMarkers.push_back(faceName);
@@ -607,11 +605,9 @@ ShadingMask<MeshType>::loadMeshDataSubPart2(mesh_ptrtype mesh, nl::json const& s
 
 template <typename MeshType>
 void
-ShadingMask<MeshType>::loadMeshDataSubPart3(mesh_ptrtype mesh, nl::json const& specs)
+ShadingMask<MeshType>::loadMeshDataSubPart3(mesh_ptrtype mesh)
     {
         // [INFO]: refactoring OK for this parts
-        if( specs["/Buildings"_json_pointer].contains("aggregatedMarkers"))
-        {
             M_rangeFaces = markedelements(mesh,"building"); // it contains all the faces of all buildings
             tic();
             int nFaces = 0;
@@ -679,9 +675,6 @@ ShadingMask<MeshType>::loadMeshDataSubPart3(mesh_ptrtype mesh, nl::json const& s
             LOG(INFO) << "BVH construction: end";
             M_metadataJson["shadingMask"]["Timer"]["BVH_building_time"] = bvhBuildingTime;
             //END::CREATE BVH
-            
-        }
-
     }
 
 
@@ -691,20 +684,11 @@ void
 ShadingMask<MeshType>::loadMeshData(mesh_ptrtype mesh, nl::json const& specs)
     {
         // [INFO]: refactoring OK for this parts
-        if ((specs["/Buildings"_json_pointer].contains("list")) || ( specs["/Buildings"_json_pointer].contains("fileVolumes")))
-        {
-             loadMeshDataSubPart1(mesh,specs);
-        }
-
-        if ((specs["/Buildings"_json_pointer].contains("fileSurfaces") ) || ( specs["/Buildings"_json_pointer].contains("fileFaces")))
-        {
-            loadMeshDataSubPart2(mesh,specs);
-        }
-
-        if ( specs["/Buildings"_json_pointer].contains("aggregatedMarkers"))
-        {
-            loadMeshDataSubPart3(mesh,specs);
-        }
+        if (specs["/Buildings"_json_pointer].contains("list"))               { loadMeshDataSubPart1(mesh,1); }
+        if (specs["/Buildings"_json_pointer].contains("fileVolumes"))        { loadMeshDataSubPart1(mesh,2); }
+        if (specs["/Buildings"_json_pointer].contains("fileSurfaces"))       { loadMeshDataSubPart2(mesh,1); } 
+        if (specs["/Buildings"_json_pointer].contains("fileFaces"))          { loadMeshDataSubPart2(mesh,2); }
+        if (specs["/Buildings"_json_pointer].contains("aggregatedMarkers"))  { loadMeshDataSubPart3(); }
     }
 
 

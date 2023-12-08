@@ -51,11 +51,11 @@ public:
     void makeCreateM_NraysMatrix(int intervalsAzimuth, int intervalsAltitude);
 
     // For each building, save the surface mesh and build the corresponding BVH tree for ray search
-    void loadMeshDataSubPart1(mesh_ptrtype mesh, nl::json const& specs);
+    void loadMeshDataSubPart1(mesh_ptrtype mesh,int numOp);
 
-    void loadMeshDataSubPart2(mesh_ptrtype mesh, nl::json const& specs);
+    void loadMeshDataSubPart2(mesh_ptrtype mesh,int numOp);
 
-    void loadMeshDataSubPart3(mesh_ptrtype mesh, nl::json const& specs);
+    void loadMeshDataSubPart3(mesh_ptrtype mesh);
 
     void loadMeshData(mesh_ptrtype mesh, nl::json const& specs);
     
@@ -78,9 +78,12 @@ public:
     bool isOnSurface(Eigen::VectorXd const &point,Eigen::VectorXd const &el_p1,Eigen::VectorXd const &el_p2,Eigen::VectorXd const &el_p3);
 
 
-    void computeMasksSubPart1();
+    void computeMasksSubPart1(int numOp);
 
-    void computeMasksSubPart2();
+    void computeMasksSubPart2(int numOp);
+
+    // Compute shading masks for the buildings in the json file
+    void computeMasksMaster();
 
     // Compute shading masks for the buildings in the json file
     void computeMasks();
