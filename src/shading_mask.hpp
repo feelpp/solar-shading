@@ -43,6 +43,8 @@ public:
     using value_type = double;
 
     ShadingMask(mesh_ptrtype mesh, nl::json const& specs, int intervalsAzimuth=72, int intervalsAltitude=10 );
+
+    ShadingMask(int num,mesh_ptrtype mesh, nl::json const& specs, int intervalsAzimuth=72, int intervalsAltitude=10 );
     
     // Create the random number generators
     void makeRandomNumberGeneratorsSeed();
@@ -51,6 +53,9 @@ public:
     void makeCreateM_NraysMatrix(int intervalsAzimuth, int intervalsAltitude);
 
     // For each building, save the surface mesh and build the corresponding BVH tree for ray search
+
+    void loadMeshDataSubPart0(mesh_ptrtype mesh);
+
     void loadMeshDataSubPart1(mesh_ptrtype mesh,int numOp);
 
     void loadMeshDataSubPart2(mesh_ptrtype mesh,int numOp);
@@ -86,8 +91,7 @@ public:
     // Compute shading masks for the buildings in the json file
     void computeMasksMaster();
 
-    // Compute shading masks for the buildings in the json file
-    void computeMasks();
+   
 
     // Save Compute shading masks
     void computeSaveMasks(std::vector<double> SM_tables);
