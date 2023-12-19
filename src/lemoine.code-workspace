@@ -140,7 +140,10 @@
 			"vec4ub": "cpp",
 			"vec4ui": "cpp",
 			"vec4us": "cpp",
-			"viewport": "cpp"
+			"viewport": "cpp",
+			"boundingbox": "cpp",
+			"boundingsphere": "cpp",
+			"polytope": "cpp"
 		}
 	}
 }

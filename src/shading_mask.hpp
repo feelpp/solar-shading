@@ -42,10 +42,10 @@ class ShadingMask
 public:
     using value_type = double;
 
-    ShadingMask(mesh_ptrtype mesh, nl::json const& specs, int intervalsAzimuth=72, int intervalsAltitude=10 );
-
     ShadingMask(int num,mesh_ptrtype mesh, nl::json const& specs, int intervalsAzimuth=72, int intervalsAltitude=10 );
-    
+
+    void LambdaFunc(std::vector<int> marker,int dim,auto el);
+
     // Create the random number generators
     void makeRandomNumberGeneratorsSeed();
 
@@ -53,17 +53,12 @@ public:
     void makeCreateM_NraysMatrix(int intervalsAzimuth, int intervalsAltitude);
 
     // For each building, save the surface mesh and build the corresponding BVH tree for ray search
-
-    void loadMeshDataSubPart0(mesh_ptrtype mesh);
-
-    void loadMeshDataSubPart1(mesh_ptrtype mesh,int numOp);
-
-    void loadMeshDataSubPart2(mesh_ptrtype mesh,int numOp);
-
-    void loadMeshDataSubPart3(mesh_ptrtype mesh);
-
     void loadMeshData(mesh_ptrtype mesh, nl::json const& specs);
-    
+        void loadMeshDataSubPartList          (mesh_ptrtype mesh);
+        void loadMeshDataSubPartVolumes       (mesh_ptrtype mesh,int numOp);
+        void loadMeshDataSubPartSurfacesFaces (mesh_ptrtype mesh,int numOp);
+        void loadMeshDataSubPartMarkers       (mesh_ptrtype mesh);
+
     // Subdivide the azimuth angles [0,360]° and altitude angles [0,90]° in subsets for easier computation of the shading masks
     void fixAzimuthAltitudeDiscretization(int intervalsAzimuth=72, int intervalsAltitude=10);
 
@@ -82,14 +77,13 @@ public:
     // created by the intersection P of the ray with the plane of  V1V2V3 (as sum of V_iV_jP)
     bool isOnSurface(Eigen::VectorXd const &point,Eigen::VectorXd const &el_p1,Eigen::VectorXd const &el_p2,Eigen::VectorXd const &el_p3);
 
-    void computeMasksSubPart0(int numOp);
-
-    void computeMasksSubPart1(int numOp);
-
-    void computeMasksSubPart2(int numOp);
 
     // Compute shading masks for the buildings in the json file
     void computeMasksMaster();
+        void computeMasksSubPartList();
+        void computeMasksSubPartSurfaceVolumes(int numOp);
+        void computeMasksSubPartRays();
+        void computeMasksSubPartMarkers();
 
    
 
@@ -98,6 +92,9 @@ public:
 
     // Compute shading masks for one building only
     void computeMasksOneBuilding(std::string building_name);
+
+    // Compute shading masks for one building only
+    void computeMasksOneBuilding2(std::string building_name);
 
     // Save the shading mask table to a CSV file
     void saveShadingMask(std::string building_name, std::string marker_name, const Eigen::Ref<const Eigen::MatrixXd>& M);

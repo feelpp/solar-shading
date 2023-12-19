@@ -2,6 +2,172 @@
 namespace Feel
 {
 
+
+    template <typename MeshType>
+    void 
+    ShadingMask<MeshType>::LambdaFunc(std::vector<int> marker,int dim, auto el )
+    {
+        std::vector<double> random_direction(dim);
+        matrixSize = M_azimuthSize * M_altitudeSize;
+
+        auto rays_from_element = [&,marker=marker](int n_rays_thread, int id_thread ){
+            Eigen::MatrixXd SM_table   (M_azimuthSize,M_altitudeSize); SM_table.setZero();
+            Eigen::MatrixXd Angle_table(M_azimuthSize,M_altitudeSize); Angle_table.setZero();
+            int index_altitude;
+            int index_azimuth;
+            int initial_index_rays = n_rays_thread * id_thread ;
+
+                        for(int j=0;j<n_rays_thread;j++)
+                        {
+
+                            // Construct the ray emitting from a random point of the element
+                            auto random_origin = get_random_point(el.second.vertices());
+
+                            Eigen::VectorXd rand_dir(dim);
+                            Eigen::VectorXd p1(dim),p2(dim),p3(dim),origin(3);
+                            bool inward_ray=false;
+                            if(dim==3)
+                            {
+                                for(int i=0;i<dim;i++)
+                                {
+                                    p1(i)=column(el.second.vertices(), 0)[i];
+                                    p2(i)=column(el.second.vertices(), 1)[i];
+                                    p3(i)=column(el.second.vertices(), 2)[i];
+                                    origin(i) = random_origin[i];
+                                }
+                                auto element_normal = ((p3-p1).head<3>()).cross((p2-p1).head<3>());
+                                element_normal.normalize();
+
+                                // Choose the direction randomly among the latitude and azimuth
+                                random_direction = std::get<0>(M_raysdirections[initial_index_rays + j]);
+                                index_azimuth = std::get<1>(M_raysdirections[initial_index_rays + j]);
+                                index_altitude = std::get<2>(M_raysdirections[initial_index_rays + j]);                              
+                                for(int i=0;i<dim;i++)
+                                {
+                                    rand_dir(i) = random_direction[i];
+                                }
+                                if(rand_dir.dot(element_normal)>=0)
+                                {
+                                    inward_ray=true;
+                                }
+
+                            }
+
+                            BVHRay<mesh_type::nRealDim> ray( origin, rand_dir, 1e-8 );
+
+                            int closer_intersection_element = -1;
+                            if(inward_ray)
+                            {
+                                closer_intersection_element = 1;
+                            }
+                            else
+                            {
+                                for(auto& [building_name,bvh_building_tree] : M_bvh_tree_vector)
+                                {
+                                    auto rayIntersectionResult =  bvh_building_tree->intersect(ray) ;
+                                    if ( !rayIntersectionResult.empty() )
+                                        closer_intersection_element = 1;
+                                    if (closer_intersection_element >=0 )
+                                        break;
+                                }
+                            }
+                            // If there is an intersection, increase the shading mask table entry by 1 and augment the angle table by 1 as well
+                            if ( closer_intersection_element >=0 )
+                            {
+                                SM_table(index_azimuth,index_altitude)++;
+                                Angle_table(index_azimuth,index_altitude)++;
+                            }
+                            else
+                            {
+                                Angle_table(index_azimuth,index_altitude)++;
+                            }
+                        }
+
+                        return std::make_pair(SM_table,Angle_table);
+
+        };
+    }
+
+
+        // Compute shading masks for one building only
+    template <typename MeshType>
+    void 
+    ShadingMask<MeshType>::computeMasksOneBuilding2(std::string building_name)
+    {
+        int dim = M_submeshes[building_name]->realDimension();
+        std::vector<double> random_direction(dim);
+
+        std::cout << "Submeshes markers" << M_submeshes[building_name]->markerNames() << std::endl;
+
+        // Loop over the markers of the building
+        Eigen::MatrixXd SM_table_marker(M_azimuthSize,M_altitudeSize);
+        Eigen::MatrixXd Angle_table_marker(M_azimuthSize,M_altitudeSize);
+
+        for(auto  [marker,marker_id] : M_submeshes[building_name]->markerNames())
+        {
+
+            SM_table_marker.setZero();
+            Angle_table_marker.setZero();
+            auto ray_submesh = createSubmesh(_mesh=M_submeshes[building_name],_range=markedelements(M_submeshes[building_name],marker));
+
+            // Launch Nrays from each triangle of each marker
+            for(auto const &el : ray_submesh->elements() ) // from each element of the submesh, launch M_Nrays randomly oriented
+            {
+                //CALL Lamba function
+
+                
+                /*
+                
+                // Execute the lambda function on multiple threads using
+                // std::async and std::future to collect the results
+                std::vector<int> n_rays_thread;
+                n_rays_thread.push_back(M_Nrays - (M_Nthreads-1) * (int)(M_Nrays / M_Nthreads));
+                for(int t= 1; t < M_Nthreads; ++t){
+                   n_rays_thread.push_back( M_Nrays / M_Nthreads);
+                }
+
+                // Used to store the future results
+                std::vector< std::future< std::pair<Eigen::MatrixXd, Eigen::MatrixXd > > > futures;
+
+                for(int t = 0; t < M_Nthreads; ++t){
+
+                    // Start a new asynchronous task
+                    futures.emplace_back(std::async(std::launch::async, rays_from_element, n_rays_thread[t],t));
+                }
+
+                for( auto& f : futures){
+                    // Wait for the result to be ready
+                    auto two_tables =  f.get();
+
+                    // Add the tables obtained in threads
+                    SM_table_marker +=two_tables.first;
+                    Angle_table_marker += two_tables.second;
+
+                }
+
+                */
+            }//END FOR EL
+
+
+
+            // Divide the shading mask by the corresponding value of the angle table
+            // If an angle combination has not been selected, suppose there is no shadow
+            auto shadingMatrix = SM_table_marker.array().binaryExpr( Angle_table_marker.array() , [](auto x, auto y) { return y==0 ? 0 : x/y; });
+
+            // Shading mask value 0 means that the surface is not shadowed, value 1 it is fully shadowed
+            // Save the shading mask table to a csv file
+            if(M_saveMasks)
+                saveShadingMask(building_name,marker,shadingMatrix.matrix());
+
+
+        }//END FOR
+
+
+    }
+
+
+
+
     // Compute shading masks for one building only
     template <typename MeshType>
     void 
@@ -155,7 +321,7 @@ namespace Feel
 
 template <typename MeshType>
     void 
-    ShadingMask<MeshType>::computeMasksSubPart0(int numOp)
+    ShadingMask<MeshType>::computeMasksSubPartList()
     {
         // [INFO]: refactoring OK for this parts
         tic();
@@ -166,7 +332,7 @@ template <typename MeshType>
 
         for(int idx = 0 ; idx <nbObjects; ++idx)
         {
-            if (numOp==1) { buildingName=markersVolume[idx]; }
+            buildingName=markersVolume[idx];
             computeMasksOneBuilding(buildingName);
         }
         
@@ -185,7 +351,7 @@ template <typename MeshType>
 
  template <typename MeshType>
     void 
-    ShadingMask<MeshType>::computeMasksSubPart1(int numOp)
+    ShadingMask<MeshType>:: computeMasksSubPartSurfaceVolumes(int numOp)
     {
         // [INFO]: refactoring OK for this parts
         tic();
@@ -219,34 +385,22 @@ template <typename MeshType>
 
  template <typename MeshType>
     void 
-    ShadingMask<MeshType>::computeMasksSubPart2(int numOp)
+    ShadingMask<MeshType>::computeMasksSubPartRays()
     {
-        if( j_["/Buildings"_json_pointer].contains("fileFaces") ||  j_["/Buildings"_json_pointer].contains("aggregatedMarkers") ) // a csv containing the face markers is provided, or they are computed using aggregated markers
-        {            
             std::vector<double> random_direction(3);            
-
             std::map<std::string, int> markerLineMap;
-
             matrixSize = M_azimuthSize * M_altitudeSize;
-
             // Store large vectors containing all the shading mask matrices whose columns are stacked onto each other
             std::vector<double> SM_tables(M_listFaceMarkers.size() * matrixSize,0);
             std::vector<double> Angle_tables(M_listFaceMarkers.size() * matrixSize,0);
-
             std::cout << "Allocated SM_tables and Angle_tables of size " << M_listFaceMarkers.size() * matrixSize << std::endl;
-
             int markerNumber = 0;   
-
             // Multithread over rays
-            if (numOp==1) //Ray
-            {
                 tic();
                 for(auto const &eltWrap : M_rangeFaces ) // from each element of the submesh, launch M_Nrays randomly oriented
                 {
                     auto const& el = unwrap_ref( eltWrap );
-
                     auto elMarker = M_mapEntityToBuildingFace.at(el.id());
-
                     auto multithreading_over_rays = [&](int n_rays_thread, int id_thread){
 
                             Eigen::VectorXd SM_vector(matrixSize);
@@ -365,11 +519,29 @@ template <typename MeshType>
                 M_metadataJson["shadingMask"]["Timer"]["MaskComputation"] = timeComputation;
                 M_metadataJson["shadingMask"]["Nthreads"] = M_Nthreads;
                 M_metadataJson["shadingMask"]["NraysPerElement"] = M_Nrays;
-            }
-// Multithread over markers
-            if (numOp==2) //narkers
-            {
-                
+
+            // Divide the shading mask by the corresponding value of the angle table
+            // If an angle combination has not been selected, suppose there is no shadow
+            std::transform(SM_tables.begin(),SM_tables.end(),Angle_tables.begin(),SM_tables.begin(),std::divides<double>());  
+
+            computeSaveMasks(SM_tables);     
+    }
+
+
+template <typename MeshType>
+    void 
+    ShadingMask<MeshType>::computeMasksSubPartMarkers()
+    {        
+            std::vector<double> random_direction(3);            
+            std::map<std::string, int> markerLineMap;
+            matrixSize = M_azimuthSize * M_altitudeSize;
+            // Store large vectors containing all the shading mask matrices whose columns are stacked onto each other
+            std::vector<double> SM_tables(M_listFaceMarkers.size() * matrixSize,0);
+            std::vector<double> Angle_tables(M_listFaceMarkers.size() * matrixSize,0);
+            std::cout << "Allocated SM_tables and Angle_tables of size " << M_listFaceMarkers.size() * matrixSize << std::endl;
+            int markerNumber = 0;   
+            // Multithread over rays
+
                     auto multithreading_over_markers = [&](std::vector<std::string> marker_list_thread, int id_thread, int start_index){
 
                             int index_altitude;
@@ -516,18 +688,11 @@ template <typename MeshType>
                     M_metadataJson["shadingMask"]["Timer"]["MaskComputation"] = timeComputation;
                     M_metadataJson["shadingMask"]["Nthreads"] = M_Nthreads;
                     M_metadataJson["shadingMask"]["NraysPerElement"] = M_Nrays;
-                    
-            }
-            
+
             // Divide the shading mask by the corresponding value of the angle table
             // If an angle combination has not been selected, suppose there is no shadow
             std::transform(SM_tables.begin(),SM_tables.end(),Angle_tables.begin(),SM_tables.begin(),std::divides<double>());  
-
-            computeSaveMasks(SM_tables);     
-        }    
-        
-         
-
+            computeSaveMasks(SM_tables);      
     }
 
 
@@ -537,13 +702,13 @@ template <typename MeshType>
     void 
     ShadingMask<MeshType>::computeMasksMaster()
     {
-        if ( j_["/Buildings"_json_pointer].contains("list") )         { computeMasksSubPart0(1); }
-        if ( j_["/Buildings"_json_pointer].contains("fileVolumes"))   { computeMasksSubPart1(2); }
-        if ( j_["/Buildings"_json_pointer].contains("fileSurfaces") ) { computeMasksSubPart1(3); }
+        if ( j_["/Buildings"_json_pointer].contains("list") )         { computeMasksSubPartList(); }
+        if ( j_["/Buildings"_json_pointer].contains("fileVolumes"))   { computeMasksSubPartSurfaceVolumes(2); }
+        if ( j_["/Buildings"_json_pointer].contains("fileSurfaces") ) { computeMasksSubPartSurfaceVolumes(3); }
         if ( j_["/Buildings"_json_pointer].contains("fileFaces") ||  j_["/Buildings"_json_pointer].contains("aggregatedMarkers") ) 
         {            
-            if (M_mthreadtype == "ray")     { computeMasksSubPart2(1); }
-            if (M_mthreadtype == "markers") { computeMasksSubPart2(2); }
+            if (M_mthreadtype == "ray")     { computeMasksSubPartRays(); }
+            if (M_mthreadtype == "markers") { computeMasksSubPartMarkers(); }
         }
     }
 
