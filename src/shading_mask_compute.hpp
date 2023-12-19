@@ -4,15 +4,32 @@ namespace Feel
 
 
     template <typename MeshType>
-    void 
-    ShadingMask<MeshType>::LambdaFunc(std::vector<int> marker,int dim, auto el )
+    Eigen::VectorXd
+    ShadingMask<MeshType>::get_element_normal(Eigen::VectorXd p1,Eigen::VectorXd p2,Eigen::VectorXd p3)
     {
+        Eigen::VectorXd element_normal = ((p3-p1).head<3>()).cross((p2-p1).head<3>());
+        element_normal.normalize();
+        return(element_normal);
+    }
+
+
+    template <typename MeshType>
+    void 
+    ShadingMask<MeshType>::LambdaFunc(std::vector<int> marker,auto el )
+    {
+        int NumOption=1;
         std::vector<double> random_direction(dim);
         matrixSize = M_azimuthSize * M_altitudeSize;
 
         auto rays_from_element = [&,marker=marker](int n_rays_thread, int id_thread ){
-            Eigen::MatrixXd SM_table   (M_azimuthSize,M_altitudeSize); SM_table.setZero();
-            Eigen::MatrixXd Angle_table(M_azimuthSize,M_altitudeSize); Angle_table.setZero();
+            //NumOption1
+            Eigen::MatrixXd SM_table   (M_azimuthSize,M_altitudeSize); SM_table.setZero(); 
+            Eigen::MatrixXd Angle_table(M_azimuthSize,M_altitudeSize); Angle_table.setZero(); 
+            
+            //NumOption2
+            Eigen::VectorXd SM_vector(matrixSize); SM_vector.setZero();
+            Eigen::VectorXd Angle_vector(matrixSize); Angle_vector.setZero();
+            
             int index_altitude;
             int index_azimuth;
             int initial_index_rays = n_rays_thread * id_thread ;
@@ -21,36 +38,37 @@ namespace Feel
                         {
 
                             // Construct the ray emitting from a random point of the element
-                            auto random_origin = get_random_point(el.second.vertices());
-
+                            Eigen::VectorXd random_origin;
+                            if (NumOption==1) { random_origin= get_random_point(el.second.vertices()); }
+                            if (NumOption==2) { random_origin= get_random_point(el.vertices()); }
                             Eigen::VectorXd rand_dir(dim);
-                            Eigen::VectorXd p1(dim),p2(dim),p3(dim),origin(3);
+                            Eigen::VectorXd origin(3);
                             bool inward_ray=false;
+
+                            Eigen::VectorXd element_normal;
+
+                            if (NumOption==1) { 
+                                element_normal=get_element_normal(column(el.second.vertices(),0),column(el.second.vertices(),1),column(el.second.vertices(),2));
+                            }
+
+                            if (NumOption==2) { 
+                                element_normal=get_element_normal(column(el.vertices(),0),column(el.vertices(),1),column(el.vertices(),2));
+                            }
+
+
                             if(dim==3)
                             {
                                 for(int i=0;i<dim;i++)
-                                {
-                                    p1(i)=column(el.second.vertices(), 0)[i];
-                                    p2(i)=column(el.second.vertices(), 1)[i];
-                                    p3(i)=column(el.second.vertices(), 2)[i];
+                                { 
                                     origin(i) = random_origin[i];
                                 }
-                                auto element_normal = ((p3-p1).head<3>()).cross((p2-p1).head<3>());
-                                element_normal.normalize();
 
                                 // Choose the direction randomly among the latitude and azimuth
                                 random_direction = std::get<0>(M_raysdirections[initial_index_rays + j]);
-                                index_azimuth = std::get<1>(M_raysdirections[initial_index_rays + j]);
-                                index_altitude = std::get<2>(M_raysdirections[initial_index_rays + j]);                              
-                                for(int i=0;i<dim;i++)
-                                {
-                                    rand_dir(i) = random_direction[i];
-                                }
-                                if(rand_dir.dot(element_normal)>=0)
-                                {
-                                    inward_ray=true;
-                                }
-
+                                index_azimuth    = std::get<1>(M_raysdirections[initial_index_rays + j]);
+                                index_altitude   = std::get<2>(M_raysdirections[initial_index_rays + j]);                              
+                                for(int i=0;i<dim;i++)              { rand_dir(i) = random_direction[i]; }
+                                if(rand_dir.dot(element_normal)>=0) { inward_ray=true; }
                             }
 
                             BVHRay<mesh_type::nRealDim> ray( origin, rand_dir, 1e-8 );
@@ -62,28 +80,48 @@ namespace Feel
                             }
                             else
                             {
-                                for(auto& [building_name,bvh_building_tree] : M_bvh_tree_vector)
-                                {
-                                    auto rayIntersectionResult =  bvh_building_tree->intersect(ray) ;
-                                    if ( !rayIntersectionResult.empty() )
-                                        closer_intersection_element = 1;
-                                    if (closer_intersection_element >=0 )
-                                        break;
+                                if (NumOption==1) { 
+                                    for(auto& [building_name,bvh_building_tree] : M_bvh_tree_vector)
+                                    {
+                                        auto rayIntersectionResult =  bvh_building_tree->intersect(ray) ;
+                                        if ( !rayIntersectionResult.empty() ) closer_intersection_element = 1;
+                                        if (closer_intersection_element >=0 ) break;
+                                    }
                                 }
+                                if (NumOption==2) { 
+                                        auto rayIntersectionResult =  M_bvh->intersect(ray) ;
+                                        if ( !rayIntersectionResult.empty() ) closer_intersection_element = 1;    
+                                } 
+                                
                             }
                             // If there is an intersection, increase the shading mask table entry by 1 and augment the angle table by 1 as well
-                            if ( closer_intersection_element >=0 )
-                            {
-                                SM_table(index_azimuth,index_altitude)++;
-                                Angle_table(index_azimuth,index_altitude)++;
+                            if (NumOption==1) { 
+                                if ( closer_intersection_element >=0 )
+                                {
+                                    SM_table(index_azimuth,index_altitude)++; Angle_table(index_azimuth,index_altitude)++;
+                                }
+                                else
+                                {
+                                    Angle_table(index_azimuth,index_altitude)++;
+                                }
                             }
-                            else
-                            {
-                                Angle_table(index_azimuth,index_altitude)++;
+
+                            
+                            if (NumOption==2) { 
+                                int vector_entry = index_azimuth + M_azimuthSize*index_altitude;
+                                if ( closer_intersection_element >=0 )
+                                {
+                                    SM_vector(vector_entry)++; Angle_vector(vector_entry)++;
+                                }
+                                else
+                                {
+                                    Angle_vector(vector_entry)++;
+                                }
                             }
                         }
 
                         return std::make_pair(SM_table,Angle_table);
+                        //op2 std::make_pair(SM_vector,Angle_vector);
 
         };
     }
@@ -94,7 +132,7 @@ namespace Feel
     void 
     ShadingMask<MeshType>::computeMasksOneBuilding2(std::string building_name)
     {
-        int dim = M_submeshes[building_name]->realDimension();
+        dim = M_submeshes[building_name]->realDimension();
         std::vector<double> random_direction(dim);
 
         std::cout << "Submeshes markers" << M_submeshes[building_name]->markerNames() << std::endl;
@@ -173,7 +211,7 @@ namespace Feel
     void 
     ShadingMask<MeshType>::computeMasksOneBuilding(std::string building_name)
     {
-        int dim = M_submeshes[building_name]->realDimension();
+        dim = M_submeshes[building_name]->realDimension();
         std::vector<double> random_direction(dim);
 
         std::cout << "Submeshes markers" << M_submeshes[building_name]->markerNames() << std::endl;

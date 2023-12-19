@@ -2,6 +2,8 @@
 #include <feel/feelmesh/bvh.hpp>
 #include <unordered_map>
 
+#include <functional>
+
 
 
 auto GetListNameObjects(std::string ChName)
@@ -44,7 +46,7 @@ public:
 
     ShadingMask(int num,mesh_ptrtype mesh, nl::json const& specs, int intervalsAzimuth=72, int intervalsAltitude=10 );
 
-    void LambdaFunc(std::vector<int> marker,int dim,auto el);
+    void LambdaFunc(std::vector<int> marker,auto el);
 
     // Create the random number generators
     void makeRandomNumberGeneratorsSeed();
@@ -67,6 +69,9 @@ public:
 
     // Get a random point from the surface of the triangle
     Eigen::VectorXd get_random_point(matrix_node_type const& element_points);
+
+    Eigen::VectorXd get_element_normal (Eigen::VectorXd p1,Eigen::VectorXd p2,Eigen::VectorXd p3);
+   
 
     // 3D case
     // Compute the sum of the areas of three subtriangles
@@ -130,15 +135,12 @@ private:
     bool M_saveMasks;
 
     int matrixSize;
+    int dim=3;
 
-    nl::json j_;
+    nl::json j_,M_metadataJson;
 
-    nl::json M_metadataJson;
-
-    std::random_device M_rd;
-    std::random_device M_rd2;
-    std::mt19937 M_gen;
-    std::mt19937 M_gen2;
+    std::random_device M_rd,M_rd2;
+    std::mt19937 M_gen,M_gen2;
 };
 } // namespace Feel
 

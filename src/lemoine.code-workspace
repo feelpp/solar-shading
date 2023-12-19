@@ -143,7 +143,11 @@
 			"viewport": "cpp",
 			"boundingbox": "cpp",
 			"boundingsphere": "cpp",
-			"polytope": "cpp"
+			"polytope": "cpp",
+			"core": "cpp",
+			"specialfunctions": "cpp",
+			"splines": "cpp",
+			"alignedvector3": "cpp"
 		}
 	}
 }
