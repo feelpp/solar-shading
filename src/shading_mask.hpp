@@ -46,7 +46,8 @@ public:
 
     ShadingMask(int num,mesh_ptrtype mesh, nl::json const& specs, int intervalsAzimuth=72, int intervalsAltitude=10 );
 
-    void LambdaFunc(std::vector<int> marker,auto el);
+    auto commonComputePart(int NumOption,matrix_node_type const& element_points,int n_rays_thread, int id_thread);
+    //std::pair<const Eigen::MatrixXd,const Eigen::MatrixXd> commonComputePart(int NumOption,matrix_node_type const& element_points,int n_rays_thread, int id_thread);
 
     // Create the random number generators
     void makeRandomNumberGeneratorsSeed();
@@ -98,7 +99,6 @@ public:
     // Compute shading masks for one building only
     void computeMasksOneBuilding(std::string building_name);
 
-    // Compute shading masks for one building only
     void computeMasksOneBuilding2(std::string building_name);
 
     // Save the shading mask table to a CSV file

@@ -14,345 +14,188 @@ namespace Feel
 
 
     template <typename MeshType>
-    void 
-    ShadingMask<MeshType>::LambdaFunc(std::vector<int> marker,auto el )
+    auto
+    ShadingMask<MeshType>::commonComputePart(int NumOption,matrix_node_type const& element_points,int n_rays_thread, int id_thread)
     {
-        int NumOption=1;
+        
         std::vector<double> random_direction(dim);
         matrixSize = M_azimuthSize * M_altitudeSize;
 
-        auto rays_from_element = [&,marker=marker](int n_rays_thread, int id_thread ){
-            //NumOption1
-            Eigen::MatrixXd SM_table   (M_azimuthSize,M_altitudeSize); SM_table.setZero(); 
-            Eigen::MatrixXd Angle_table(M_azimuthSize,M_altitudeSize); Angle_table.setZero(); 
-            
-            //NumOption2
-            Eigen::VectorXd SM_vector(matrixSize); SM_vector.setZero();
-            Eigen::VectorXd Angle_vector(matrixSize); Angle_vector.setZero();
-            
-            int index_altitude;
-            int index_azimuth;
-            int initial_index_rays = n_rays_thread * id_thread ;
 
-                        for(int j=0;j<n_rays_thread;j++)
+        //NumOption1
+        Eigen::MatrixXd SM_table   (M_azimuthSize,M_altitudeSize); SM_table.setZero(); 
+        Eigen::MatrixXd Angle_table(M_azimuthSize,M_altitudeSize); Angle_table.setZero(); 
+            
+        //NumOption2
+        Eigen::VectorXd SM_vector    (matrixSize); SM_vector.setZero();
+        Eigen::VectorXd Angle_vector (matrixSize); Angle_vector.setZero();
+            
+        int index_altitude;
+        int index_azimuth;
+        int initial_index_rays = n_rays_thread * id_thread ;
+
+            for(int j=0;j<n_rays_thread;j++)
+            {
+                Eigen::VectorXd random_origin= get_random_point(element_points);
+
+                Eigen::VectorXd rand_dir(dim),origin(3);
+                bool inward_ray=false;
+                Eigen::VectorXd p1(dim),p2(dim),p3(dim);
+                for(int i=0;i<dim;i++)
+                {
+                    p1(i)=column(element_points, 0)[i]; p2(i)=column(element_points, 1)[i]; p3(i)=column(element_points, 2)[i];
+                }
+                Eigen::VectorXd element_normal=get_element_normal(p1,p2,p3);
+
+                if(dim==3)
+                {
+                    for(int i=0;i<dim;i++)
+                    { 
+                        origin(i) = random_origin[i];
+                    }
+
+                    // Choose the direction randomly among the latitude and azimuth
+                    random_direction = std::get<0>(M_raysdirections[initial_index_rays + j]);
+                    index_azimuth    = std::get<1>(M_raysdirections[initial_index_rays + j]);
+                    index_altitude   = std::get<2>(M_raysdirections[initial_index_rays + j]);                              
+                    for(int i=0;i<dim;i++)              { rand_dir(i) = random_direction[i]; }
+                    if(rand_dir.dot(element_normal)>=0) { inward_ray=true; }
+                }
+
+                
+                BVHRay<mesh_type::nRealDim> ray( origin, rand_dir, 1e-8 );
+
+                int closer_intersection_element = -1;
+                if(inward_ray)
+                {
+                    closer_intersection_element = 1;
+                }
+                else
+                {
+                    if (NumOption==1) { 
+                        for(auto& [building_name,bvh_building_tree] : M_bvh_tree_vector)
                         {
-
-                            // Construct the ray emitting from a random point of the element
-                            Eigen::VectorXd random_origin;
-                            if (NumOption==1) { random_origin= get_random_point(el.second.vertices()); }
-                            if (NumOption==2) { random_origin= get_random_point(el.vertices()); }
-                            Eigen::VectorXd rand_dir(dim);
-                            Eigen::VectorXd origin(3);
-                            bool inward_ray=false;
-
-                            Eigen::VectorXd element_normal;
-
-                            if (NumOption==1) { 
-                                element_normal=get_element_normal(column(el.second.vertices(),0),column(el.second.vertices(),1),column(el.second.vertices(),2));
-                            }
-
-                            if (NumOption==2) { 
-                                element_normal=get_element_normal(column(el.vertices(),0),column(el.vertices(),1),column(el.vertices(),2));
-                            }
-
-
-                            if(dim==3)
-                            {
-                                for(int i=0;i<dim;i++)
-                                { 
-                                    origin(i) = random_origin[i];
-                                }
-
-                                // Choose the direction randomly among the latitude and azimuth
-                                random_direction = std::get<0>(M_raysdirections[initial_index_rays + j]);
-                                index_azimuth    = std::get<1>(M_raysdirections[initial_index_rays + j]);
-                                index_altitude   = std::get<2>(M_raysdirections[initial_index_rays + j]);                              
-                                for(int i=0;i<dim;i++)              { rand_dir(i) = random_direction[i]; }
-                                if(rand_dir.dot(element_normal)>=0) { inward_ray=true; }
-                            }
-
-                            BVHRay<mesh_type::nRealDim> ray( origin, rand_dir, 1e-8 );
-
-                            int closer_intersection_element = -1;
-                            if(inward_ray)
-                            {
-                                closer_intersection_element = 1;
-                            }
-                            else
-                            {
-                                if (NumOption==1) { 
-                                    for(auto& [building_name,bvh_building_tree] : M_bvh_tree_vector)
-                                    {
-                                        auto rayIntersectionResult =  bvh_building_tree->intersect(ray) ;
-                                        if ( !rayIntersectionResult.empty() ) closer_intersection_element = 1;
-                                        if (closer_intersection_element >=0 ) break;
-                                    }
-                                }
-                                if (NumOption==2) { 
-                                        auto rayIntersectionResult =  M_bvh->intersect(ray) ;
-                                        if ( !rayIntersectionResult.empty() ) closer_intersection_element = 1;    
-                                } 
+                            auto rayIntersectionResult =  bvh_building_tree->intersect(ray) ;
+                            if ( !rayIntersectionResult.empty() ) closer_intersection_element = 1;
+                            if (closer_intersection_element >=0 ) break;
+                        }
+                    }
+                    
+                    if (NumOption==2) { 
+                        auto rayIntersectionResult =  M_bvh->intersect(ray) ;
+                        if ( !rayIntersectionResult.empty() ) closer_intersection_element = 1;    
+                    } 
                                 
-                            }
-                            // If there is an intersection, increase the shading mask table entry by 1 and augment the angle table by 1 as well
-                            if (NumOption==1) { 
-                                if ( closer_intersection_element >=0 )
-                                {
-                                    SM_table(index_azimuth,index_altitude)++; Angle_table(index_azimuth,index_altitude)++;
-                                }
-                                else
-                                {
-                                    Angle_table(index_azimuth,index_altitude)++;
-                                }
-                            }
+                }
+                            
+                // If there is an intersection, increase the shading mask table entry by 1 and augment the angle table by 1 as well
+                if (NumOption==1) { 
+                    if ( closer_intersection_element >=0 )
+                    {
+                        SM_table(index_azimuth,index_altitude)++; Angle_table(index_azimuth,index_altitude)++;
+                    }
+                    else
+                    {
+                        Angle_table(index_azimuth,index_altitude)++;
+                    }
+                }
 
                             
-                            if (NumOption==2) { 
-                                int vector_entry = index_azimuth + M_azimuthSize*index_altitude;
-                                if ( closer_intersection_element >=0 )
-                                {
-                                    SM_vector(vector_entry)++; Angle_vector(vector_entry)++;
-                                }
-                                else
-                                {
-                                    Angle_vector(vector_entry)++;
-                                }
-                            }
-                        }
+                if (NumOption==2) { 
+                    int vector_entry = index_azimuth + M_azimuthSize*index_altitude;
+                    if ( closer_intersection_element >=0 )
+                    {
+                        SM_vector(vector_entry)++; Angle_vector(vector_entry)++;
+                    }
+                    else
+                    {
+                        Angle_vector(vector_entry)++;
+                    }
+                }
+            }
 
-                        return std::make_pair(SM_table,Angle_table);
-                        //op2 std::make_pair(SM_vector,Angle_vector);
+            //if (NumOption==1) { return std::make_pair(SM_table,Angle_table); }
+            //if (NumOption==2) { return std::make_pair(SM_vector,Angle_vector); }
 
-        };
+        return std::make_pair(SM_table,Angle_table); 
+
     }
+
+
+
+ 
 
 
         // Compute shading masks for one building only
-    template <typename MeshType>
-    void 
-    ShadingMask<MeshType>::computeMasksOneBuilding2(std::string building_name)
-    {
-        dim = M_submeshes[building_name]->realDimension();
-        std::vector<double> random_direction(dim);
-
-        std::cout << "Submeshes markers" << M_submeshes[building_name]->markerNames() << std::endl;
-
-        // Loop over the markers of the building
-        Eigen::MatrixXd SM_table_marker(M_azimuthSize,M_altitudeSize);
-        Eigen::MatrixXd Angle_table_marker(M_azimuthSize,M_altitudeSize);
-
-        for(auto  [marker,marker_id] : M_submeshes[building_name]->markerNames())
-        {
-
-            SM_table_marker.setZero();
-            Angle_table_marker.setZero();
-            auto ray_submesh = createSubmesh(_mesh=M_submeshes[building_name],_range=markedelements(M_submeshes[building_name],marker));
-
-            // Launch Nrays from each triangle of each marker
-            for(auto const &el : ray_submesh->elements() ) // from each element of the submesh, launch M_Nrays randomly oriented
-            {
-                //CALL Lamba function
-
-                
-                /*
-                
-                // Execute the lambda function on multiple threads using
-                // std::async and std::future to collect the results
-                std::vector<int> n_rays_thread;
-                n_rays_thread.push_back(M_Nrays - (M_Nthreads-1) * (int)(M_Nrays / M_Nthreads));
-                for(int t= 1; t < M_Nthreads; ++t){
-                   n_rays_thread.push_back( M_Nrays / M_Nthreads);
-                }
-
-                // Used to store the future results
-                std::vector< std::future< std::pair<Eigen::MatrixXd, Eigen::MatrixXd > > > futures;
-
-                for(int t = 0; t < M_Nthreads; ++t){
-
-                    // Start a new asynchronous task
-                    futures.emplace_back(std::async(std::launch::async, rays_from_element, n_rays_thread[t],t));
-                }
-
-                for( auto& f : futures){
-                    // Wait for the result to be ready
-                    auto two_tables =  f.get();
-
-                    // Add the tables obtained in threads
-                    SM_table_marker +=two_tables.first;
-                    Angle_table_marker += two_tables.second;
-
-                }
-
-                */
-            }//END FOR EL
-
-
-
-            // Divide the shading mask by the corresponding value of the angle table
-            // If an angle combination has not been selected, suppose there is no shadow
-            auto shadingMatrix = SM_table_marker.array().binaryExpr( Angle_table_marker.array() , [](auto x, auto y) { return y==0 ? 0 : x/y; });
-
-            // Shading mask value 0 means that the surface is not shadowed, value 1 it is fully shadowed
-            // Save the shading mask table to a csv file
-            if(M_saveMasks)
-                saveShadingMask(building_name,marker,shadingMatrix.matrix());
-
-
-        }//END FOR
-
-
-    }
-
-
-
-
-    // Compute shading masks for one building only
     template <typename MeshType>
     void 
     ShadingMask<MeshType>::computeMasksOneBuilding(std::string building_name)
     {
         dim = M_submeshes[building_name]->realDimension();
         std::vector<double> random_direction(dim);
-
         std::cout << "Submeshes markers" << M_submeshes[building_name]->markerNames() << std::endl;
-
         // Loop over the markers of the building
         Eigen::MatrixXd SM_table_marker(M_azimuthSize,M_altitudeSize);
         Eigen::MatrixXd Angle_table_marker(M_azimuthSize,M_altitudeSize);
-
         for(auto  [marker,marker_id] : M_submeshes[building_name]->markerNames())
         {
-
             SM_table_marker.setZero();
             Angle_table_marker.setZero();
             auto ray_submesh = createSubmesh(_mesh=M_submeshes[building_name],_range=markedelements(M_submeshes[building_name],marker));
-
             // Launch Nrays from each triangle of each marker
             for(auto const &el : ray_submesh->elements() ) // from each element of the submesh, launch M_Nrays randomly oriented
-            {
-
-                    auto rays_from_element = [&,marker=marker](int n_rays_thread, int id_thread ){
-
-                        Eigen::MatrixXd SM_table(M_azimuthSize,M_altitudeSize);
-                        SM_table.setZero();
-
-                        Eigen::MatrixXd Angle_table(M_azimuthSize,M_altitudeSize);
-                        Angle_table.setZero();
-
-                        int index_altitude;
-                        int index_azimuth;
-                        int initial_index_rays = n_rays_thread * id_thread ;
-
-                        for(int j=0;j<n_rays_thread;j++)
-                        {
-
-                            // Construct the ray emitting from a random point of the element
-                            auto random_origin = get_random_point(el.second.vertices());
-
-                            Eigen::VectorXd rand_dir(dim);
-                            Eigen::VectorXd p1(dim),p2(dim),p3(dim),origin(3);
-                            bool inward_ray=false;
-                            if(dim==3)
-                            {
-                                for(int i=0;i<dim;i++)
-                                {
-                                    p1(i)=column(el.second.vertices(), 0)[i];
-                                    p2(i)=column(el.second.vertices(), 1)[i];
-                                    p3(i)=column(el.second.vertices(), 2)[i];
-                                    origin(i) = random_origin[i];
-                                }
-                                auto element_normal = ((p3-p1).head<3>()).cross((p2-p1).head<3>());
-                                element_normal.normalize();
-
-                                // Choose the direction randomly among the latitude and azimuth
-                                random_direction = std::get<0>(M_raysdirections[initial_index_rays + j]);
-                                index_azimuth = std::get<1>(M_raysdirections[initial_index_rays + j]);
-                                index_altitude = std::get<2>(M_raysdirections[initial_index_rays + j]);                              
-                                for(int i=0;i<dim;i++)
-                                {
-                                    rand_dir(i) = random_direction[i];
-                                }
-                                if(rand_dir.dot(element_normal)>=0)
-                                {
-                                    inward_ray=true;
-                                }
-
-                            }
-
-                            BVHRay<mesh_type::nRealDim> ray( origin, rand_dir, 1e-8 );
-
-                            int closer_intersection_element = -1;
-                            if(inward_ray)
-                            {
-                                closer_intersection_element = 1;
-                            }
-                            else
-                            {
-                                for(auto& [building_name,bvh_building_tree] : M_bvh_tree_vector)
-                                {
-                                    auto rayIntersectionResult =  bvh_building_tree->intersect(ray) ;
-                                    if ( !rayIntersectionResult.empty() )
-                                        closer_intersection_element = 1;
-                                    if (closer_intersection_element >=0 )
-                                        break;
-                                }
-                            }
-                            // If there is an intersection, increase the shading mask table entry by 1 and augment the angle table by 1 as well
-                            if ( closer_intersection_element >=0 )
-                            {
-                                SM_table(index_azimuth,index_altitude)++;
-                                Angle_table(index_azimuth,index_altitude)++;
-                            }
-                            else
-                            {
-                                Angle_table(index_azimuth,index_altitude)++;
-                            }
-                        }
-
-                        return std::make_pair(SM_table,Angle_table);
-                    };
-
-                // Execute the lambda function on multiple threads using
-                // std::async and std::future to collect the results
+            {   
+               
+                // std::async and std::future to collect the results   
+                
                 std::vector<int> n_rays_thread;
                 n_rays_thread.push_back(M_Nrays - (M_Nthreads-1) * (int)(M_Nrays / M_Nthreads));
-                for(int t= 1; t < M_Nthreads; ++t){
-                   n_rays_thread.push_back( M_Nrays / M_Nthreads);
-                }
-
+                for(int t= 1; t < M_Nthreads; ++t){ n_rays_thread.push_back( M_Nrays / M_Nthreads); }
                 // Used to store the future results
                 std::vector< std::future< std::pair<Eigen::MatrixXd, Eigen::MatrixXd > > > futures;
 
-                for(int t = 0; t < M_Nthreads; ++t){
+                matrix_node_type const& element_points=el.second.vertices();
 
+                auto multithreading_over_rays = [&](int NumOption,matrix_node_type const& element_points,int n_rays_thread, int id_thread){
+                    return commonComputePart(NumOption,element_points,n_rays_thread,id_thread);
+                };
+
+                int NumOption=1;
+                for(int t = 0; t < M_Nthreads; ++t){
                     // Start a new asynchronous task
-                    futures.emplace_back(std::async(std::launch::async, rays_from_element, n_rays_thread[t],t));
+                    //futures.emplace_back( std::async(std::launch::async,commonComputePart,NumOption,element_points,n_rays_thread[t],t));
+
+                    futures.emplace_back( std::async(std::launch::async,multithreading_over_rays,NumOption,element_points,n_rays_thread[t],t));
                 }
+
+                /**/
 
                 for( auto& f : futures){
-                    // Wait for the result to be ready
-                    auto two_tables =  f.get();
+                    auto two_tables =  f.get();// Wait for the result to be ready
+                    SM_table_marker +=two_tables.first; 
+                    Angle_table_marker += two_tables.second; // Add the tables obtained in threads
+                }  
+                
+                
+            }//END FOR EL
 
-                    // Add the tables obtained in threads
-                    SM_table_marker +=two_tables.first;
-                    Angle_table_marker += two_tables.second;
-
-                }
-            }
             // Divide the shading mask by the corresponding value of the angle table
             // If an angle combination has not been selected, suppose there is no shadow
             auto shadingMatrix = SM_table_marker.array().binaryExpr( Angle_table_marker.array() , [](auto x, auto y) { return y==0 ? 0 : x/y; });
-
             // Shading mask value 0 means that the surface is not shadowed, value 1 it is fully shadowed
             // Save the shading mask table to a csv file
-            if(M_saveMasks)
-                saveShadingMask(building_name,marker,shadingMatrix.matrix());
-
-        }
+            if(M_saveMasks) saveShadingMask(building_name,marker,shadingMatrix.matrix());
+        }//END FOR
     }
 
 
 
+    // Compute shading masks for one building only
+    template <typename MeshType>
+    void 
+    ShadingMask<MeshType>::computeMasksOneBuilding2(std::string building_name)
+    {
+    }
 
     
 
@@ -439,6 +282,8 @@ template <typename MeshType>
                 {
                     auto const& el = unwrap_ref( eltWrap );
                     auto elMarker = M_mapEntityToBuildingFace.at(el.id());
+
+
                     auto multithreading_over_rays = [&](int n_rays_thread, int id_thread){
 
                             Eigen::VectorXd SM_vector(matrixSize);
