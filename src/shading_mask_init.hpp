@@ -78,14 +78,13 @@ ShadingMask<MeshType>::makeRandomNumberGeneratorsSeed(bool QCTRL_SAVE_SEED,bool 
 
 
         //BEGIN::SAVE AND LOAD SEED
-        // save state
-        if (QCTRL_SAVE_SEED)
+         if (QCTRL_SAVE_SEED)
         {
             std::cout<<"[SPECX INFO] : Saving seed...\n";
             {
-                std::string SeedFolder = (boost::filesystem::path(Environment::appRepository())/("seed")).string();
-                if (!boost::filesystem::exists(SeedFolder))
-                boost::filesystem::create_directory(SeedFolder);
+                std::string SeedFolder = (std::filesystem::path(Environment::appRepository())/("seed")).string();
+                if (!std::filesystem::exists(SeedFolder))
+                std::filesystem::create_directory(SeedFolder);
                 std::ofstream fout1(SeedFolder+"/seed_gen.dat");
                 fout1 << gen;
                 fout1.close();
@@ -99,7 +98,7 @@ ShadingMask<MeshType>::makeRandomNumberGeneratorsSeed(bool QCTRL_SAVE_SEED,bool 
         {
             std::cout<<"[SPECX INFO] : Loading seed...\n";
             {
-                std::string SeedFolder = (boost::filesystem::path(Environment::appRepository())/("seed")).string();
+                std::string SeedFolder = (std::filesystem::path(Environment::appRepository())/("seed")).string();
                 std::ifstream fin1(SeedFolder+"/seed_gen.dat");
                 fin1 >> gen;
                 fin1.close();
@@ -108,6 +107,9 @@ ShadingMask<MeshType>::makeRandomNumberGeneratorsSeed(bool QCTRL_SAVE_SEED,bool 
                 fin2.close();
             }
         }
+
+
+
 
         M_gen=gen;
         M_gen2=gen2;

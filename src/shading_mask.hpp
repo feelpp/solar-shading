@@ -52,7 +52,7 @@ public:
      auto commonComputePartOld(int NumOption,matrix_node_type const& element_points,int n_rays_thread, int id_thread);
     //std::pair<const Eigen::MatrixXd,const Eigen::MatrixXd> commonComputePart(int NumOption,matrix_node_type const& element_points,int n_rays_thread, int id_thread);
 
-    bool computePartMarker(std::vector<std::string> marker_list_thread, int id_thread, int start_index,std::vector<double> SM_tables,std::vector<double> Angle_tables);
+    bool computePartMarker(std::vector<std::string> marker_list_thread, int id_thread, int start_index);
     void computeMasksSubPartMarkersTest();
 
 
@@ -148,6 +148,9 @@ private:
 
     std::random_device M_rd,M_rd2;
     std::mt19937 M_gen,M_gen2;
+
+    std::vector<double> SM_tables_Alpha;
+    std::vector<double> Angle_tables_Alpha;
 };
 } // namespace Feel
 

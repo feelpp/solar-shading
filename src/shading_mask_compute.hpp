@@ -289,12 +289,12 @@ namespace Feel
                 };
 
                 
-                int NumOption=1;
+                //int NumOption=1;
                 for(int t = 0; t < M_Nthreads; ++t){
                     // Start a new asynchronous task
                     //futures.emplace_back( std::async(std::launch::async,commonComputePart,NumOption,element_points,n_rays_thread[t],t));
 
-                    futures.emplace_back( std::async(std::launch::async,multithreading_over_rays,NumOption,element_points,n_rays_thread[t],t));
+                    futures.emplace_back( std::async(std::launch::async,multithreading_over_rays,1,element_points,n_rays_thread[t],t));
                 }
 
 
@@ -327,7 +327,7 @@ namespace Feel
             }
 
 
-        }//END FOR
+        }//END FOR M_submeshes
         
     }
 
@@ -552,9 +552,7 @@ template <typename MeshType>
     bool
     ShadingMask<MeshType>::computePartMarker(
         std::vector<std::string> marker_list_thread, 
-        int id_thread, int start_index,
-        std::vector<double> SM_tables,
-        std::vector<double> Angle_tables)
+        int id_thread, int start_index)
     {
         std::vector<double> random_direction(dim);
         int index_altitude;
@@ -573,8 +571,8 @@ template <typename MeshType>
                                 
             initial_index_marker = start_index + i_marker;
 
-            auto initial_index_SM = SM_tables.begin() +  initial_index_marker * matrixSize;
-            auto initial_index_Angles = Angle_tables.begin() +  initial_index_marker * matrixSize;
+            auto initial_index_SM = SM_tables_Alpha.begin() +  initial_index_marker * matrixSize;
+            auto initial_index_Angles = Angle_tables_Alpha.begin() +  initial_index_marker * matrixSize;
 
                                 // Extract a view from the vectors SM_tables and Angle_tables
             auto SM_vector = Eigen::Map<Eigen::VectorXd>( &(*initial_index_SM), matrixSize);
@@ -662,14 +660,22 @@ template <typename MeshType>
             std::map<std::string, int> markerLineMap;
             matrixSize = M_azimuthSize * M_altitudeSize;
             // Store large vectors containing all the shading mask matrices whose columns are stacked onto each other
-            std::vector<double> SM_tables(M_listFaceMarkers.size() * matrixSize,0);
-            std::vector<double> Angle_tables(M_listFaceMarkers.size() * matrixSize,0);
+            //std::vector<double> SM_tables(M_listFaceMarkers.size() * matrixSize,0);
+            //std::vector<double> Angle_tables(M_listFaceMarkers.size() * matrixSize,0);
+
+            //SM_tables_Alpha(M_listFaceMarkers.size() * matrixSize,0);
+            //Angle_tables_Alpha(M_listFaceMarkers.size() * matrixSize,0);
+
+            SM_tables_Alpha.assign(M_listFaceMarkers.size() * matrixSize, 0);
+            Angle_tables_Alpha.assign(M_listFaceMarkers.size() * matrixSize, 0);
+
+
             std::cout << "Allocated SM_tables and Angle_tables of size " << M_listFaceMarkers.size() * matrixSize << std::endl;
             int markerNumber = 0;   
             // Multithread over rays
 
-                    auto multithreading_over_markers = [&](std::vector<std::string> marker_list_thread, int id_thread, int start_index){
-                        computePartMarker(marker_list_thread,id_thread,start_index,SM_tables,Angle_tables);
+                    auto multithreading_over_markers = [&](std::vector<std::string> marker_list_thread, int id_thread, int start_index) {
+                        computePartMarker(marker_list_thread,id_thread,start_index);
                         return true;
                     };
                     
@@ -733,8 +739,8 @@ template <typename MeshType>
 
             // Divide the shading mask by the corresponding value of the angle table
             // If an angle combination has not been selected, suppose there is no shadow
-            std::transform(SM_tables.begin(),SM_tables.end(),Angle_tables.begin(),SM_tables.begin(),std::divides<double>());  
-            computeSaveMasks(SM_tables);      
+            std::transform(SM_tables_Alpha.begin(),SM_tables_Alpha.end(),Angle_tables_Alpha.begin(),SM_tables_Alpha.begin(),std::divides<double>());  
+            computeSaveMasks(SM_tables_Alpha);      
     }
 
 
@@ -934,7 +940,8 @@ template <typename MeshType>
         if ( j_["/Buildings"_json_pointer].contains("fileFaces") ||  j_["/Buildings"_json_pointer].contains("aggregatedMarkers") ) 
         {            
             if (M_mthreadtype == "ray")     { computeMasksSubPartRays(); }
-            if (M_mthreadtype == "markers") { computeMasksSubPartMarkers(); }
+            //if (M_mthreadtype == "markers") { computeMasksSubPartMarkers(); }
+            if (M_mthreadtype == "markers") { computeMasksSubPartMarkersTest(); }
         }
     }
 
