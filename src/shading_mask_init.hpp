@@ -19,7 +19,7 @@ ShadingMask<MeshType>::ShadingMask(int num,mesh_ptrtype mesh, nl::json const& sp
     // Fix the size of the shading mask matrix
     fixAzimuthAltitudeDiscretization(intervalsAzimuth, intervalsAltitude);
     // Create the random number generators
-    makeRandomNumberGeneratorsSeed();
+    makeRandomNumberGeneratorsSeed(true,false);
     // Create and store the directions of the M_Nrays
     makeCreateM_NraysMatrix(intervalsAzimuth,intervalsAltitude);
     // For each building, save the surface mesh and build the corresponding BVH tree for ray search
@@ -61,7 +61,7 @@ ShadingMask<MeshType>::fixAzimuthAltitudeDiscretization(int intervalsAzimuth, in
 
 template <typename MeshType>
 void
-ShadingMask<MeshType>::makeRandomNumberGeneratorsSeed()
+ShadingMask<MeshType>::makeRandomNumberGeneratorsSeed(bool QCTRL_SAVE_SEED,bool QCTRL_LOAD_SEED)
     {
         // Create the random number generators
         std::random_device rd;
@@ -74,8 +74,45 @@ ShadingMask<MeshType>::makeRandomNumberGeneratorsSeed()
         gen2.seed(std::chrono::high_resolution_clock::now()
                             .time_since_epoch()
                             .count());
+
+
+
+        //BEGIN::SAVE AND LOAD SEED
+        // save state
+        if (QCTRL_SAVE_SEED)
+        {
+            std::cout<<"[SPECX INFO] : Saving seed...\n";
+            {
+                std::string SeedFolder = (boost::filesystem::path(Environment::appRepository())/("seed")).string();
+                if (!boost::filesystem::exists(SeedFolder))
+                boost::filesystem::create_directory(SeedFolder);
+                std::ofstream fout1(SeedFolder+"/seed_gen.dat");
+                fout1 << gen;
+                fout1.close();
+                std::ofstream fout2(SeedFolder+"/seed_gen2.dat");
+                fout2 << gen2;
+                fout2.close();
+            }
+        }
+
+        if (QCTRL_LOAD_SEED)
+        {
+            std::cout<<"[SPECX INFO] : Loading seed...\n";
+            {
+                std::string SeedFolder = (boost::filesystem::path(Environment::appRepository())/("seed")).string();
+                std::ifstream fin1(SeedFolder+"/seed_gen.dat");
+                fin1 >> gen;
+                fin1.close();
+                std::ifstream fin2(SeedFolder+"/seed_gen2.dat");
+                fin2 >> gen2;
+                fin2.close();
+            }
+        }
+
         M_gen=gen;
         M_gen2=gen2;
+
+    //END::SAVE AND LOAD SEED
     }
 
 

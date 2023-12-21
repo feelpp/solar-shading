@@ -44,13 +44,20 @@ class ShadingMask
 public:
     using value_type = double;
 
+
     ShadingMask(int num,mesh_ptrtype mesh, nl::json const& specs, int intervalsAzimuth=72, int intervalsAltitude=10 );
 
     auto commonComputePart(int NumOption,matrix_node_type const& element_points,int n_rays_thread, int id_thread);
+
+     auto commonComputePartOld(int NumOption,matrix_node_type const& element_points,int n_rays_thread, int id_thread);
     //std::pair<const Eigen::MatrixXd,const Eigen::MatrixXd> commonComputePart(int NumOption,matrix_node_type const& element_points,int n_rays_thread, int id_thread);
 
+    bool computePartMarker(std::vector<std::string> marker_list_thread, int id_thread, int start_index,std::vector<double> SM_tables,std::vector<double> Angle_tables);
+    void computeMasksSubPartMarkersTest();
+
+
     // Create the random number generators
-    void makeRandomNumberGeneratorsSeed();
+    void makeRandomNumberGeneratorsSeed(bool QCTRL_SAVE_SEED,bool QCTRL_LOAD_SEED);
 
      // Create and store the directions of the M_Nrays
     void makeCreateM_NraysMatrix(int intervalsAzimuth, int intervalsAltitude);
@@ -91,7 +98,7 @@ public:
         void computeMasksSubPartRays();
         void computeMasksSubPartMarkers();
 
-   
+    void computeThread(Eigen::MatrixXd SM_table_marker,Eigen::MatrixXd Angle_table_marker,matrix_node_type const& element_points);
 
     // Save Compute shading masks
     void computeSaveMasks(std::vector<double> SM_tables);
@@ -99,7 +106,7 @@ public:
     // Compute shading masks for one building only
     void computeMasksOneBuilding(std::string building_name);
 
-    void computeMasksOneBuilding2(std::string building_name);
+    void computeMasksOneBuildingOld(std::string building_name);
 
     // Save the shading mask table to a CSV file
     void saveShadingMask(std::string building_name, std::string marker_name, const Eigen::Ref<const Eigen::MatrixXd>& M);
