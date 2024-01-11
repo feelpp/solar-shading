@@ -16,6 +16,8 @@ ShadingMask<MeshType>::ShadingMask(int num,mesh_ptrtype mesh, nl::json const& sp
     M_mthreadtype = specs["Multithread"]["type"].get<std::string>();
     M_saveMasks = specs["SaveMasks"];
 
+    QModeSpecxON=false;
+
     // Fix the size of the shading mask matrix
     fixAzimuthAltitudeDiscretization(intervalsAzimuth, intervalsAltitude);
     // Create the random number generators
@@ -80,7 +82,7 @@ ShadingMask<MeshType>::makeRandomNumberGeneratorsSeed(bool QCTRL_SAVE_SEED,bool 
         //BEGIN::SAVE AND LOAD SEED
          if (QCTRL_SAVE_SEED)
         {
-            std::cout<<"[SPECX INFO] : Saving seed...\n";
+            std::cout<<"[INFO] : Saving seed...\n";
             {
                 std::string SeedFolder = (std::filesystem::path(Environment::appRepository())/("seed")).string();
                 if (!std::filesystem::exists(SeedFolder))
@@ -96,7 +98,7 @@ ShadingMask<MeshType>::makeRandomNumberGeneratorsSeed(bool QCTRL_SAVE_SEED,bool 
 
         if (QCTRL_LOAD_SEED)
         {
-            std::cout<<"[SPECX INFO] : Loading seed...\n";
+            std::cout<<"[INFO] : Loading seed...\n";
             {
                 std::string SeedFolder = (std::filesystem::path(Environment::appRepository())/("seed")).string();
                 std::ifstream fin1(SeedFolder+"/seed_gen.dat");
@@ -467,14 +469,14 @@ ShadingMask<MeshType>::loadMeshData(mesh_ptrtype mesh, nl::json const& specs)
         // [INFO]: refactoring OK for this parts
         if constexpr( MeshType::nDim==MeshType::nRealDim )
         {
-            if (specs["/Buildings"_json_pointer].contains("list"))               { loadMeshDataSubPartList(mesh);   }
-            if (specs["/Buildings"_json_pointer].contains("fileVolumes"))        { loadMeshDataSubPartVolumes(mesh,2); }
+            if (specs["/Buildings"_json_pointer].contains("list"))               { std::cout << "\n[INFO: STEP1 >LOAD MESH LIST]" << std::endl;     loadMeshDataSubPartList(mesh);        }
+            if (specs["/Buildings"_json_pointer].contains("fileVolumes"))        { std::cout << "\n[INFO: STEP1 >LOAD MESH VOLUMES]" << std::endl;  loadMeshDataSubPartVolumes(mesh,2);  }
         }
         else
         {
-            if (specs["/Buildings"_json_pointer].contains("fileSurfaces"))       { loadMeshDataSubPartSurfacesFaces(mesh,1); } 
-            if (specs["/Buildings"_json_pointer].contains("fileFaces"))          { loadMeshDataSubPartSurfacesFaces(mesh,2); }
-            if (specs["/Buildings"_json_pointer].contains("aggregatedMarkers"))  { loadMeshDataSubPartMarkers(mesh);   }
+            if (specs["/Buildings"_json_pointer].contains("fileSurfaces"))       { std::cout << "\n[INFO: STEP1 >LOAD MESH SURFACES]" << std::endl;  loadMeshDataSubPartSurfacesFaces(mesh,1);  } 
+            if (specs["/Buildings"_json_pointer].contains("fileFaces"))          { std::cout << "\n[INFO: STEP1 >LOAD MESH FACES]" << std::endl;     loadMeshDataSubPartSurfacesFaces(mesh,2);  } 
+            if (specs["/Buildings"_json_pointer].contains("aggregatedMarkers"))  { std::cout << "\n[INFO: STEP1 >LOAD MESH AGGREGATE]" << std::endl; loadMeshDataSubPartMarkers(mesh);         }
         }
     }
 }

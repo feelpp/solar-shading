@@ -43,17 +43,15 @@ class ShadingMask
 
 public:
     using value_type = double;
+    bool QModeSpecxON;
 
 
     ShadingMask(int num,mesh_ptrtype mesh, nl::json const& specs, int intervalsAzimuth=72, int intervalsAltitude=10 );
 
-    auto commonComputePart(int NumOption,matrix_node_type const& element_points,int n_rays_thread, int id_thread);
-
-     auto commonComputePartOld(int NumOption,matrix_node_type const& element_points,int n_rays_thread, int id_thread);
-    //std::pair<const Eigen::MatrixXd,const Eigen::MatrixXd> commonComputePart(int NumOption,matrix_node_type const& element_points,int n_rays_thread, int id_thread);
+    auto commonComputePartCTRL(int NumOption,matrix_node_type const& element_points,int n_rays_thread, int id_thread);
 
     bool computePartMarker(std::vector<std::string> marker_list_thread, int id_thread, int start_index);
-    void computeMasksSubPartMarkersTest();
+
 
 
     // Create the random number generators
@@ -95,8 +93,7 @@ public:
     void computeMasksMaster();
         void computeMasksSubPartList();
         void computeMasksSubPartSurfaceVolumes(int numOp);
-        void computeMasksSubPartRays();
-        void computeMasksSubPartMarkers();
+        void computeMasksSubPartMarkersCTRL();
 
     void computeThread(Eigen::MatrixXd SM_table_marker,Eigen::MatrixXd Angle_table_marker,matrix_node_type const& element_points);
 
@@ -104,9 +101,9 @@ public:
     void computeSaveMasks(std::vector<double> SM_tables);
 
     // Compute shading masks for one building only
-    void computeMasksOneBuilding(std::string building_name);
+    void computeMasksOneBuildingCTRL(std::string building_name);
 
-    void computeMasksOneBuildingOld(std::string building_name);
+    //void computeMasksOneBuildingOld(std::string building_name);
 
     // Save the shading mask table to a CSV file
     void saveShadingMask(std::string building_name, std::string marker_name, const Eigen::Ref<const Eigen::MatrixXd>& M);
@@ -151,6 +148,8 @@ private:
 
     std::vector<double> SM_tables_Alpha;
     std::vector<double> Angle_tables_Alpha;
+
+    
 };
 } // namespace Feel
 

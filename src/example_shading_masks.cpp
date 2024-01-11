@@ -1,5 +1,16 @@
 #include <iostream>
 
+
+#include "SpDataAccessMode.hpp"
+#include "Utils/SpUtils.hpp"
+
+#include "Task/SpTask.hpp"
+#include "Legacy/SpRuntime.hpp"
+#include "Utils/SpTimer.hpp"
+#include "Utils/small_vector.hpp"
+
+
+
 #include <shading_mask.hpp>
 #include <feel/feelcore/ptreetools.hpp>
 #include <feel/feelcore/utility.hpp>
@@ -41,13 +52,10 @@ int main(int argc, char **argv)
     toc("Mesh loaded");
 
     // Compute the shading masks
-    //ShadingMask<mesh_t> sm(mesh,json_buildings);
     ShadingMask<mesh_t> sm(1,mesh,json_buildings);
 
-
-    //sm.computeMasks();
+    sm.QModeSpecxON=true;
     sm.computeMasksMaster(); //In fact
-
 
     std::cout << fmt::format("End Shading mask example\n");
     return 0;

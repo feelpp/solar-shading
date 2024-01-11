@@ -147,7 +147,8 @@
 			"core": "cpp",
 			"specialfunctions": "cpp",
 			"splines": "cpp",
-			"alignedvector3": "cpp"
+			"alignedvector3": "cpp",
+			"*.txx": "cpp"
 		}
 	}
 }
