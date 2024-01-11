@@ -115,9 +115,7 @@ namespace Feel
 
             //if (NumOption==1) { Result=std::make_pair(SM_table,Angle_table);  }
             //if (NumOption==2) { Result=std::make_pair(SM_vector,Angle_vector); }
-
         return Result; 
-        //return std::make_pair(SM_vector,Angle_vector);
     }
 
 
@@ -161,30 +159,28 @@ namespace Feel
 
 
                 if (QModeSpecxON) {
+                    //BEGIN::THREAD PART SPECX
                     SpRuntime runtime(M_Nthreads);
-                    SpTimer timerTaskCompute;
                     for(int t= 0; t < M_Nthreads; ++t){ 
                         runtime.task(
                             SpRead(t),
                                 [&](const int & k) -> bool {
-                                    auto values_Pair=rays_from_element(NumOption,element_points,n_rays_thread[k],k);
+                                    //auto values_Pair=rays_from_element(NumOption,element_points,n_rays_thread[k],k);
+                                    auto values_Pair=commonComputePartCTRL(NumOption,element_points,n_rays_thread[k],k);
                                     SM_table_marker +=values_Pair.first;
                                     Angle_table_marker += values_Pair.second;
                                 return true;
                                 }
                                 ).setTaskName("Op("+std::to_string(t)+")");
-                                usleep(10);
+                                usleep(0);
                             std::atomic_int counter(0);
                     }
                     runtime.waitAllTasks();
                     runtime.stopAllThreads();
-                    timerTaskCompute.stop();
-                    auto timeSpecxTaskCompute=timerTaskCompute.getElapsed();
-                
+                    //END::THREAD PART SPECX
                 }
                 else
                 {
-                    // Used to store the future results
                     //BEGIN::THREAD PART STD::ASYNC
                     std::vector< std::future< std::pair<Eigen::MatrixXd, Eigen::MatrixXd > > > futures;
                     for(int t = 0; t < M_Nthreads; ++t){
@@ -212,6 +208,27 @@ namespace Feel
     }
 
 
+template <typename MeshType>
+    void 
+    ShadingMask<MeshType>::saveMetadataInfoPart()
+    {
+        //BEGIN:SAVE META INFO
+        auto timeComputation = toc("Shading masks computed using raytracing");
+        M_metadataJson["shadingMask"]["Timer"]["MaskComputation"] = timeComputation;
+        M_metadataJson["shadingMask"]["Nthreads"] = M_Nthreads;
+        M_metadataJson["shadingMask"]["NraysPerElement"] = M_Nrays;
+
+        auto end_computation = std::chrono::system_clock::now();
+        std::time_t end_time = std::chrono::system_clock::to_time_t(end_computation);
+        M_metadataJson["shadingMask"]["Timestamp"]["End"] = strtok(std::ctime(&end_time),"\n");
+
+        auto timeAllDuration = toc("Time All Duration");
+        M_metadataJson["shadingMask"]["Timestamp"]["Time All Duration"] = timeAllDuration;  
+
+        saveMetadata(); 
+        std::cout<<"[INFO: Metadata Saved]\n";
+        //END:SAVE META INFO
+    }
 
 
 
@@ -236,10 +253,7 @@ template <typename MeshType>
         }
         
         //BEGIN:SAVE META INFO
-        auto timeComputation = toc("Shading masks computed using raytracing");
-        M_metadataJson["shadingMask"]["Timer"]["MaskComputation"] = timeComputation;
-        M_metadataJson["shadingMask"]["Nthreads"] = M_Nthreads;
-        M_metadataJson["shadingMask"]["NraysPerElement"] = M_Nrays;
+        saveMetadataInfoPart();
         //END:SAVE META INFO
 
     }
@@ -266,19 +280,36 @@ template <typename MeshType>
         std::cout << "[computeMasksSubPartSurfaceVolumes] : nbObjects="<<nbObjects<< std::endl;
         std::cout << "[computeMasksSubPartSurfaceVolumes] : M_Nthreads =" <<M_Nthreads<< std::endl;
 
-
-        for(int idx = 0 ; idx <nbObjects; ++idx)
+        /**
+        if (QModeSpecxON) {
+            SpRuntime runtime(M_Nthreads);
+            for(int idx = 0 ; idx <nbObjects; ++idx)
+            {
+                runtime.task(SpRead(idx),
+                        [&](const int & k) -> bool {
+                            if ((numOp==2)|| (numOp==3)) { buildingName=listObjects[k]; }
+                            computeMasksOneBuildingCTRL(buildingName);
+                            return true;
+                        }
+                ).setTaskName("Op("+std::to_string(idx)+")");
+                usleep(10);
+                std::atomic_int counter(0);
+            }
+            runtime.waitAllTasks();
+            runtime.stopAllThreads();
+        }
+        else 
+        */
         {
-            if ((numOp==2)|| (numOp==3)) { buildingName=listObjects[idx];   }
-            //computeMasksOneBuildingOld(buildingName);
-            computeMasksOneBuildingCTRL(buildingName);
+            for(int idx = 0 ; idx <nbObjects; ++idx)
+            {
+                if ((numOp==2)|| (numOp==3)) { buildingName=listObjects[idx];   }
+                computeMasksOneBuildingCTRL(buildingName);
+            }
         }
         
         //BEGIN:SAVE META INFO
-        auto timeComputation = toc("Shading masks computed using raytracing");
-        M_metadataJson["shadingMask"]["Timer"]["MaskComputation"] = timeComputation;
-        M_metadataJson["shadingMask"]["Nthreads"] = M_Nthreads;
-        M_metadataJson["shadingMask"]["NraysPerElement"] = M_Nrays;
+        saveMetadataInfoPart();
         //END:SAVE META INFO
     }
 
@@ -442,8 +473,8 @@ template <typename MeshType>
                 }
 
                 if (QModeSpecxON) {
+                    //BEGIN::THREAD PART SPECX
                     SpRuntime runtime(M_Nthreads);
-                    SpTimer timerTaskCompute;
                     for(int t= 0; t < M_Nthreads; ++t){ 
                         runtime.task(
                             SpRead(t),
@@ -452,28 +483,26 @@ template <typename MeshType>
                                 return true;
                                 }
                                 ).setTaskName("Op("+std::to_string(t)+")");
-                                usleep(10);
-                            std::atomic_int counter(0);
+                                usleep(1);
+                                std::atomic_int counter(0);
                     }
                     runtime.waitAllTasks();
                     runtime.stopAllThreads();
-                    timerTaskCompute.stop();
-                    auto timeSpecxTaskCompute=timerTaskCompute.getElapsed();
-                    std::cout<<"[INFO] : Save Generate Dot Specx.\n"; 
-                    runtime.generateDot("RuntimeCompute.dot",true);
-                    runtime.generateTrace("RuntimeCompute.svg");
+                    if (QSaveSpecxDotON) {
+                        std::cout<<"[INFO] : Save Generate Dot Specx.\n"; 
+                        runtime.generateDot("RuntimeCompute.dot",true);
+                        runtime.generateTrace("RuntimeCompute.svg");
+                    }
+                    //END::THREAD PART SPECX
                 }
                 else
                 {
                     //BEGIN::THREAD PART STD::ASYNC
-                        // Used to store the future results
                         std::vector< std::future< bool > > futures;
                         for(int t= 0; t < M_Nthreads; ++t){ 
                             futures.emplace_back(std::async(std::launch::async, multithreading_over_markers, marker_thread_lists[t], t, start_index_list[t]));
                         }
-                        for( auto& f : futures){
-                            auto a =  f.get();  // Wait for the result to be ready
-                        }
+                        for( auto& f : futures){ auto a =  f.get(); }
                      //END::THREAD PART
                 }
 
@@ -482,6 +511,8 @@ template <typename MeshType>
                 M_metadataJson["shadingMask"]["Timer"]["MaskComputation"] = timeComputation;
                 M_metadataJson["shadingMask"]["Nthreads"] = M_Nthreads;
                 M_metadataJson["shadingMask"]["NraysPerElement"] = M_Nrays;
+
+
 
             // Divide the shading mask by the corresponding value of the angle table
             // If an angle combination has not been selected, suppose there is no shadow
@@ -503,7 +534,7 @@ template <typename MeshType>
         if ( j_["/Buildings"_json_pointer].contains("fileSurfaces") ) { std::cout << "\n[INFO: STEP2 >COMPUTE MASKS MASTER SURFACES]" << std::endl; computeMasksSubPartSurfaceVolumes(2);  }
         if ( j_["/Buildings"_json_pointer].contains("fileFaces") ||  j_["/Buildings"_json_pointer].contains("aggregatedMarkers") ) 
         {            
-             if (M_mthreadtype == "markers") { std::cout << "[\nINFO:STEP2 >COMPUTE MASKS MASTER AGGREGATE MARKERS]" << std::endl; computeMasksSubPartMarkersCTRL();  }
+             if (M_mthreadtype == "markers") { std::cout << "\n[INFO:STEP2 >COMPUTE MASKS MASTER AGGREGATE MARKERS]" << std::endl; computeMasksSubPartMarkersCTRL();  }
         }
     }
 
@@ -539,9 +570,13 @@ template <typename MeshType>
         auto end_computation = std::chrono::system_clock::now();
         std::time_t end_time = std::chrono::system_clock::to_time_t(end_computation);
         M_metadataJson["shadingMask"]["Timestamp"]["End"] = strtok(std::ctime(&end_time),"\n");
+        std::time_t end_time_all = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+        
+        auto timeAllDuration = toc("Time All Duration");
+        M_metadataJson["shadingMask"]["Timestamp"]["Time All Duration"] = timeAllDuration;  
+
         saveMetadata(); 
+        std::cout<<"[INFO: Metadata Saved]\n";
     }
-
-
 
 }

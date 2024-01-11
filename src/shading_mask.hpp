@@ -44,6 +44,7 @@ class ShadingMask
 public:
     using value_type = double;
     bool QModeSpecxON;
+    bool QSaveSpecxDotON;
 
 
     ShadingMask(int num,mesh_ptrtype mesh, nl::json const& specs, int intervalsAzimuth=72, int intervalsAltitude=10 );
@@ -111,6 +112,8 @@ public:
     // Save the shading mask table metadata to json
     void saveMetadata();
 
+    void saveMetadataInfoPart();
+
     
 
 private:
@@ -148,6 +151,8 @@ private:
 
     std::vector<double> SM_tables_Alpha;
     std::vector<double> Angle_tables_Alpha;
+
+    std::time_t beginning_time;
 
     
 };

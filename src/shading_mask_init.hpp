@@ -5,8 +5,9 @@ namespace Feel
 template <typename MeshType>
 ShadingMask<MeshType>::ShadingMask(int num,mesh_ptrtype mesh, nl::json const& specs, int intervalsAzimuth, int intervalsAltitude )
 {
+    tic();
     auto start_computation = std::chrono::system_clock::now();
-    std::time_t beginning_time = std::chrono::system_clock::to_time_t(start_computation);
+    beginning_time = std::chrono::system_clock::to_time_t(start_computation);
     M_metadataJson["shadingMask"]["Timestamp"]["Beginning"] = strtok(std::ctime(&beginning_time),"\n");;
 
     // Read the number of rays per triangle and the number of threads
@@ -17,6 +18,7 @@ ShadingMask<MeshType>::ShadingMask(int num,mesh_ptrtype mesh, nl::json const& sp
     M_saveMasks = specs["SaveMasks"];
 
     QModeSpecxON=false;
+    QSaveSpecxDotON=false;
 
     // Fix the size of the shading mask matrix
     fixAzimuthAltitudeDiscretization(intervalsAzimuth, intervalsAltitude);
