@@ -20,6 +20,16 @@ auto GetListNameObjects(std::string ChName)
 
 namespace Feel {
 
+/*
+class TaskDispach
+{
+    TaskDispach(void);
+    public:
+        bool numMode;
+};
+*/
+
+
 template <typename MeshType>
 class ShadingMask
 {
@@ -45,6 +55,7 @@ public:
     using value_type = double;
     bool QModeSpecxON;
     bool QSaveSpecxDotON;
+    bool QSaveControlFiles;
 
 
     ShadingMask(int num,mesh_ptrtype mesh, nl::json const& specs, int intervalsAzimuth=72, int intervalsAltitude=10 );
@@ -107,14 +118,17 @@ public:
     //void computeMasksOneBuildingOld(std::string building_name);
 
     // Save the shading mask table to a CSV file
-    void saveShadingMask(std::string building_name, std::string marker_name, const Eigen::Ref<const Eigen::MatrixXd>& M);
+    void saveShadingMask(std::string prefix_name,std::string building_name, std::string marker_name, const Eigen::Ref<const Eigen::MatrixXd>& M);
 
     // Save the shading mask table metadata to json
-    void saveMetadata();
+    void saveMetadata(std::string name);
 
     void saveMetadataInfoPart();
 
-    
+    void testComparisonAllMasksValidation();
+    bool testComparisonMaskValidationLevel1(std::string matrix_filename_NEW,std::string matrix_filename_CTRL);
+    bool testComparisonMaskValidationLevel2(std::string matrix_filename_NEW,std::string matrix_filename_CTRL);
+
 
 private:
     
@@ -162,3 +176,10 @@ private:
 #include<shading_mask_geometry.hpp>
 #include<shading_mask_compute.hpp>
 #include<shading_mask_save.hpp>
+#include<shading_mask_control.hpp>
+
+
+
+
+
+

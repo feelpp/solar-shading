@@ -203,7 +203,13 @@ namespace Feel
 
             // Shading mask value 0 means that the surface is not shadowed, value 1 it is fully shadowed
             // Save the shading mask table to a csv file
-            if(M_saveMasks) saveShadingMask(building_name,marker,shadingMatrix.matrix());
+            if (M_saveMasks) 
+            { 
+                saveShadingMask("SM_Matrix_",building_name,marker,shadingMatrix.matrix());
+                if (QSaveControlFiles) { 
+                    saveShadingMask("SM_Matrix_CTRL_",building_name,marker,shadingMatrix.matrix());
+                 }              
+            }
         }
     }
 
@@ -225,7 +231,7 @@ template <typename MeshType>
         auto timeAllDuration = toc("Time All Duration");
         M_metadataJson["shadingMask"]["Timestamp"]["Time All Duration"] = timeAllDuration;  
 
-        saveMetadata(); 
+        saveMetadata("shadingmask_metadata_"+std::to_string(M_Nthreads)+"_"+std::to_string(M_Nrays)); 
         std::cout<<"[INFO: Metadata Saved]\n";
         //END:SAVE META INFO
     }
@@ -480,6 +486,7 @@ template <typename MeshType>
                             SpRead(t),
                                 [&](const int & k) -> bool {
                                     multithreading_over_markers(marker_thread_lists[k],k,start_index_list[k]);
+                                    //computePartMarker(marker_thread_lists[k],k,start_index_list[k]);
                                 return true;
                                 }
                                 ).setTaskName("Op("+std::to_string(t)+")");
@@ -501,6 +508,7 @@ template <typename MeshType>
                         std::vector< std::future< bool > > futures;
                         for(int t= 0; t < M_Nthreads; ++t){ 
                             futures.emplace_back(std::async(std::launch::async, multithreading_over_markers, marker_thread_lists[t], t, start_index_list[t]));
+                            //futures.emplace_back(std::async(std::launch::async,ShadingMask<MeshType>::computePartMarker, marker_thread_lists[t], t, start_index_list[t]));
                         }
                         for( auto& f : futures){ auto a =  f.get(); }
                      //END::THREAD PART
@@ -561,7 +569,8 @@ template <typename MeshType>
                 if (numOp==2) { building_name = M_listFaceMarkers[i]; }
                 auto initial_index_SM = SM_tables.begin() +  i * matrixSize;
                 auto shadingMatrix = Eigen::Map<Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor>>(&(*initial_index_SM),M_azimuthSize, M_altitudeSize);   
-                saveShadingMask(building_name,marker,shadingMatrix.matrix());
+                saveShadingMask("SM_Matrix_",building_name,marker,shadingMatrix.matrix());
+                if (QSaveControlFiles) { saveShadingMask("SM_Matrix_CTRL_",building_name,marker,shadingMatrix.matrix()); }
             }
   
             auto timeCSVsaving = toc("Mask CSV saved");
@@ -575,7 +584,7 @@ template <typename MeshType>
         auto timeAllDuration = toc("Time All Duration");
         M_metadataJson["shadingMask"]["Timestamp"]["Time All Duration"] = timeAllDuration;  
 
-        saveMetadata(); 
+        saveMetadata("shadingmask_metadata_"+std::to_string(M_Nthreads)+"_"+std::to_string(M_Nrays)); 
         std::cout<<"[INFO: Metadata Saved]\n";
     }
 

@@ -19,6 +19,7 @@ ShadingMask<MeshType>::ShadingMask(int num,mesh_ptrtype mesh, nl::json const& sp
 
     QModeSpecxON=false;
     QSaveSpecxDotON=false;
+    QSaveControlFiles=false;
 
     // Fix the size of the shading mask matrix
     fixAzimuthAltitudeDiscretization(intervalsAzimuth, intervalsAltitude);
