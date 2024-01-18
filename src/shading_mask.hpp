@@ -17,17 +17,72 @@ auto GetListNameObjects(std::string ChName)
 }
 
 
+//BEGIN::FISRT PART OF TASKDISPACH MULTITHREAD
+class MyTaskDispach
+{
+    public:
+        int numTypeThread;
+        int nbThread;
+        bool QSaveSpecxGenerateTrace;
+        template<class Function>
+            Function run(Function myFunc);
+        MyTaskDispach(void);
+};
+
+
+MyTaskDispach::MyTaskDispach() { 
+    numTypeThread=2; 
+    nbThread=6;
+    QSaveSpecxGenerateTrace=true;
+}
+
+template<class Function>
+Function MyTaskDispach::run(Function myFunc)
+{
+   
+    if (numTypeThread==1) //with std::async
+    {
+        std::vector< std::future< bool > > futures;
+        for(int k= 0; k < nbThread; ++k){ 
+            auto const& idk = k;
+            std::cout<<"Call num Thread futures="<<k<<"\n";
+            futures.emplace_back(std::async(std::launch::async,myFunc,idk));
+        }
+        for( auto& r : futures){ auto a =  r.get(); }
+        std::cout<<"\n";
+    }
+
+    if (numTypeThread==2) //With Specx
+    {
+        SpRuntime runtime(nbThread);  
+        int nbThread= runtime.getNbThreads();
+        int iValue=0;
+        for(int k= 0; k < nbThread; ++k)
+        { 
+            auto const& idk = k;
+            runtime.task(SpRead(idk),myFunc).setTaskName("Op("+std::to_string(k)+")");
+            usleep(1);
+            std::atomic_int counter(0);
+        }
+        runtime.waitAllTasks();
+        runtime.stopAllThreads();
+        if (QSaveSpecxGenerateTrace)
+        {
+            runtime.generateDot("TestClassSpecxWithOneParam.dot", true);
+            runtime.generateTrace("TestClassSpecxWithOneParam.svg");  
+        }
+        std::cout<<"\n";
+    }
+    return myFunc;
+}
+
+//END::FISRT PART OF TASKDISPACH MULTITHREAD
+
+//SECOND PART OF TASKDISPACH MULTITHREAD
+//...
+
 
 namespace Feel {
-
-/*
-class TaskDispach
-{
-    TaskDispach(void);
-    public:
-        bool numMode;
-};
-*/
 
 
 template <typename MeshType>

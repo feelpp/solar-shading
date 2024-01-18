@@ -445,6 +445,7 @@ template <typename MeshType>
                         computePartMarker(marker_list_thread,id_thread,start_index);
                         return true;
                     };
+
                     
                     tic();
                     // Store the index of M_listFaceMarkers where each thread will stop its computations
@@ -513,6 +514,10 @@ template <typename MeshType>
                         for( auto& f : futures){ auto a =  f.get(); }
                      //END::THREAD PART
                 }
+
+                //TEST THIS PART
+                MyTaskDispach Fg1; 
+                //Fg1.numTypeThread=1; Fg1.nbThread=M_Nthreads;  Fg1.run(MyAlgo000);
 
 
                 auto timeComputation = toc("Shading masks computed using raytracing");
