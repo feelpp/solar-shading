@@ -54,8 +54,9 @@ int main(int argc, char **argv)
     // Compute the shading masks
     ShadingMask<mesh_t> sm(1,mesh,json_buildings);
 
-    sm.QModeSpecxON=false; sm.QSaveSpecxDotON=false;
-    sm.QModeSpecxON=true;
+    sm.numTypeThread=2; //1: Mode std::async.  2: Mode Specx
+    sm.QSaveTypeThreadDotON=false;
+
     sm.computeMasksMaster(); //In fact
 
     std::cout << fmt::format("End Shading mask example\n");

@@ -23,7 +23,7 @@ class MyTaskDispach
     public:
         int numTypeThread;
         int nbThread;
-        bool QSaveSpecxGenerateTrace;
+        bool QSaveGenerateTrace;
         template<class Function>
             Function run(Function myFunc);
         MyTaskDispach(void);
@@ -33,7 +33,7 @@ class MyTaskDispach
 MyTaskDispach::MyTaskDispach() { 
     numTypeThread=2; 
     nbThread=6;
-    QSaveSpecxGenerateTrace=true;
+    QSaveGenerateTrace=false;
 }
 
 template<class Function>
@@ -66,7 +66,7 @@ Function MyTaskDispach::run(Function myFunc)
         }
         runtime.waitAllTasks();
         runtime.stopAllThreads();
-        if (QSaveSpecxGenerateTrace)
+        if (QSaveGenerateTrace)
         {
             runtime.generateDot("TestClassSpecxWithOneParam.dot", true);
             runtime.generateTrace("TestClassSpecxWithOneParam.svg");  
@@ -108,9 +108,9 @@ class ShadingMask
 
 public:
     using value_type = double;
-    bool QModeSpecxON;
-    bool QSaveSpecxDotON;
+    bool QSaveTypeThreadDotON;
     bool QSaveControlFiles;
+    int  numTypeThread;
 
 
     ShadingMask(int num,mesh_ptrtype mesh, nl::json const& specs, int intervalsAzimuth=72, int intervalsAltitude=10 );

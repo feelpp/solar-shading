@@ -17,9 +17,9 @@ ShadingMask<MeshType>::ShadingMask(int num,mesh_ptrtype mesh, nl::json const& sp
     M_mthreadtype = specs["Multithread"]["type"].get<std::string>();
     M_saveMasks = specs["SaveMasks"];
 
-    QModeSpecxON=false;
-    QSaveSpecxDotON=false;
+    QSaveTypeThreadDotON=false;
     QSaveControlFiles=false;
+    numTypeThread=1; //1: Mode std::async.  2: Mode Specx
 
     // Fix the size of the shading mask matrix
     fixAzimuthAltitudeDiscretization(intervalsAzimuth, intervalsAltitude);

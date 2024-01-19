@@ -158,7 +158,7 @@ namespace Feel
                 matrix_node_type const& element_points=el.second.vertices();
 
 
-                if (QModeSpecxON) {
+                if (numTypeThread==2) {
                     //BEGIN::THREAD PART SPECX
                     SpRuntime runtime(M_Nthreads);
                     for(int t= 0; t < M_Nthreads; ++t){ 
@@ -287,7 +287,7 @@ template <typename MeshType>
         std::cout << "[computeMasksSubPartSurfaceVolumes] : M_Nthreads =" <<M_Nthreads<< std::endl;
 
         /**
-        if (QModeSpecxON) {
+        if (numTypeThread==2) {
             SpRuntime runtime(M_Nthreads);
             for(int idx = 0 ; idx <nbObjects; ++idx)
             {
@@ -479,6 +479,7 @@ template <typename MeshType>
                     start_index_list[t]=n;
                 }
 
+                /**
                 if (QModeSpecxON) {
                     //BEGIN::THREAD PART SPECX
                     SpRuntime runtime(M_Nthreads);
@@ -514,10 +515,19 @@ template <typename MeshType>
                         for( auto& f : futures){ auto a =  f.get(); }
                      //END::THREAD PART
                 }
+                */
+
 
                 //TEST THIS PART
+                auto MyAlgo000=[&](const int& k) {  
+                    multithreading_over_markers(marker_thread_lists[k],k,start_index_list[k]);
+                return true;};
+
                 MyTaskDispach Fg1; 
-                //Fg1.numTypeThread=1; Fg1.nbThread=M_Nthreads;  Fg1.run(MyAlgo000);
+                Fg1.numTypeThread=numTypeThread; 
+                Fg1.QSaveGenerateTrace=QSaveTypeThreadDotON;
+                Fg1.nbThread=M_Nthreads;  
+                Fg1.run(MyAlgo000);
 
 
                 auto timeComputation = toc("Shading masks computed using raytracing");
@@ -539,7 +549,7 @@ template <typename MeshType>
     void 
     ShadingMask<MeshType>::computeMasksMaster()
     {
-        if (QModeSpecxON) { std::cout<<"\n[INFO] : Resolution with Specx...\n"; }
+        if (numTypeThread==2) { std::cout<<"\n[INFO] : Resolution with Specx...\n"; }
         else { std::cout<<"\n[INFO] : Resolution with std::async...\n"; }
 
         if ( j_["/Buildings"_json_pointer].contains("list") )         { std::cout << "\n[INFO: STEP2 >COMPUTE MASKS MASTER LIST]" << std::endl;     computeMasksSubPartList();  }
