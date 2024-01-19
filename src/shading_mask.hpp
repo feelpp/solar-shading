@@ -21,9 +21,12 @@ auto GetListNameObjects(std::string ChName)
 class MyTaskDispach
 {
     public:
-        int numTypeThread;
-        int nbThread;
-        bool QSaveGenerateTrace;
+        int numTypeTh;
+        int nbTh;
+        bool QSave;
+        std::string FileName;
+        void init(int numType,int nbThread,bool QsaveInfo);
+        void setFileName(std::string s);
         template<class Function>
             Function run(Function myFunc);
         MyTaskDispach(void);
@@ -31,19 +34,30 @@ class MyTaskDispach
 
 
 MyTaskDispach::MyTaskDispach() { 
-    numTypeThread=2; 
-    nbThread=6;
-    QSaveGenerateTrace=false;
+    numTypeTh=2; 
+    nbTh=6;
+    QSave=false;
+    FileName="TestDispach";
+}
+
+void MyTaskDispach::init(int numType,int nbThread,bool QsaveInfo)
+{
+    numTypeTh=numType; nbTh=nbThread; QSave=QsaveInfo;
+}
+
+void MyTaskDispach::setFileName(std::string s)
+{
+    FileName=s;
 }
 
 template<class Function>
 Function MyTaskDispach::run(Function myFunc)
 {
    
-    if (numTypeThread==1) //with std::async
+    if (numTypeTh==1) //with std::async
     {
         std::vector< std::future< bool > > futures;
-        for(int k= 0; k < nbThread; ++k){ 
+        for(int k= 0; k < nbTh; ++k){ 
             auto const& idk = k;
             std::cout<<"Call num Thread futures="<<k<<"\n";
             futures.emplace_back(std::async(std::launch::async,myFunc,idk));
@@ -52,12 +66,12 @@ Function MyTaskDispach::run(Function myFunc)
         std::cout<<"\n";
     }
 
-    if (numTypeThread==2) //With Specx
+    if (numTypeTh==2) //With Specx
     {
-        SpRuntime runtime(nbThread);  
-        int nbThread= runtime.getNbThreads();
+        SpRuntime runtime(nbTh);  
+        nbTh= runtime.getNbThreads();
         int iValue=0;
-        for(int k= 0; k < nbThread; ++k)
+        for(int k= 0; k < nbTh; ++k)
         { 
             auto const& idk = k;
             runtime.task(SpRead(idk),myFunc).setTaskName("Op("+std::to_string(k)+")");
@@ -66,10 +80,10 @@ Function MyTaskDispach::run(Function myFunc)
         }
         runtime.waitAllTasks();
         runtime.stopAllThreads();
-        if (QSaveGenerateTrace)
+        if (QSave)
         {
-            runtime.generateDot("TestClassSpecxWithOneParam.dot", true);
-            runtime.generateTrace("TestClassSpecxWithOneParam.svg");  
+            runtime.generateDot(FileName+".dot", true);
+            runtime.generateTrace(FileName+".svg");   
         }
         std::cout<<"\n";
     }

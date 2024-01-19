@@ -524,9 +524,7 @@ template <typename MeshType>
                 return true;};
 
                 MyTaskDispach Fg1; 
-                Fg1.numTypeThread=numTypeThread; 
-                Fg1.QSaveGenerateTrace=QSaveTypeThreadDotON;
-                Fg1.nbThread=M_Nthreads;  
+                Fg1.init(numTypeThread,M_Nthreads,QSaveTypeThreadDotON);
                 Fg1.run(MyAlgo000);
 
 
