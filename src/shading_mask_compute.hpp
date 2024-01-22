@@ -158,44 +158,19 @@ namespace Feel
                 matrix_node_type const& element_points=el.second.vertices();
 
 
-                if (numTypeThread==2) {
-                    //BEGIN::THREAD PART SPECX
-                    SpRuntime runtime(M_Nthreads);
-                    for(int t= 0; t < M_Nthreads; ++t){ 
-                        runtime.task(
-                            SpRead(t),
-                                [&](const int & k) -> bool {
-                                    //auto values_Pair=rays_from_element(NumOption,element_points,n_rays_thread[k],k);
-                                    auto values_Pair=commonComputePartCTRL(NumOption,element_points,n_rays_thread[k],k);
-                                    SM_table_marker +=values_Pair.first;
-                                    Angle_table_marker += values_Pair.second;
-                                return true;
-                                }
-                                ).setTaskName("Op("+std::to_string(t)+")");
-                                usleep(0);
-                            std::atomic_int counter(0);
-                    }
-                    runtime.waitAllTasks();
-                    runtime.stopAllThreads();
-                    //END::THREAD PART SPECX
-                }
-                else
-                {
-                    //BEGIN::THREAD PART STD::ASYNC
-                    std::vector< std::future< std::pair<Eigen::MatrixXd, Eigen::MatrixXd > > > futures;
-                    for(int t = 0; t < M_Nthreads; ++t){
-                        futures.emplace_back( std::async(std::launch::async,rays_from_element,NumOption,element_points,n_rays_thread[t],t));
-                    }
+            //BEGIN: TaskDispach part
+                auto MyAlgo000=[&](const int& k) {  
+                    auto values_Pair=commonComputePartCTRL(NumOption,element_points,n_rays_thread[k],k);
+                    SM_table_marker +=values_Pair.first;
+                    Angle_table_marker += values_Pair.second;
+                return true;};
 
-                    for( auto& f : futures){
-                        // Wait for the result to be ready
-                        auto two_tables =  f.get();
-                        // Add the tables obtained in threads
-                        SM_table_marker +=two_tables.first;
-                        Angle_table_marker += two_tables.second;
-                    }
-                    //END::THREAD PART STD::ASYNC
-                }
+                MyTaskDispach Fg1; 
+                Fg1.init(numTypeThread,M_Nthreads,QSaveTypeThreadDotON);
+                Fg1.run(MyAlgo000);
+            //END: TaskDispach part
+
+
             }
             // Divide the shading mask by the corresponding value of the angle table
             // If an angle combination has not been selected, suppose there is no shadow
@@ -479,46 +454,7 @@ template <typename MeshType>
                     start_index_list[t]=n;
                 }
 
-                /**
-                if (QModeSpecxON) {
-                    //BEGIN::THREAD PART SPECX
-                    SpRuntime runtime(M_Nthreads);
-                    for(int t= 0; t < M_Nthreads; ++t){ 
-                        runtime.task(
-                            SpRead(t),
-                                [&](const int & k) -> bool {
-                                    multithreading_over_markers(marker_thread_lists[k],k,start_index_list[k]);
-                                    //computePartMarker(marker_thread_lists[k],k,start_index_list[k]);
-                                return true;
-                                }
-                                ).setTaskName("Op("+std::to_string(t)+")");
-                                usleep(1);
-                                std::atomic_int counter(0);
-                    }
-                    runtime.waitAllTasks();
-                    runtime.stopAllThreads();
-                    if (QSaveSpecxDotON) {
-                        std::cout<<"[INFO] : Save Generate Dot Specx.\n"; 
-                        runtime.generateDot("RuntimeCompute.dot",true);
-                        runtime.generateTrace("RuntimeCompute.svg");
-                    }
-                    //END::THREAD PART SPECX
-                }
-                else
-                {
-                    //BEGIN::THREAD PART STD::ASYNC
-                        std::vector< std::future< bool > > futures;
-                        for(int t= 0; t < M_Nthreads; ++t){ 
-                            futures.emplace_back(std::async(std::launch::async, multithreading_over_markers, marker_thread_lists[t], t, start_index_list[t]));
-                            //futures.emplace_back(std::async(std::launch::async,ShadingMask<MeshType>::computePartMarker, marker_thread_lists[t], t, start_index_list[t]));
-                        }
-                        for( auto& f : futures){ auto a =  f.get(); }
-                     //END::THREAD PART
-                }
-                */
-
-
-                //TEST THIS PART
+                //BEGIN: TaskDispach part
                 auto MyAlgo000=[&](const int& k) {  
                     multithreading_over_markers(marker_thread_lists[k],k,start_index_list[k]);
                 return true;};
@@ -526,6 +462,8 @@ template <typename MeshType>
                 MyTaskDispach Fg1; 
                 Fg1.init(numTypeThread,M_Nthreads,QSaveTypeThreadDotON);
                 Fg1.run(MyAlgo000);
+                //END: TaskDispach part
+
 
 
                 auto timeComputation = toc("Shading masks computed using raytracing");

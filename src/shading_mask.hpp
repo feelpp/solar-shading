@@ -53,17 +53,17 @@ void MyTaskDispach::setFileName(std::string s)
 template<class Function>
 Function MyTaskDispach::run(Function myFunc)
 {
-   
+    bool QInfo=false; 
     if (numTypeTh==1) //with std::async
     {
         std::vector< std::future< bool > > futures;
         for(int k= 0; k < nbTh; ++k){ 
             auto const& idk = k;
-            std::cout<<"Call num Thread futures="<<k<<"\n";
+            if (QInfo) { std::cout<<"Call num Thread futures="<<k<<"\n"; }
             futures.emplace_back(std::async(std::launch::async,myFunc,idk));
         }
         for( auto& r : futures){ auto a =  r.get(); }
-        std::cout<<"\n";
+        if (QInfo) { std::cout<<"\n"; }
     }
 
     if (numTypeTh==2) //With Specx
@@ -85,7 +85,7 @@ Function MyTaskDispach::run(Function myFunc)
             runtime.generateDot(FileName+".dot", true);
             runtime.generateTrace(FileName+".svg");   
         }
-        std::cout<<"\n";
+        if (QInfo) { std::cout<<"\n"; }
     }
     return myFunc;
 }
