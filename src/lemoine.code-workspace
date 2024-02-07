@@ -148,7 +148,8 @@
 			"specialfunctions": "cpp",
 			"splines": "cpp",
 			"alignedvector3": "cpp",
-			"*.txx": "cpp"
+			"*.txx": "cpp",
+			"timer": "cpp"
 		}
 	}
 }
