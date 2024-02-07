@@ -165,7 +165,7 @@ namespace Feel
                     Angle_table_marker += values_Pair.second;
                 return true;};
 
-                MyTaskDispach Fg1; 
+                TasksDispach Fg1; 
                 Fg1.init(numTypeThread,M_Nthreads,QSaveTypeThreadDotON);
                 Fg1.run(MyAlgo000);
             //END: TaskDispach part
@@ -459,7 +459,7 @@ template <typename MeshType>
                     multithreading_over_markers(marker_thread_lists[k],k,start_index_list[k]);
                 return true;};
 
-                MyTaskDispach Fg1; 
+                TasksDispach Fg1; 
                 Fg1.init(numTypeThread,M_Nthreads,QSaveTypeThreadDotON);
                 Fg1.run(MyAlgo000);
                 //END: TaskDispach part
