@@ -194,18 +194,16 @@ void TasksDispach::RunTaskInNumCPU(int idCPU,Function myFunc)
 template<class Function>
 void TasksDispach::RunTaskInNumCPUs(std::vector<int> NumCPU ,Function myFunc)
 {
-  int nbTh=NumCPU.size;
+  int nbTh=NumCPU.size();
   std::function<void()> func =myFunc;
-  pthread_t *thread_array;
-  thread_array = malloc(nbTh * sizeof(pthread_t));
-  pthread_attr_t *pta_array;
-  pta_array = malloc(nbTh * sizeof(pthread_attr_t));
+  pthread_t thread_array[nbTh];
+  pthread_attr_t pta_array[nbTh];
 
   for (int i = 0; i < nbTh; i++) {
     cpu_set_t cpuset;
     CPU_ZERO(&cpuset);
     CPU_SET(NumCPU[i], &cpuset);
-    std::cout<<"Num CPU="<< i <<" activated"<<std::endl;
+    std::cout<<"Num CPU="<< NumCPU[i] <<" activated"<<std::endl;
     pthread_attr_init(&pta_array[i]);
     pthread_attr_setaffinity_np(&pta_array[i], sizeof(cpuset), &cpuset);
     if (pthread_create(&thread_array[i],&pta_array[i],WorkerInNumCPU,&func)) { std::cerr << "Error in creating thread" << std::endl; }
@@ -213,10 +211,11 @@ void TasksDispach::RunTaskInNumCPUs(std::vector<int> NumCPU ,Function myFunc)
 
   for (int i = 0; i < nbTh; i++) {
         pthread_join(thread_array[i], NULL);
+  }
+
+  for (int i = 0; i < nbTh; i++) {
         pthread_attr_destroy(&pta_array[i]);
   }
-  free(thread_array); 
-  free(pta_array); 
 }
 
 
