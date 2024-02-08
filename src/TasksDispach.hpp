@@ -30,13 +30,17 @@
 
 
 
+//=======================================================================================================================
+//...
+//=======================================================================================================================
+
+
+
 void *WorkerInNumCPU(void *arg) {
     std::function<void()> *func = (std::function<void()>*)arg;
     (*func)();
     pthread_exit(NULL);
 }
-
-
 
 class TasksDispach
 {
@@ -96,6 +100,8 @@ class TasksDispach
         //BEGIN::Thread affinity part
         template<class Function>
             void RunTaskInNumCPU(int idCPU,Function myFunc);
+        template<class Function>
+            void RunTaskInNumCPUs(std::vector<int> NumCPU ,Function myFunc);
         //END::Thread affinity part
 
         template<class InputIterator, class Function>
@@ -175,10 +181,42 @@ void TasksDispach::RunTaskInNumCPU(int idCPU,Function myFunc)
   pthread_attr_t pta;
   pthread_attr_init(&pta);
   pthread_attr_setaffinity_np(&pta, sizeof(cpuset), &cpuset);
+  
+  //pthread_attr_setdetachstate(&pta, PTHREAD_CREATE_DETACHED);
+
   pthread_t thread;
   if (pthread_create(&thread,&pta,WorkerInNumCPU,&func)) { std::cerr << "Error in creating thread" << std::endl; }
   pthread_join(thread, NULL);
+  //pthread_detach(thread);
   pthread_attr_destroy(&pta);
+}
+
+template<class Function>
+void TasksDispach::RunTaskInNumCPUs(std::vector<int> NumCPU ,Function myFunc)
+{
+  int nbTh=NumCPU.size;
+  std::function<void()> func =myFunc;
+  pthread_t *thread_array;
+  thread_array = malloc(nbTh * sizeof(pthread_t));
+  pthread_attr_t *pta_array;
+  pta_array = malloc(nbTh * sizeof(pthread_attr_t));
+
+  for (int i = 0; i < nbTh; i++) {
+    cpu_set_t cpuset;
+    CPU_ZERO(&cpuset);
+    CPU_SET(NumCPU[i], &cpuset);
+    std::cout<<"Num CPU="<< i <<" activated"<<std::endl;
+    pthread_attr_init(&pta_array[i]);
+    pthread_attr_setaffinity_np(&pta_array[i], sizeof(cpuset), &cpuset);
+    if (pthread_create(&thread_array[i],&pta_array[i],WorkerInNumCPU,&func)) { std::cerr << "Error in creating thread" << std::endl; }
+  }
+
+  for (int i = 0; i < nbTh; i++) {
+        pthread_join(thread_array[i], NULL);
+        pthread_attr_destroy(&pta_array[i]);
+  }
+  free(thread_array); 
+  free(pta_array); 
 }
 
 
