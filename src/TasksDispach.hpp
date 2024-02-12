@@ -28,12 +28,108 @@
 #include "Utils/small_vector.hpp"
 #include "Utils/SpConsumerThread.hpp"
 
-
+#include "napp.hpp"
 
 //=======================================================================================================================
 //...
 //=======================================================================================================================
 
+constexpr auto& _parameters = NA::identifier<struct parameters_tag>;
+constexpr auto& _task = NA::identifier<struct task_tag>;
+
+namespace Backend{
+
+    template<typename ...T, size_t... I>
+    auto extractParametersAsTuple( std::tuple<T...> && t, std::index_sequence<I...>)
+    {
+        return std::forward_as_tuple( std::get<I>(t).getValue()...);
+    }
+
+    struct Runtime{
+        template <typename ... Ts>
+        void task(Ts && ... ts ) {
+            auto t = std::make_tuple( std::forward<Ts>(ts)... );
+            auto callback = std::get<sizeof...(Ts) - 1>(t);
+            auto parameters = extractParametersAsTuple( std::move(t), std::make_index_sequence<sizeof...(Ts)-1>{} );
+            std::apply( callback, std::move(parameters) );
+        }
+    };
+
+    template <typename T,bool b>
+    class SpData
+    {
+        static_assert(std::is_reference<T>::value,
+                    "The given type must be a reference");
+    public:
+        using value_type = T;
+        static constexpr bool isWrite = b;
+
+        template <typename U, typename = std::enable_if_t<std::is_convertible_v<U,T>> >
+        constexpr explicit SpData( U && u ) : M_val( std::forward<U>(u) ) {}
+
+        constexpr value_type getValue() { return M_val; }
+    private:
+        value_type M_val;
+    };
+
+    template <typename T>
+    auto spRead( T && t )
+    {
+        return SpData<T,false>{ std::forward<T>( t ) };
+    }
+    template <typename T>
+    auto spWrite( T && t )
+    {
+        return SpData<T,true>{ std::forward<T>( t ) };
+    }
+
+    template<typename T>
+    auto toSpData( T && t )
+    {
+        if constexpr ( std::is_const_v<std::remove_reference_t<T>> )
+            return spRead( std::forward<T>( t ) );
+        else
+            return spWrite( std::forward<T>( t ) );
+    }
+
+    template<typename ...T, size_t... I>
+    auto makeSpDataHelper( std::tuple<T...>& t, std::index_sequence<I...>)
+    {
+        return std::make_tuple( toSpData(std::get<I>(t))...);
+    }
+    template<typename ...T>
+    auto makeSpData( std::tuple<T...>& t ){
+        return makeSpDataHelper<T...>(t, std::make_index_sequence<sizeof...(T)>{});
+    }
+}
+
+
+namespace Frontend
+{
+    template <typename ... Ts>
+    void
+    runTask( Ts && ... ts )
+    {
+        auto args = NA::make_arguments( std::forward<Ts>(ts)... );
+        auto && task = args.get(_task);
+        auto && parameters = args.get_else(_parameters,std::make_tuple());
+        Backend::Runtime runtime;
+
+        std::apply( [&runtime](auto... args){ runtime.task(args...); }, std::tuple_cat( Backend::makeSpData( parameters ), std::make_tuple( task ) ) );
+    }
+
+    template <typename ... Ts>
+    auto parameters(Ts && ... ts)
+    {
+        //Construit un tuple de références aux arguments dans args pouvant être transmis en tant qu'argument à une fonction
+        return std::forward_as_tuple( std::forward<Ts>(ts)... );
+    }
+}
+
+
+//=======================================================================================================================
+//...
+//=======================================================================================================================
 
 
 void *WorkerInNumCPU(void *arg) {
@@ -50,8 +146,8 @@ class TasksDispach
         void initIndice();
 
     public:
-        int numTypeTh;
-        int nbTh;
+        int  numTypeTh;
+        int  nbTh;
         bool qSave;
         bool qSlipt;
         bool qDeferred;
@@ -63,9 +159,10 @@ class TasksDispach
         auto end(); 
         auto size(); 
 
-        int getNbMaxThread();
+        int  getNbMaxThread();
         void init(int numType,int nbThread,bool qsaveInfo);
         void setFileName(std::string s);
+        void setNbThread(int v);
 
         //BEGIN::multithread specx part
         template<class Function>
@@ -101,7 +198,7 @@ class TasksDispach
         template<class Function>
             void RunTaskInNumCPU(int idCPU,Function myFunc);
         template<class Function>
-            void RunTaskInNumCPUs(std::vector<int> NumCPU ,Function myFunc);
+            void RunTaskInNumCPUs(const std::vector<int> & numCPU ,Function myFunc);
         //END::Thread affinity part
 
         template<class InputIterator, class Function>
@@ -114,8 +211,8 @@ class TasksDispach
 
 TasksDispach::TasksDispach() { 
     nbThTotal=std::thread::hardware_concurrency();
+    nbTh=nbThTotal;
     numTypeTh=2; 
-    nbTh=1;
     qSave=false;
     FileName="TestDispach";
     qSlipt=false;
@@ -126,7 +223,7 @@ TasksDispach::TasksDispach() {
     initIndice();
 }
 
-TasksDispach::~ TasksDispach(void) { 
+TasksDispach::~TasksDispach(void) { 
 }
 
 
@@ -147,8 +244,13 @@ auto TasksDispach::size()
 
 void TasksDispach::initIndice()
 {
-    indice.clear();
-    for (int i = 1; i <= nbTh; ++i)  { indice.push_back(i); }
+    indice.clear(); for (int i = 1; i <= nbTh; ++i)  { indice.push_back(i); }
+}
+
+void TasksDispach::setNbThread(int v)
+{
+    nbTh=std::min(v,nbThTotal);
+    initIndice();
 }
 
 void TasksDispach::init(int numType,int nbThread,bool qsaveInfo)
@@ -173,28 +275,14 @@ int TasksDispach::getNbMaxThread()
 template<class Function>
 void TasksDispach::RunTaskInNumCPU(int idCPU,Function myFunc)
 {
-  std::function<void()> func =myFunc;
-  int ret;
-  cpu_set_t cpuset;
-  CPU_ZERO(&cpuset);
-  CPU_SET(idCPU, &cpuset);
-  pthread_attr_t pta;
-  pthread_attr_init(&pta);
-  pthread_attr_setaffinity_np(&pta, sizeof(cpuset), &cpuset);
-  
-  //pthread_attr_setdetachstate(&pta, PTHREAD_CREATE_DETACHED);
-
-  pthread_t thread;
-  if (pthread_create(&thread,&pta,WorkerInNumCPU,&func)) { std::cerr << "Error in creating thread" << std::endl; }
-  pthread_join(thread, NULL);
-  //pthread_detach(thread);
-  pthread_attr_destroy(&pta);
+    const std::vector<int> v={idCPU};
+    RunTaskInNumCPUs(v,myFunc);
 }
 
 template<class Function>
-void TasksDispach::RunTaskInNumCPUs(std::vector<int> NumCPU ,Function myFunc)
+void TasksDispach::RunTaskInNumCPUs(const std::vector<int> & numCPU ,Function myFunc)
 {
-  int nbTh=NumCPU.size();
+  int nbTh=numCPU.size();
   std::function<void()> func =myFunc;
   pthread_t thread_array[nbTh];
   pthread_attr_t pta_array[nbTh];
@@ -202,8 +290,8 @@ void TasksDispach::RunTaskInNumCPUs(std::vector<int> NumCPU ,Function myFunc)
   for (int i = 0; i < nbTh; i++) {
     cpu_set_t cpuset;
     CPU_ZERO(&cpuset);
-    CPU_SET(NumCPU[i], &cpuset);
-    std::cout<<"Num CPU="<< NumCPU[i] <<" activated"<<std::endl;
+    CPU_SET(numCPU[i], &cpuset);
+    std::cout<<"Num CPU="<< numCPU[i] <<" activated"<<std::endl;
     pthread_attr_init(&pta_array[i]);
     pthread_attr_setaffinity_np(&pta_array[i], sizeof(cpuset), &cpuset);
     if (pthread_create(&thread_array[i],&pta_array[i],WorkerInNumCPU,&func)) { std::cerr << "Error in creating thread" << std::endl; }
@@ -484,4 +572,150 @@ Function TasksDispach::run(Function myFunc)
     default:
         return(sub_run_multithread(myFunc));
   }
+}
+
+
+
+//=======================================================================================================================
+//...
+//=======================================================================================================================
+
+
+
+class TasksDispachComplex 
+{
+        int nbThTotal;   
+    public:
+        int nbTh;
+
+        void setNbThread(int v);
+        int  getNbMaxThread();
+
+        template <typename ... Ts>
+            auto parameters(Ts && ... ts);
+
+        template <typename ... Ts>
+            void runTask( Ts && ... ts );
+
+        template <typename ... Ts>
+            void runTaskLoop( Ts && ... ts );
+        
+        TasksDispachComplex(void);
+};
+
+
+TasksDispachComplex::TasksDispachComplex()
+{
+    nbThTotal=std::thread::hardware_concurrency();
+    nbTh=nbThTotal;
+}
+
+void TasksDispachComplex::setNbThread(int v)
+{
+    nbTh=std::min(v,nbThTotal);
+}
+
+int TasksDispachComplex::getNbMaxThread()
+{
+    nbThTotal=std::thread::hardware_concurrency();
+    return(nbThTotal);
+}
+
+template <typename ... Ts>
+auto TasksDispachComplex::parameters(Ts && ... ts)
+{
+    return std::forward_as_tuple( std::forward<Ts>(ts)... );
+}
+
+template <typename ... Ts>
+void TasksDispachComplex::runTask( Ts && ... ts )
+{
+    auto args = NA::make_arguments( std::forward<Ts>(ts)... );
+    auto && task = args.get(_task);
+    auto && parameters = args.get_else(_parameters,std::make_tuple());
+    Backend::Runtime runtime;
+    std::apply( [&runtime](auto... args){ runtime.task(args...); }, std::tuple_cat( Backend::makeSpData( parameters ), std::make_tuple( task ) ) );
+}
+
+template <typename ... Ts>
+void TasksDispachComplex::runTaskLoop( Ts && ... ts )
+{
+    auto args = NA::make_arguments( std::forward<Ts>(ts)... );
+    auto && task = args.get(_task);
+    auto && parameters = args.get_else(_parameters,std::make_tuple());
+    Backend::Runtime runtime;
+    std::vector< std::future< bool > > futures;
+    for (int k = 0; k < nbTh; k++) {
+        std::cout<<"Call num Thread futures="<<k<<"\n";
+		auto tp=std::tuple_cat( 
+					Backend::makeSpData( parameters ), 
+					std::make_tuple( task ) 
+				);
+		auto LamdaTransfert = [&]() {
+			std::apply([&runtime](auto... args){ runtime.task(args...); }, tp);
+            return true; 
+		};
+
+        futures.emplace_back(
+            std::async(std::launch::async,LamdaTransfert));
+    }
+    for( auto& r : futures){ auto a =  r.get(); }
+}
+
+
+
+//=======================================================================================================================
+//...
+//=======================================================================================================================
+
+
+void testScanAllThreadMethods()
+{
+    int qPutLittleTroublemaker=true;
+    int time_sleep= 100000;
+    auto P001=[time_sleep,qPutLittleTroublemaker](const int i,double& s) {  
+            double sum=0.0; 
+            for(int j=0;j<100;j++) { sum+=double(j); }
+            if (qPutLittleTroublemaker) {
+                srand((unsigned)time(0)); int time_sleep2 = rand() % 5000 + 1; usleep(time_sleep2); 
+            }
+            usleep(time_sleep);
+            s=sum+i;      
+        return true;
+    };
+
+    bool qChrono=false;
+
+    TasksDispach Fg1; 
+    int nbThreads = Fg1.nbTh;
+    //int nbThreads = 96;
+    Color(7); std::cout<<"Test Scan [";
+    Color(3); std::cout<<nbThreads;
+    Color(7); std::cout<<"] Thread Methods >>> ";
+    Fg1.setFileName("Results"); 
+    Fg1.init(1,nbThreads,true); Fg1.qViewChrono=qChrono; 
+    std::vector<double> valuesVec1=Fg1.sub_run_multithread_beta(P001);
+    double Value1=std::reduce(valuesVec1.begin(),valuesVec1.end()); 
+
+    TasksDispach Fg2; 
+    Fg2.setFileName("Results"); 
+    Fg2.init(1,nbThreads,true); Fg2.qViewChrono=qChrono; 
+    std::vector<double> valuesVec2=Fg2.sub_run_async_beta(P001);
+    double Value2=std::reduce(valuesVec2.begin(),valuesVec2.end()); 
+
+    TasksDispach Fg3; 
+    Fg3.setFileName("Results"); 
+    Fg3.init(2,nbThreads,true); Fg3.qViewChrono=qChrono; 
+    std::vector<double> valuesVec3=Fg3.sub_run_specx(P001);
+    double Value3=std::reduce(valuesVec3.begin(),valuesVec3.end()); 
+    if ((Value1==Value2) && (Value1==Value3)) {
+        Color(2); std::cout <<"OK"<< "\n"; 
+    } 
+    else 
+    {
+        Color(1); std::cout <<"ERROR "<<"m1:"<<Value1<<" m2:"<<Value2<<" m3:"<<Value3<< "\n"; 
+    }
+    std::cout << "\n"; 
+    Color(7);
+    std::cout << "\n"; 
 }
