@@ -101,6 +101,25 @@ namespace Backend{
     auto makeSpData( std::tuple<T...>& t ){
         return makeSpDataHelper<T...>(t, std::make_index_sequence<sizeof...(T)>{});
     }
+
+    template<typename T>
+    auto toSpDataSpecx( T && t )
+    {
+        if constexpr ( std::is_const_v<std::remove_reference_t<T>> )
+            return SpRead(std::forward<T>( t ));
+        else
+            return SpWrite(std::forward<T>( t ));
+    }
+
+    template<typename ...T, size_t... I>
+    auto makeSpDataHelperSpecx( std::tuple<T...>& t, std::index_sequence<I...>)
+    {
+        return std::make_tuple( toSpDataSpecx(std::get<I>(t))...);
+    }
+    template<typename ...T>
+    auto makeSpDataSpecx( std::tuple<T...>& t ){
+        return makeSpDataHelperSpecx<T...>(t, std::make_index_sequence<sizeof...(T)>{});
+    }
 }
 
 
@@ -582,11 +601,17 @@ Function TasksDispach::run(Function myFunc)
 
 
 
+
 class TasksDispachComplex 
 {
-        int nbThTotal;   
+    int nbThTotal;   
+    std::string FileName;
+
     public:
         int nbTh;
+        bool qViewChrono;
+        bool qInfo;
+        bool qSave;
 
         void setNbThread(int v);
         int  getNbMaxThread();
@@ -598,9 +623,14 @@ class TasksDispachComplex
             void runTask( Ts && ... ts );
 
         template <typename ... Ts>
-            void runTaskLoop( Ts && ... ts );
+            void runTaskLoopAsync( Ts && ... ts );
+
+        template <typename ... Ts>
+            void runTaskLoopSpecx( Ts && ... ts );
         
         TasksDispachComplex(void);
+
+        void setFileName(std::string s);
 };
 
 
@@ -608,6 +638,15 @@ TasksDispachComplex::TasksDispachComplex()
 {
     nbThTotal=std::thread::hardware_concurrency();
     nbTh=nbThTotal;
+    qViewChrono=false;
+    qInfo=false;
+    qSave=false;
+    FileName="TestDispachComplex";
+}
+
+void TasksDispachComplex::setFileName(std::string s)
+{
+    FileName=s;
 }
 
 void TasksDispachComplex::setNbThread(int v)
@@ -630,21 +669,68 @@ auto TasksDispachComplex::parameters(Ts && ... ts)
 template <typename ... Ts>
 void TasksDispachComplex::runTask( Ts && ... ts )
 {
+    auto begin = std::chrono::steady_clock::now();
     auto args = NA::make_arguments( std::forward<Ts>(ts)... );
     auto && task = args.get(_task);
     auto && parameters = args.get_else(_parameters,std::make_tuple());
     Backend::Runtime runtime;
-    std::apply( [&runtime](auto... args){ runtime.task(args...); }, std::tuple_cat( Backend::makeSpData( parameters ), std::make_tuple( task ) ) );
+    auto tp=std::tuple_cat( 
+					Backend::makeSpData( parameters ), 
+					std::make_tuple( task ) 
+				);
+    std::apply( [&runtime](auto... args){ runtime.task(args...); }, tp );
+    auto end = std::chrono::steady_clock::now();
+    if (qViewChrono) {  std::cout << "===> Elapsed microseconds: "<< std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count()<< " us\n"; std::cout<<"\n"; }
 }
 
 template <typename ... Ts>
-void TasksDispachComplex::runTaskLoop( Ts && ... ts )
+void TasksDispachComplex::runTaskLoopAsync( Ts && ... ts )
 {
+    auto begin = std::chrono::steady_clock::now();
     auto args = NA::make_arguments( std::forward<Ts>(ts)... );
     auto && task = args.get(_task);
     auto && parameters = args.get_else(_parameters,std::make_tuple());
     Backend::Runtime runtime;
     std::vector< std::future< bool > > futures;
+    std::cout <<"nbTh="<<nbTh<< "\n";
+
+    for (int k = 0; k < nbTh; k++) {
+        if (qInfo) { std::cout<<"Call num Thread futures="<<k<<"\n"; }
+		auto tp=std::tuple_cat( 
+					Backend::makeSpData( parameters ), 
+					std::make_tuple( task ) 
+				);
+		auto LamdaTransfert = [&]() {
+			std::apply([&runtime](auto... args){ runtime.task(args...); }, tp);
+            return true; 
+		};
+
+        /*
+        futures.emplace_back(
+            std::async(std::launch::async,LamdaTransfert));
+        */
+
+        futures.emplace_back(
+            std::async(std::launch::deferred,LamdaTransfert));
+    }
+    for( auto& r : futures){ auto a =  r.get(); }
+    auto end = std::chrono::steady_clock::now();
+    if (qViewChrono) {  std::cout << "===> Elapsed microseconds: "<< std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count()<< " us\n"; std::cout<<"\n"; }
+}
+
+/*
+template <typename ... Ts>
+void TasksDispachComplex::runTaskLoopMultithread( Ts && ... ts )
+{
+    //add mutex
+    auto begin = std::chrono::steady_clock::now();
+    auto args = NA::make_arguments( std::forward<Ts>(ts)... );
+    auto && task = args.get(_task);
+    auto && parameters = args.get_else(_parameters,std::make_tuple());
+    Backend::Runtime runtime;
+    std::vector<std::thread> mythreads;
+    std::cout <<"nbTh="<<nbTh<< "\n";
+    std::mutex mtx; 
     for (int k = 0; k < nbTh; k++) {
         std::cout<<"Call num Thread futures="<<k<<"\n";
 		auto tp=std::tuple_cat( 
@@ -655,11 +741,64 @@ void TasksDispachComplex::runTaskLoop( Ts && ... ts )
 			std::apply([&runtime](auto... args){ runtime.task(args...); }, tp);
             return true; 
 		};
-
-        futures.emplace_back(
-            std::async(std::launch::async,LamdaTransfert));
+        std::thread th(LamdaTransfert);
+        mythreads.push_back(move(th));
     }
-    for( auto& r : futures){ auto a =  r.get(); }
+    for (std::thread &t : mythreads) { t.join();}
+    auto end = std::chrono::steady_clock::now();
+    if (qViewChrono) {  std::cout << "===> Elapsed microseconds: "<< std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count()<< " us\n"; std::cout<<"\n"; }
+}
+*/
+
+
+template <typename ... Ts>
+void TasksDispachComplex::runTaskLoopSpecx( Ts && ... ts )
+{
+    auto begin = std::chrono::steady_clock::now();
+    auto args = NA::make_arguments( std::forward<Ts>(ts)... );
+    auto && task = args.get(_task);
+    auto && parameters = args.get_else(_parameters,std::make_tuple());
+    Backend::Runtime runtime;
+    std::cout <<"nbTh="<<nbTh<< "\n";
+
+    SpRuntime runtime_Specx(nbTh); 
+
+
+    auto tpSpecxFront=Backend::makeSpData( parameters );
+        int NbtpSpecxFront=std::tuple_size<decltype(tpSpecxFront)>::value;
+        std::cout <<"Size Tuple Front="<<NbtpSpecxFront<< std::endl;
+
+    auto LambdaExpression=std::make_tuple( task );
+        int NbLambdaExpression=std::tuple_size<decltype(LambdaExpression)>::value;
+        std::cout <<"Size Tuple Parameters="<<NbLambdaExpression<< std::endl;
+        
+    //auto tpBackend=Backend::makeSpData( parameters );
+    auto tpBackend=Backend::makeSpDataSpecx( parameters );
+         int NbtpBackend=std::tuple_size<decltype(tpBackend)>::value;
+        std::cout <<"Size tpBackend="<<NbtpBackend<< std::endl;
+
+    auto tpSpecx=std::tuple_cat( 
+					Backend::makeSpDataSpecx( parameters ), 
+					std::make_tuple( task ) 
+				);
+
+    for (int k = 0; k < nbTh; k++) {
+        if (qInfo) { std::cout<<"Call num Thread specx="<<k<<"\n"; }
+        std::apply([&](auto &&... args) { runtime_Specx.task(args...); },tpSpecx);
+    }
+
+    runtime_Specx.waitAllTasks();
+    runtime_Specx.stopAllThreads();
+
+    auto end = std::chrono::steady_clock::now();
+
+    if (qSave)
+    {
+        runtime_Specx.generateDot("Test.dot", true);
+        runtime_Specx.generateTrace("Test.svg");   
+    }
+
+    if (qViewChrono) {  std::cout << "===> Elapsed microseconds: "<< std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count()<< " us\n"; std::cout<<"\n"; }
 }
 
 
@@ -719,3 +858,6 @@ void testScanAllThreadMethods()
     Color(7);
     std::cout << "\n"; 
 }
+
+
+

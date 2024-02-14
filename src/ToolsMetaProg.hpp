@@ -12,7 +12,7 @@
 #include <type_traits>
 #include <list>
 #include <ranges>
-
+#include <stdexcept>
 
 // META-FUNCTIONS FOR EXTRACTING THE n-th TYPE OF A PARAMETER PACK
 
@@ -261,4 +261,184 @@ void forward_pack(F&& f, Ts&&... args)
 }
 
 //===============================================================================
+
+template<class Tuple, std::size_t N>
+struct TuplePrinter
+{
+    static void print_tuple(const Tuple& t)
+    {
+        TuplePrinter<Tuple, N - 1>::print_tuple(t);
+        std::cout << ", " << std::get<N-1>(t);
+    }
+};
+ 
+template<class Tuple>
+struct TuplePrinter<Tuple, 1>
+{
+    static void print_tuple(const Tuple& t)
+    {
+        std::cout << std::get<0>(t);
+    }
+};
+ 
+template<typename... Args, std::enable_if_t<sizeof...(Args) == 0, int> = 0>
+void print_tuple(const std::tuple<Args...>& t)
+{
+    std::cout << "()\n";
+}
+ 
+template<typename... Args, std::enable_if_t<sizeof...(Args) != 0, int> = 0>
+void print_tuple(const std::tuple<Args...>& t)
+{
+    std::cout << "(";
+    TuplePrinter<decltype(t), sizeof...(Args)>::print_tuple(t);
+    std::cout << ")\n";
+}
+
+//===============================================================================
+
+template<typename ...T, size_t... I>
+auto makeTupleReferencesSub(std::tuple<T...>& t ,  std::index_sequence<I...>)
+{ return std::tie(*std::get<I>(t)...) ;}
+
+template<typename ...T>
+auto makeTupleReferences( std::tuple<T...>& t ){
+	return makeTupleReferencesSub<T...>(t, std::make_index_sequence<sizeof...(T)>{});
+}
+
+
+//===============================================================================
+
+template< class T, T... Ints > 
+class integer_sequence;
+
+template<std::size_t... Ints>
+using index_sequence = std::integer_sequence<std::size_t, Ints...>;
+
+
+template <typename T>
+void printElem(const T& x) {
+    std::cout << x << ',';
+};
+
+template <typename TupleT, std::size_t... Is>
+void printTupleManual(const TupleT& tp, std::index_sequence<Is...>) {
+    (printElem(std::get<Is>(tp)), ...);
+}
+
+
+/*
+template <typename TupleT>
+auto getValueTupleManual(const TupleT& tp,const int k) {
+    return std::get<k>(tp);
+}
+*/
+
+
+//===============================================================================
+
+template<
+    typename Tuple,
+    typename Indices=std::make_index_sequence<std::tuple_size<Tuple>::value>>
+struct runtime_get_func_table;
+
+template<typename Tuple,size_t ... Indices>
+struct runtime_get_func_table<Tuple,std::index_sequence<Indices...>>{
+    using return_type=typename std::tuple_element<0,Tuple>::type&;
+    using get_func_ptr=return_type (*)(Tuple&) noexcept;
+    static constexpr get_func_ptr table[std::tuple_size<Tuple>::value]={
+        &std::get<Indices>...
+    };
+};
+
+template<typename Tuple,size_t ... Indices>
+constexpr typename
+runtime_get_func_table<Tuple,std::index_sequence<Indices...>>::get_func_ptr
+runtime_get_func_table<Tuple,std::index_sequence<Indices...>>::table[std::tuple_size<Tuple>::value];
+
+template<typename Tuple>
+constexpr
+typename std::tuple_element<0,typename std::remove_reference<Tuple>::type>::type&
+runtime_get(Tuple&& t,size_t index){
+    using tuple_type=typename std::remove_reference<Tuple>::type;
+    if(index>=std::tuple_size<tuple_type>::value)
+        throw std::runtime_error("Out of range");
+    return runtime_get_func_table<tuple_type>::table[index](t);
+}		
+
+//===============================================================================
+
+
+template <int... Indices> struct indices;
+template <> struct indices<-1> { typedef indices<> type; };
+template <int... Indices>
+struct indices<0, Indices...>
+{
+    typedef indices<0, Indices...> type;
+};
+template <int Index, int... Indices>
+struct indices<Index, Indices...>
+{
+    typedef typename indices<Index - 1, Index, Indices...>::type type;
+};
+
+template <typename T>
+typename indices<std::tuple_size<T>::value - 1>::type const*
+make_indices()
+{
+    return 0;
+}
+
+/*
+template <typename F, typename Tuple, int... N>
+void call_impl(F&& fun, Tuple&& t, indices<Indices...> const*)
+{
+    fun(std::get<N>(t)...);
+}
+*/
+
+template <typename F, typename... T, int... N>
+void call_impl(F&& fun, std::tuple<T...>&& t) {
+    fun(std::get<N>(t)...);
+}
+
+template <typename F, typename Tuple>
+void call(F&& fun, Tuple&& t)
+{
+    call_impl(std::forward<F>(fun), std::forward<Tuple>(t), make_indices<Tuple>());
+}
+
+
+//===============================================================================
+
+
+template<typename Function, typename Tuple, size_t ... I>
+auto call_FwT(Function f, Tuple t, std::index_sequence<I ...>)
+{
+     return f(std::get<I>(t) ...);
+}
+
+template<typename Function, typename Tuple>
+auto call_FwT(Function f, Tuple t)
+{
+    static constexpr auto size = std::tuple_size<Tuple>::value;
+    return call_FwT(f, t, std::make_index_sequence<size>{});
+}
+
+
+//===============================================================================
+
+ template<typename F, typename Tuple, size_t ...S > 
+ decltype(auto) apply_tuple_impl(F&& fn, Tuple&& t, std::index_sequence<S...>) 
+ {
+      return std::forward<F>(fn)(std::get<S>(std::forward<Tuple>(t))...);
+ }
+
+ template<typename F, typename Tuple>
+ decltype(auto) apply_from_tuple(F&& fn, Tuple&& t)
+ {
+    std::size_t constexpr tSize=std::tuple_size<typename std::remove_reference<Tuple>::type>::value;
+    return apply_tuple_impl(std::forward<F>(fn),std::forward<Tuple>(t),std::make_index_sequence<tSize>());
+ }
+
 

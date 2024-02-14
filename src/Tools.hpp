@@ -196,6 +196,30 @@ std::string GetCallTyp(T& fcv)
 }
 
 
+template <typename T>
+int GetSignatureSpecxFunction(T& fcv)
+{
+    int res=0;
+    std::string rep="Unknow";
+    std::string s1=typeid(fcv).name();
+    bool qconst=std::is_const_v<T>;
+    bool qclass=std::is_class_v<T>;
+    bool qfunction=std::is_function_v<T>;
+    bool qpointer=std::is_pointer_v<T>;
+    bool qarray=std::is_array_v<T>;
+    bool qenum=std::is_enum_v<T>;
+    bool qunion=std::is_union_v<T>;
+    bool qvoid=std::is_void_v<T>;
+
+    int l=s1.length();
+    if (l>1) {
+        if (s1.find("16SpScalarDataModeIL16SpDataAccessMode0") != std::string::npos) { res=1; } //SpRead
+        if (s1.find("16SpScalarDataModeIL16SpDataAccessMode1") != std::string::npos) { res=2; } //SpWrite
+        if (s1.find("16SpScalarDataModeIL16SpDataAccessMode3") != std::string::npos) { res=3; } //SpCommutativeWrite
+    }
+    return (res);
+}
+
 /*=====================================================================================================*/
 
 auto GetListNameObjects(std::string ChName)
