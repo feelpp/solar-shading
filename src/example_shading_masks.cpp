@@ -54,8 +54,9 @@ int main(int argc, char **argv)
     // Compute the shading masks
     ShadingMask<mesh_t> sm(1,mesh,json_buildings);
 
-    sm.numTypeThread=2; //1: Mode std::async.  2: Mode Specx
+    sm.numTypeThread=1; //1: Mode std::async.  2: Mode Specx
     sm.QSaveTypeThreadDotON=false;
+    sm.numModeTaskUsed=2;
 
     sm.computeMasksMaster(); //In fact
 

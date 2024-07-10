@@ -6,8 +6,9 @@
 
 
 #include "Tools.hpp"
-#include "TasksDispach.hpp"
+#include "TasksDispatch.hpp"
 
+#include <feel/feeltask/taskpu.hpp>
 
 
 namespace Feel {
@@ -39,6 +40,7 @@ public:
     bool QSaveTypeThreadDotON;
     bool QSaveControlFiles;
     int  numTypeThread;
+    int  numModeTaskUsed; 
 
 
     ShadingMask(int num,mesh_ptrtype mesh, nl::json const& specs, int intervalsAzimuth=72, int intervalsAltitude=10 );

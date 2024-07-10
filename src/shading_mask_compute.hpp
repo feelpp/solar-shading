@@ -158,17 +158,42 @@ namespace Feel
                 matrix_node_type const& element_points=el.second.vertices();
 
 
-            //BEGIN: TaskDispach part
+
                 auto MyAlgo000=[&](const int& k) {  
                     auto values_Pair=commonComputePartCTRL(NumOption,element_points,n_rays_thread[k],k);
                     SM_table_marker +=values_Pair.first;
                     Angle_table_marker += values_Pair.second;
                 return true;};
 
-                TasksDispach Fg1; 
-                Fg1.init(numTypeThread,M_Nthreads,QSaveTypeThreadDotON);
-                Fg1.run(MyAlgo000);
-            //END: TaskDispach part
+
+            std::cout<<"\n[INFO: numModeTaskUsed="<<numModeTaskUsed<<"]\n";
+
+            //BEGIN: TaskDispatch part
+                if (numModeTaskUsed==1)
+                {
+                    TasksDispatch Fg1; 
+                    Fg1.init(numTypeThread,M_Nthreads,QSaveTypeThreadDotON);
+                    Fg1.run(MyAlgo000);
+                }
+                
+            //END: TaskDispatch part
+
+             //BEGIN: Task part
+                if (numModeTaskUsed==2)
+                {
+                    Task::Task TsK(M_Nthreads,numTypeThread);
+                    TsK.setSave( QSaveTypeThreadDotON );
+                    TsK.setInfo( true );
+                    for ( int k = 0; k < M_Nthreads; k++ )
+                    {
+                        auto const& idk = k;
+                        TsK.add( _param(idk), _tasks = MyAlgo000 );
+                    }
+                    TsK.run();
+                    TsK.close();
+                }
+            
+            //END: Task part
 
 
             }
@@ -454,16 +479,39 @@ template <typename MeshType>
                     start_index_list[t]=n;
                 }
 
-                //BEGIN: TaskDispach part
+                
                 auto MyAlgo000=[&](const int& k) {  
                     multithreading_over_markers(marker_thread_lists[k],k,start_index_list[k]);
                 return true;};
 
-                TasksDispach Fg1; 
-                Fg1.init(numTypeThread,M_Nthreads,QSaveTypeThreadDotON);
-                Fg1.run(MyAlgo000);
-                //END: TaskDispach part
+                std::cout<<"\n[INFO: numModeTaskUsed="<<numModeTaskUsed<<"]\n";
+                std::cout<<"\n[INFO: M_Nthreads="<<M_Nthreads<<"]\n";
 
+                //BEGIN: TaskDispatch part
+                if (numModeTaskUsed==1)
+                {
+                    TasksDispatch Fg1; 
+                    Fg1.init(numTypeThread,M_Nthreads,QSaveTypeThreadDotON);
+                    Fg1.run(MyAlgo000);
+                }
+                
+                //END: TaskDispatch part
+
+                //BEGIN: Task part
+                if (numModeTaskUsed==2)
+                {
+                    Task::Task TsK(M_Nthreads,numTypeThread);
+                    TsK.setSave( QSaveTypeThreadDotON );
+                    TsK.setInfo( true );
+                    for ( int k = 0; k < M_Nthreads; k++ )
+                    {
+                        auto const& idk = k;
+                        TsK.add( _param(idk), _tasks = MyAlgo000 );
+                    }
+                    TsK.run();
+                    TsK.close();
+                }
+                //END: Task part
 
 
                 auto timeComputation = toc("Shading masks computed using raytracing");

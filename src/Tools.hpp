@@ -28,8 +28,14 @@
 #include <ranges>
 
 
-#define clrscr() printf("\033[H\033[2J")
+//================================================================================================================================
+
+//#define clrscr() printf("\033[H\033[2J")
 //#define color(param) printf("\033[%sm",param)
+
+
+//================================================================================================================================
+// Tools to manage the console: colors, cursor,...
 
 /* 
     0  réinitialisation         1  haute intensité (des caractères)
@@ -137,18 +143,13 @@ void CONSOLE_Color(int n)
 //END::CONSOLE TOOLS
 
 
-/*=====================================================================================================*/
 
+//================================================================================================================================
+// Functions that provide the characteristics, type of a variable,...
 
 template <typename T>
 std::string GetCallTyp(T& fcv)
 {
-    //return std::is_const_v<T>;
-    //if constexpr ( T::AccessMode == SpDataAccessMode::READ )
-    //{
-    //}
-
-
     std::string rep="Unknow";
     std::string s1=typeid(fcv).name();
     bool qconst=std::is_const_v<T>;
@@ -173,8 +174,8 @@ std::string GetCallTyp(T& fcv)
 
     int l=s1.length();
     if (l>1) {
-        if (s1.find("16SpScalarDataModeIL16SpDataAccessMode1") != std::string::npos) { rep="SpWrite"; }
         if (s1.find("16SpScalarDataModeIL16SpDataAccessMode0") != std::string::npos) { rep="SpRead"; }
+        if (s1.find("16SpScalarDataModeIL16SpDataAccessMode1") != std::string::npos) { rep="SpWrite"; }
         if (s1.find("16SpScalarDataModeIL16SpDataAccessMode3") != std::string::npos) { rep="SpCommutativeWrite"; }
         if (s1.find("vector") != std::string::npos) { 
             if (qconst) { rep="Const Vector"; } else { rep="Vector"; }
@@ -220,7 +221,8 @@ int GetSignatureSpecxFunction(T& fcv)
     return (res);
 }
 
-/*=====================================================================================================*/
+
+//================================================================================================================================
 
 auto GetListNameObjects(std::string ChName)
 {
@@ -232,4 +234,20 @@ auto GetListNameObjects(std::string ChName)
     return ListObjects;
 }
 
-/*=====================================================================================================*/
+//================================================================================================================================
+
+void WriteMat(int Mat[][3],int row,int col)
+{
+    for(int i = 0; i < row; i++) {
+        for(int j = 0; j < col; j++) {
+            Color(j+1);
+            std::cout << Mat[i][j];
+            std::cout << "\t";
+        }
+        std::cout << "\n";
+    }
+    std::cout << "\n";
+    Color(7);
+}
+
+//================================================================================================================================
